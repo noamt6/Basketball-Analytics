@@ -23,6 +23,10 @@ __pycache__/
 # baseline; this is the scratch dir the Docker/compose job writes to)
 /out/
 
+# --- scrape_league.py ---
+.scrape_cache/
+/data/scraped/
+
 # --- Terraform (infra/) ---
 *.tfstate
 *.tfstate.*
