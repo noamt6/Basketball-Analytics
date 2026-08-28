@@ -1,0 +1,9 @@
+# Direct dependencies, pinned for reproducible image builds.
+# (For a full transitive lock: `pip freeze > requirements.lock.txt` and COPY that
+#  into the Dockerfile instead.)
+SQLAlchemy==2.0.52
+psycopg2-binary==2.9.12
+pandas==2.3.3
+python-dotenv==1.2.3
+openpyxl==3.1.5
+boto3==1.43.81   # only used when DB_SECRET_ARN / DB_SECRET_NAME is set (AWS Secrets Manager)

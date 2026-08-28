@@ -1,0 +1,41 @@
+# --- secrets / local env ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_rsa.*
+*credentials*.json
+aws-credentials*
+.aws/
+
+# --- python ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# batch `export` output (the committed data.json at repo root is the checked-in
+# baseline; this is the scratch dir the Docker/compose job writes to)
+/out/
+
+# --- Terraform (infra/) ---
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+tfplan
+*.tfplan
+crash.log
+crash.*.log
+.terraform/
+# .terraform.lock.hcl IS committed on purpose (pins provider versions)
+backend.hcl
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

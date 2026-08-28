@@ -1,0 +1,44 @@
+# Local dev stack: Postgres + the batch image. Not for production (RDS + ECR
+# replace both there). Usage:
+#   docker compose up -d db                      # just the database
+#   docker compose run --rm app migrate          # apply schema.sql
+#   docker compose run --rm app ingest           # load the bundled workbook
+#   docker compose run --rm app test             # print leaderboards
+#   docker compose run --rm app export           # writes ./out/data.json
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: analytics_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d analytics_db"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: analytics_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_SSLMODE: disable
+      SEASON: "2023-2024"
+    volumes:
+      - ./out:/app/out
+    # No default long-running process — this is a job runner. `command` is
+    # supplied per `docker compose run`.
+
+volumes:
+  pgdata:

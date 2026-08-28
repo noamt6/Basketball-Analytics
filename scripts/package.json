@@ -1,0 +1,14 @@
+{
+  "name": "basketball-analytics-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dev/QA tooling for basketball-analytics (Node side). Python tools in this dir have no npm deps.",
+  "type": "commonjs",
+  "scripts": {
+    "qa": "node qa_responsive_rtl.js",
+    "postinstall": "playwright install chromium"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}

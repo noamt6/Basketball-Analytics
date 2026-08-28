@@ -1,0 +1,6 @@
+# Copy to backend.hcl and fill in, then:
+#   terraform init -backend-config=backend.hcl
+bucket         = "REPLACE-with-your-tfstate-bucket"
+region         = "eu-central-1"
+dynamodb_table = "REPLACE-with-your-tflock-table"
+# key + encrypt are set in versions.tf

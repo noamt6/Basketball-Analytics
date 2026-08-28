@@ -1,0 +1,10 @@
+.terraform/
+terraform.tfvars
+backend.hcl
+tfplan
+*.tfplan
+*.tfstate
+*.tfstate.*
+crash.log
+*.log
+# .terraform.lock.hcl is committed on purpose (pins provider versions)

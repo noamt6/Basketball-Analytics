@@ -1,0 +1,2377 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>סטטיסטיקות ליגת העל</title>
+<script>
+  (function () {
+    try {
+      var lang = localStorage.getItem('sls-lang') || 'he';
+      document.documentElement.setAttribute('lang', lang);
+      document.documentElement.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+      document.documentElement.setAttribute('data-lang', lang);
+    } catch (e) {}
+    // JS-measured mobile breakpoint, redundant with the CSS @media(max-width:640px)
+    // block but authoritative when the two disagree -- see the CSS comment
+    // next to the html[data-mobile] rules for why they can disagree (page
+    // rendered inside an <iframe>, where a <meta viewport> tag is ignored).
+    function syncMobileAttr() {
+      if (window.innerWidth <= 640) document.documentElement.setAttribute('data-mobile', '');
+      else document.documentElement.removeAttribute('data-mobile');
+    }
+    syncMobileAttr();
+    window.addEventListener('resize', syncMobileAttr);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Rubik:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0A0E13;
+    --panel: #11161D;
+    --panel-2: #151b23;
+    --hair: rgba(255,255,255,.08);
+    --hair-soft: rgba(255,255,255,.05);
+    --hair-strong: rgba(255,255,255,.14);
+    --ink: #ffffff;
+    --ink-2: rgba(255,255,255,.65);
+    --ink-3: rgba(255,255,255,.45);
+    --ink-4: rgba(255,255,255,.28);
+    --track: rgba(255,255,255,.09);
+    --accent: #D8492E;
+    --accent-rgb: 216,73,46;
+    --accent-hover: #f0664a;
+    --accent-wash: rgba(216,73,46,.10);
+    --accent-ring: rgba(216,73,46,.32);
+    --font-display: 'Anton', 'Archivo Black', sans-serif;
+    --font-body: 'Archivo', system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-display-he: 'Rubik', 'Segoe UI', sans-serif;
+    --font-body-he: 'Rubik', system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  :root[data-lang="he"] {
+    --font-display: var(--font-display-he);
+    --font-body: var(--font-body-he);
+  }
+
+  * { box-sizing: border-box; }
+  /* `clip`, not `hidden`: clipping horizontal bleed without turning <body>
+     into a scroll container -- `overflow-x: hidden` forces `overflow-y` to
+     compute to `auto`, which breaks `position: sticky` on the topbar. */
+  html, body { background: var(--bg); overflow-x: clip; max-width: 100%; }
+  body {
+    margin: 0; color: var(--ink); font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent-hover); }
+  ::selection { background: var(--accent-wash); }
+  button { font-family: inherit; }
+
+  .shell { min-height: 100vh; background: var(--bg); padding-bottom: 64px; }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    padding: 0 40px; height: 64px; border-bottom: 1px solid var(--hair);
+    background: var(--bg); position: sticky; top: 0; z-index: 20;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .brand-bar { width: 10px; height: 24px; background: var(--accent); display: block; flex: none; }
+  .brand-name {
+    font: 400 19px/1 var(--font-display); letter-spacing: .02em; text-transform: uppercase; white-space: nowrap;
+  }
+  .season-chip {
+    font: 500 11px/1 var(--font-body); color: var(--ink-3); padding: 4px 8px;
+    border: 1px solid var(--hair-strong); border-radius: 3px; white-space: nowrap;
+  }
+  nav.tabs { display: flex; align-items: center; gap: 4px; flex: none; }
+  nav.tabs button {
+    padding: 8px 15px; border: 0; border-radius: 3px; cursor: pointer;
+    font: 600 11.5px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase;
+    background: transparent; color: var(--ink-3); transition: background .12s ease, color .12s ease;
+  }
+  nav.tabs button:hover { color: var(--ink-2); background: rgba(255,255,255,.06); }
+  nav.tabs button[aria-current="true"] { background: var(--accent); color: #fff; }
+  nav.tabs button[aria-current="true"]:hover { background: var(--accent-hover); color: #fff; }
+  .flag-indicator {
+    display: flex; align-items: center; gap: 9px; font: 500 11px/1 var(--font-body);
+    color: var(--ink-3); white-space: nowrap; flex: none;
+  }
+  .flag-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; display: block; }
+  .topbar-right { display: flex; align-items: center; gap: 18px; flex: none; }
+  .lang-switch {
+    display: flex; align-items: center; gap: 2px; padding: 2px; flex: none;
+    border: 1px solid var(--hair-strong); border-radius: 4px;
+  }
+  .lang-switch button {
+    padding: 5px 10px; border: 0; border-radius: 2px; cursor: pointer;
+    font: 600 11px/1 var(--font-body); background: transparent; color: var(--ink-3); transition: background .12s ease, color .12s ease;
+  }
+  .lang-switch button:hover { color: var(--ink-2); }
+  .lang-switch button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  @media (max-width: 980px) { .flag-indicator, .season-chip { display: none; } }
+
+  .view { padding: 44px 40px 0; max-width: 1360px; margin: 0 auto; }
+
+  /* ---------- Hero ---------- */
+  .hero-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; margin-bottom: 34px; flex-wrap: wrap; }
+  .eyebrow {
+    font: 600 10px/1 var(--font-body); letter-spacing: .22em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .display-xl {
+    font: 400 clamp(34px, 5.5vw + 14px, 68px)/.9 var(--font-display); text-transform: uppercase; letter-spacing: -.02em; text-wrap: balance;
+  }
+  .display-outline { color: transparent; -webkit-text-stroke: 1.5px rgba(255,255,255,.5); }
+  .stat-row { display: flex; gap: 44px; padding-bottom: 8px; flex-wrap: wrap; }
+  .stat-row .num { font: 400 44px/1 var(--font-display); }
+  .stat-row .lbl { margin-top: 6px; font: 600 9.5px/1 var(--font-body); letter-spacing: .17em; text-transform: uppercase; color: var(--ink-3); }
+
+  /* ---------- Panels ---------- */
+  .panel { background: var(--panel); border: 1px solid var(--hair); }
+  .panel-head { padding: 24px 28px 18px; border-bottom: 1px solid var(--hair); }
+  .panel-kicker { font: 600 10px/1 var(--font-body); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px; }
+  .panel-title { font: 400 30px/1 var(--font-display); text-transform: uppercase; }
+  .panel-title.sm { font-size: 26px; }
+
+  /* ---------- Overview grid ---------- */
+  .ov-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 980px) { .ov-grid { grid-template-columns: 1fr; } }
+  .team-bars { padding: 18px 28px 26px; display: flex; flex-direction: column; gap: 1px; }
+  .team-bar-row {
+    display: grid; grid-template-columns: 26px 1fr 190px 54px; align-items: center; gap: 14px;
+    padding: 7px 4px; border-radius: 4px; cursor: pointer; border: 0; background: transparent; width: 100%; text-align: inherit;
+    font-family: inherit; color: inherit;
+  }
+  .team-bar-row:hover, .team-bar-row:focus-visible { background: rgba(255,255,255,.05); outline: none; }
+  .team-bar-row .rk { font: 500 11px/1 var(--font-body); color: var(--ink-4); text-align: right; }
+  .team-bar-row .nm { font: 500 13px/1.2 var(--font-body); color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .team-bar-row .tr { height: 9px; background: var(--track); display: block; }
+  .team-bar-row .fl { display: block; height: 100%; }
+  .team-bar-row .vl { text-align: right; font: 600 14px/1 var(--font-body); }
+
+  .leaders-list { padding: 24px 28px 28px; display: flex; flex-direction: column; }
+  .leader-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0;
+    border-bottom: 1px solid var(--hair-soft); cursor: pointer; background: transparent; border-left: 0; border-right: 0; border-top: 0;
+    width: 100%; text-align: inherit; font-family: inherit; color: inherit;
+  }
+  .leader-row:last-child { border-bottom: none; }
+  .leader-row:hover .leader-name, .leader-row:focus-visible .leader-name { color: var(--accent); }
+  .leader-name { font: 600 14px/1.2 var(--font-body); transition: color .12s ease; }
+  .leader-meta { margin-top: 5px; font: 400 11px/1 var(--font-body); color: var(--ink-3); }
+  .leader-val { font: 400 30px/1 var(--font-display); }
+  .leader-val.hi { color: var(--accent); }
+
+  /* ---------- Home: league-leader cards ---------- */
+  .leaders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: 16px; }
+  .leader-card { background: var(--panel); border: 1px solid var(--hair); padding: 18px 20px 12px; display: flex; flex-direction: column; }
+  .leader-card-cat { font: 600 10px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 14px; }
+  .leader-card-top {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; width: 100%;
+    background: transparent; border: 0; padding: 0 0 14px; text-align: inherit; font-family: inherit; color: inherit; cursor: pointer;
+  }
+  .leader-card-top:hover .lc-name, .leader-card-top:focus-visible .lc-name { color: var(--accent); }
+  .leader-card-top:focus-visible { outline: none; }
+  .lc-who { min-width: 0; }
+  .lc-name { font: 600 14px/1.25 var(--font-body); transition: color .12s ease; }
+  .lc-meta { margin-top: 5px; font: 400 11px/1.3 var(--font-body); color: var(--ink-3); }
+  .lc-val { font: 400 30px/1 var(--font-display); color: var(--accent); flex: none; font-variant-numeric: tabular-nums; }
+  .leader-card-rest { display: flex; flex-direction: column; }
+  .lc-row {
+    display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 10px; padding: 8px 0;
+    border-top: 1px solid var(--hair-soft); background: transparent; border-left: 0; border-right: 0; border-bottom: 0;
+    width: 100%; text-align: inherit; font-family: inherit; color: inherit; cursor: pointer;
+  }
+  .lc-row:hover .lc-rn, .lc-row:focus-visible .lc-rn { color: var(--accent); }
+  .lc-row:focus-visible { outline: none; }
+  .lc-rk { font: 400 12px/1 var(--font-display); color: var(--ink-4); }
+  .lc-rn { font: 500 12.5px/1.3 var(--font-body); color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .12s ease; }
+  .lc-rv { font: 600 12.5px/1 var(--font-body); color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  .dq-card { padding: 24px 28px 28px; }
+  .dq-head { display: flex; align-items: center; gap: 9px; margin-bottom: 16px; }
+  .dq-head .flag-dot { width: 6px; height: 6px; }
+  .dq-head span.lbl { font: 600 10px/1 var(--font-body); letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+  .dq-title { font: 400 22px/1.3 var(--font-display); text-transform: uppercase; margin-bottom: 12px; }
+  .dq-body { font: 400 12.5px/1.6 var(--font-body); color: var(--ink-3); }
+  .dq-link { display: inline-block; margin-top: 18px; font: 600 11px/1 var(--font-body); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; border: 0; background: none; padding: 0; }
+
+  /* ---------- Tables ---------- */
+  .table-wrap { overflow-x: auto; }
+  .grid-table { width: 100%; border-collapse: collapse; min-width: 640px; }
+  .grid-head {
+    display: grid; gap: 0; padding: 0 28px; border-bottom: 1px solid var(--hair-strong); height: 46px; align-items: center;
+    font: 600 9.5px/1 var(--font-body); letter-spacing: .15em; text-transform: uppercase; color: var(--ink-3);
+  }
+  .grid-row {
+    display: grid; gap: 0; padding: 0 28px; height: 52px; align-items: center; border-bottom: 1px solid var(--hair-soft);
+    background: transparent; border-left: 0; border-right: 0; border-top: 0; width: 100%; text-align: inherit; font-family: inherit; color: inherit; cursor: pointer;
+  }
+  .grid-row:hover, .grid-row:focus-visible { background: rgba(255,255,255,.035); outline: none; }
+  .grid-row:last-child { border-bottom: none; }
+  .cell-right { text-align: right; }
+  .rank-num { font: 400 20px/1 var(--font-display); color: var(--ink-4); }
+  .rank-num.sm { font-size: 17px; }
+  .team-name-cell { font: 600 14px/1.2 var(--font-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .player-name-cell { font: 600 13.5px/1.2 var(--font-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 7px; }
+  .stat-strong { font: 600 14px/1 var(--font-body); }
+  .stat-strong.sm { font-size: 13.5px; }
+  .stat-soft { font: 400 14px/1 var(--font-body); color: var(--ink-2); }
+  .stat-soft.sm { font-size: 13px; }
+  .pir-cell { font: 400 20px/1 var(--font-display); }
+  .pir-cell.sm { font-size: 17px; }
+  .pos-cell { font: 500 11px/1 var(--font-body); color: var(--ink-3); }
+  .row-flag { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: none; }
+
+  .league-cols { grid-template-columns: 44px 1fr repeat(6, 84px); }
+  .roster-cols { grid-template-columns: 44px 1fr 44px 60px 66px 56px repeat(3, 68px) 72px; }
+  .players-cols { grid-template-columns: minmax(150px, 1.6fr) minmax(96px, 1fr) 48px 44px 46px 58px repeat(4, 58px) repeat(3, 52px); }
+
+  .team-note {
+    padding: 14px 28px; border-top: 1px solid var(--hair); font: 400 12px/1.6 var(--font-body); color: var(--ink-3);
+  }
+
+  /* ---------- Team hero ---------- */
+  .team-hero {
+    position: relative; padding: 36px 40px 32px; overflow: hidden; margin-bottom: 24px;
+  }
+  .ring { position: absolute; border-radius: 50%; pointer-events: none; }
+  .ring-accent { right: -150px; top: -150px; width: 460px; height: 460px; border: 1px solid rgba(216,73,46,.3); }
+  .ring-soft { right: -210px; top: -90px; width: 340px; height: 340px; border: 1px solid rgba(255,255,255,.08); }
+  .edge-accent { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--accent); }
+  .team-hero-inner { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
+  .team-hero-title { font: 400 clamp(32px, 6.8vw + 8px, 74px)/.88 var(--font-display); text-transform: uppercase; letter-spacing: -.015em; }
+  .team-quad { display: grid; grid-template-columns: repeat(3, auto); gap: 36px 44px; padding-bottom: 6px; text-align: right; }
+  .team-quad .num { font: 400 40px/1 var(--font-display); }
+  .team-quad .num.hi { color: var(--accent); }
+  .team-quad .lbl { margin-top: 6px; font: 600 9.5px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+
+  /* ---------- Player hero ---------- */
+  .player-hero { position: relative; padding: 36px 40px 30px; overflow: hidden; }
+  .player-hero-inner { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 30px; flex-wrap: wrap; }
+  .player-name { font: 400 clamp(36px, 7.7vw + 8px, 84px)/.86 var(--font-display); text-transform: uppercase; letter-spacing: -.015em; text-wrap: balance; }
+  .rank-badge { flex: none; text-align: right; }
+  .rank-badge .big { font: 400 clamp(48px, 7.7vw + 20px, 96px)/1 var(--font-display); color: var(--accent); letter-spacing: -.04em; }
+  .rank-badge .lbl { font: 600 10px/1 var(--font-body); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); margin-top: 4px; }
+  .player-pos {
+    display: inline-block; margin-top: 18px; padding: 7px 13px;
+    border: 1px solid var(--accent-ring); border-radius: 3px;
+    font: 600 12px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+  }
+
+  .quad4 { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--hair); }
+  .quad4 > div { padding-block: 24px 26px; padding-inline: 40px 0; border-inline-end: 1px solid var(--hair); }
+  .quad4 > div:last-child { border-inline-end: 0; }
+  .quad4 .num { font: 400 58px/1 var(--font-display); }
+  .quad4 .num.hi { color: var(--accent); }
+  .quad4 .lbl { margin-top: 8px; font: 600 10px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+
+  .player-lower { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 28px 40px 34px; border-top: 1px solid var(--hair); }
+  @media (max-width: 780px) { .player-lower { grid-template-columns: 1fr; } }
+  .section-lbl { font: 600 10px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
+  .bar-line { display: grid; grid-template-columns: 52px 1fr 48px; align-items: center; gap: 14px; }
+  .bar-line .k { font: 500 12px/1 var(--font-body); color: var(--ink-2); }
+  .bar-line .tr { height: 6px; background: var(--track); display: block; }
+  .bar-line .fl { display: block; height: 100%; background: var(--accent); }
+  .bar-line .fl.white { background: #fff; }
+  .bar-line .v { text-align: right; font: 600 14px/1 var(--font-body); }
+
+  .flag-banner {
+    display: flex; gap: 9px; align-items: flex-start; margin-top: 14px; padding: 11px 13px;
+    background: var(--accent-wash); border: 1px solid var(--accent-ring); font: 400 11.5px/1.55 var(--font-body); color: var(--ink-2);
+  }
+  .flag-banner b { color: var(--ink); }
+
+  .bio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .bio-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .bio-grid .num { margin-top: 9px; font: 600 24px/1 var(--font-body); }
+  .flag-ico {
+    display: inline-block; width: 22px; height: 15px; margin-inline-end: 9px;
+    vertical-align: -1px; border-radius: 2px; overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.16);
+  }
+  .flag-ico svg { display: block; width: 100%; height: 100%; }
+
+  .player-picker { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .player-picker label { font: 600 10px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+  .player-picker select {
+    background: var(--panel); color: var(--ink); border: 1px solid var(--hair-strong); border-radius: 4px;
+    padding: 8px 12px; font: 600 13px/1 var(--font-body); cursor: pointer;
+  }
+  .player-picker select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .table-toolbar { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; }
+  .search-input {
+    background: var(--panel); color: var(--ink); border: 1px solid var(--hair-strong); border-radius: 4px;
+    padding: 8px 12px; font: 600 13px/1 var(--font-body); width: 100%; max-width: 280px;
+  }
+  .search-input::placeholder { color: var(--ink-3); font-weight: 500; }
+  .search-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .search-input::-webkit-search-cancel-button { cursor: pointer; }
+
+  .export-btn {
+    margin-inline-start: auto; flex: none; white-space: nowrap; cursor: pointer;
+    background: transparent; color: var(--ink-2); border: 1px solid var(--hair-strong); border-radius: 4px;
+    padding: 8px 13px; font: 600 10px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase;
+    transition: color .12s ease, border-color .12s ease;
+  }
+  .export-btn:hover, .export-btn:focus-visible { color: var(--accent); border-color: var(--accent-ring); outline: none; }
+
+  .sort-head {
+    border: 0; background: transparent; padding: 0; margin: 0; cursor: pointer;
+    font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit;
+    text-align: inherit; white-space: nowrap;
+  }
+  .sort-head:hover, .sort-head:focus-visible { color: var(--ink-2); outline: none; }
+  .sort-head.active { color: var(--ink); }
+
+  .empty-state {
+    padding: 40px 28px; text-align: center; font: 500 13px/1.6 var(--font-body); color: var(--ink-3);
+  }
+
+  .cmp-panel { padding: 22px 28px 26px; }
+  .cmp-row { display: grid; grid-template-columns: 96px 1fr 1fr 44px; align-items: center; gap: 12px; padding: 9px 0; }
+  .cmp-row .k { font: 500 12px/1 var(--font-body); color: var(--ink-2); }
+  .cmp-row .tr { height: 8px; background: var(--track); display: block; }
+  .cmp-row .fl { display: block; height: 100%; }
+  .cmp-row .v { text-align: right; font: 600 13px/1 var(--font-body); }
+  .cmp-legend { display: flex; gap: 18px; margin-top: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+  .cmp-legend span { display: flex; align-items: center; gap: 6px; font: 500 11px/1 var(--font-body); color: var(--ink-3); }
+  .cmp-legend i { width: 9px; height: 9px; display: block; border-radius: 2px; flex: none; }
+
+  /* ---------- Analytics: player comparison ---------- */
+  .cmp-picker-row { display: flex; flex-wrap: wrap; gap: 12px; padding: 22px 28px 6px; }
+  .cmp-picker-slot { display: flex; align-items: center; gap: 8px; }
+  .cmp-picker-swatch { width: 9px; height: 9px; border-radius: 2px; flex: none; display: block; }
+  .cmp-picker-slot select {
+    background: var(--panel); color: var(--ink); border: 1px solid var(--hair-strong); border-radius: 4px;
+    padding: 7px 10px; font: 600 12px/1 var(--font-body); cursor: pointer; max-width: 220px;
+  }
+  .cmp-picker-slot select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .cmp-chart { padding: 18px 28px 26px; }
+  .cmp-group { margin-bottom: 22px; }
+  .cmp-group:last-child { margin-bottom: 0; }
+  .cmp-group-label {
+    font: 600 10px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: 10px;
+  }
+  .cmp-bar-row { display: grid; grid-template-columns: 92px 1fr 52px; align-items: center; gap: 12px; padding: 4px 0; }
+  .cmp-bar-name { font: 500 12px/1 var(--font-body); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cmp-bar-track { height: 10px; background: var(--track); display: block; }
+  .cmp-bar-fill { display: block; height: 100%; border-start-end-radius: 4px; border-end-end-radius: 4px; }
+  .cmp-bar-value { text-align: right; font: 600 12.5px/1 var(--font-body); font-variant-numeric: tabular-nums; }
+
+  /* ---------- Analytics: team radar ---------- */
+  .radar-wrap { padding: 18px 28px 26px; }
+  .radar-svg { width: 100%; max-width: 460px; height: auto; display: block; margin: 0 auto; direction: ltr; }
+  /* viewBox units, not real px -- see the scatter-tick note history; sized up
+     front so they stay legible once the SVG scales down on a phone-width panel */
+  .radar-axis-label { font: 600 12px var(--font-body); letter-spacing: .04em; fill: var(--ink-3); }
+  .radar-value-label { font: 700 11px var(--font-body); font-variant-numeric: tabular-nums; }
+  .radar-legend-name { border: 0; background: transparent; padding: 0; margin: 0; cursor: pointer; font: inherit; color: inherit; }
+  .radar-legend-name:hover, .radar-legend-name:focus-visible { color: var(--ink-2); outline: none; }
+
+  /* ---------- percentile-tinted table cells ---------- */
+  .pct-cell { padding: 2px 6px; border-radius: 4px; }
+
+  /* ---------- Roster Per Mode toggle ---------- */
+  .stat-mode-row { display: flex; align-items: center; gap: 10px; padding: 0 28px 14px; flex-wrap: wrap; }
+  .stat-mode-row label { font: 600 10px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+  .stat-mode-row .gap { flex-basis: 14px; }
+
+  /* ---------- Player: stats-by-season table ---------- */
+  .player-season-cols { grid-template-columns: 92px minmax(92px, 148px) 40px repeat(11, 54px); }
+  .grid-row.static { cursor: default; }
+  .grid-row.static:hover, .grid-row.static:focus-visible { background: transparent; }
+
+  /* ---------- Analytics: players / teams toggle ---------- */
+  .an-toggle { display: flex; align-items: center; gap: 10px; margin: 0 0 26px; flex-wrap: wrap; }
+  .an-toggle label { font: 600 10px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+
+  /* ---------- All-players table (Player tab default view) ---------- */
+  .players-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .players-filters .search-input { max-width: 220px; }
+  .players-filters select {
+    background: var(--panel); color: var(--ink); border: 1px solid var(--hair-strong); border-radius: 4px;
+    padding: 8px 12px; font: 600 12px/1 var(--font-body); cursor: pointer;
+  }
+  .players-filters select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .players-filters .lang-switch { margin-inline-start: auto; }
+  .players-cols .ellip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .stint-star { color: var(--accent); font-weight: 700; margin-inline-start: 3px; }
+  .back-link {
+    border: 0; background: none; padding: 0; margin-bottom: 18px; cursor: pointer;
+    font: 600 11px/1 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+  }
+  .back-link:hover, .back-link:focus-visible { color: var(--accent); outline: none; }
+
+  .footer-note {
+    max-width: 1360px; margin: 28px auto 0; padding: 0 40px; font: 400 12px/1.7 var(--font-body); color: var(--ink-3);
+  }
+  .footer-note code { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; background: rgba(255,255,255,.06); padding: 1px 5px; border-radius: 3px; color: var(--ink-2); }
+
+  /* ---------- Mobile (<=640px) ---------- */
+  @media (max-width: 640px) {
+    .topbar { flex-wrap: wrap; height: auto; padding: 10px 16px; row-gap: 8px; position: static; }
+    .shell { overflow-x: clip; }
+    .brand { order: 1; flex: 1 1 auto; min-width: 0; }
+    .brand-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+    .topbar-right { order: 2; flex: 0 0 100%; justify-content: space-between; }
+    nav.tabs {
+      order: 3; flex: 0 0 100%;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+    }
+    nav.tabs button {
+      padding: 8px 4px; font-size: 10.5px; min-height: 44px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lang-switch button { padding: 9px 12px; min-height: 40px; }
+
+    .view { padding: 24px 16px 0; }
+    .footer-note { padding: 0 16px; }
+    .panel-head { padding: 16px 14px 12px; }
+    .grid-head, .grid-row { padding: 0 14px; }
+    .team-note { padding: 14px; }
+    .team-hero, .player-hero { padding: 24px 16px 20px; }
+    .player-lower { padding: 20px 16px 24px; }
+    .cmp-panel { padding: 16px 14px 20px; }
+
+    .player-picker select { padding: 11px 12px; min-height: 44px; }
+
+    .team-bar-row { grid-template-columns: 20px 1fr 84px 40px; gap: 8px; }
+
+    .team-quad { grid-template-columns: repeat(2, 1fr); gap: 20px 18px; }
+    .team-quad .num { font-size: 28px; }
+
+    .bio-grid { grid-template-columns: repeat(2, 1fr); gap: 16px 18px; }
+
+    .quad4 { grid-template-columns: repeat(2, 1fr); }
+    .quad4 > div:nth-child(2n) { border-inline-end: 0; border-bottom: 1px solid var(--hair); }
+    .quad4 > div:nth-child(-n+2) { border-bottom: 1px solid var(--hair); }
+    .quad4 .num { font-size: 34px; }
+
+    .cmp-row { grid-template-columns: 72px 1fr 1fr 32px; gap: 8px; }
+
+    /* the name column's `1fr` track collapses toward zero width once the
+       fixed stat columns alone already exceed the viewport (grid gives `fr`
+       tracks no positive free space to distribute) -- floor it so the name
+       cell always has room to actually show a name. The table still relies
+       on plain .table-wrap{overflow-x:auto} scrolling on mobile (tried a
+       sticky name column too, but position:sticky on this grid-item
+       structure hit a reproducible Chromium offset bug under real scroll
+       -- confirmed via getBoundingClientRect at multiple insets -- so it
+       was dropped rather than shipped broken). */
+    .league-cols { grid-template-columns: 44px minmax(120px, 1fr) repeat(6, 84px); }
+    .roster-cols { grid-template-columns: 44px minmax(120px, 1fr) 44px 60px 66px 56px repeat(3, 68px) 72px; }
+  }
+
+  /* Same rules as the @media block above, duplicated behind a JS-measured
+     [data-mobile] attribute (set/cleared by a script near the end of the
+     file, from window.innerWidth). Belt-and-suspenders: an artifact host
+     can render this page inside an <iframe>, and a `<meta name="viewport">`
+     has no effect on nested browsing contexts, which can leave the CSS
+     layout viewport (what @media resolves against) wider than the real,
+     visible width reported by window.innerWidth -- seen in practice as the
+     topbar never wrapping and its rows overlapping on a real phone even
+     though @media(max-width:640px) tests fine when the file is opened
+     directly. If @media above is already matching correctly these rules
+     are simply redundant (same declarations, harmless). */
+  html[data-mobile] .topbar { flex-wrap: wrap; height: auto; padding: 10px 16px; row-gap: 8px; position: static; }
+  html[data-mobile] .shell { overflow-x: clip; }
+  html[data-mobile] .brand { order: 1; flex: 1 1 auto; min-width: 0; }
+  html[data-mobile] .brand-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  html[data-mobile] .topbar-right { order: 2; flex: 0 0 100%; justify-content: space-between; }
+  html[data-mobile] nav.tabs {
+    order: 3; flex: 0 0 100%;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+  }
+  html[data-mobile] nav.tabs button {
+    padding: 8px 4px; font-size: 10.5px; min-height: 44px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  html[data-mobile] .lang-switch button { padding: 9px 12px; min-height: 40px; }
+  html[data-mobile] .view { padding: 24px 16px 0; }
+  html[data-mobile] .footer-note { padding: 0 16px; }
+  html[data-mobile] .panel-head { padding: 16px 14px 12px; }
+  html[data-mobile] .grid-head, html[data-mobile] .grid-row { padding: 0 14px; }
+  html[data-mobile] .team-note { padding: 14px; }
+  html[data-mobile] .team-hero, html[data-mobile] .player-hero { padding: 24px 16px 20px; }
+  html[data-mobile] .player-lower { padding: 20px 16px 24px; }
+  html[data-mobile] .cmp-panel { padding: 16px 14px 20px; }
+  html[data-mobile] .player-picker select { padding: 11px 12px; min-height: 44px; }
+  html[data-mobile] .team-bar-row { grid-template-columns: 20px 1fr 84px 40px; gap: 8px; }
+  html[data-mobile] .team-quad { grid-template-columns: repeat(2, 1fr); gap: 20px 18px; }
+  html[data-mobile] .team-quad .num { font-size: 28px; }
+  html[data-mobile] .bio-grid { grid-template-columns: repeat(2, 1fr); gap: 16px 18px; }
+  html[data-mobile] .quad4 { grid-template-columns: repeat(2, 1fr); }
+  html[data-mobile] .quad4 > div:nth-child(2n) { border-inline-end: 0; border-bottom: 1px solid var(--hair); }
+  html[data-mobile] .quad4 > div:nth-child(-n+2) { border-bottom: 1px solid var(--hair); }
+  html[data-mobile] .quad4 .num { font-size: 34px; }
+  html[data-mobile] .cmp-row { grid-template-columns: 72px 1fr 1fr 32px; gap: 8px; }
+  html[data-mobile] .league-cols { grid-template-columns: 44px minmax(120px, 1fr) repeat(6, 84px); }
+  html[data-mobile] .roster-cols { grid-template-columns: 44px minmax(120px, 1fr) 44px 60px 66px 56px repeat(3, 68px) 72px; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="shell">
+  <div class="topbar">
+    <div class="brand">
+      <span class="brand-bar"></span>
+      <span class="brand-name" id="brand-name"></span>
+      <span class="season-chip" id="season-chip"></span>
+    </div>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Sections"></nav>
+    <div class="topbar-right">
+      <div class="flag-indicator"><span class="flag-dot"></span><span id="flag-count-text"></span></div>
+      <div class="lang-switch" id="comp-switch" role="group">
+        <button type="button" data-comp="regular_season"></button>
+        <button type="button" data-comp="playoffs"></button>
+      </div>
+      <div class="lang-switch" id="lang-switch" role="group">
+        <button type="button" data-lang="he">עברית</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="view" class="view"></div>
+
+  <div class="footer-note" id="footer-note"></div>
+</div>
+
+<script>
+// Data is loaded at runtime from ./data.json (generated by export_dashboard_data.py).
+// Shape: { default_season, seasons: { <season>: { teams, players, by_position, transfers, bad_split_count, player_count, playoffs } } }.
+let DATA;
+/* ---------------- i18n ---------------- */
+/* Only five real position slots. The source also carries hybrid codes
+   (G, F, G-F, F-C); `posGroups` collapses each to one or two of the five,
+   primary first, so the filter offers just PG/SG/SF/PF/C and a "plays both"
+   player shows up under either. English spells the slot out; Hebrew keeps the
+   code -- the convention Israeli basketball media follows. */
+const POSITION_NAME = {
+  PG: 'Point guard', SG: 'Shooting guard', SF: 'Small forward', PF: 'Power forward', C: 'Center',
+};
+const POS_SLOTS = ['PG', 'SG', 'SF', 'PF', 'C'];
+const POS_MAP = {
+  PG: ['PG'], SG: ['SG'], SF: ['SF'], PF: ['PF'], C: ['C'],
+  G: ['PG', 'SG'], F: ['SF', 'PF'], 'G-F': ['SG', 'SF'], 'F-C': ['PF', 'C'],
+};
+function posGroups(code) { return POS_MAP[code] || (code ? [code] : []); }
+function posLabel(code) { return posGroups(code).join('/') || '—'; }
+
+const STR = {
+  he: {
+    brand: 'סטטיסטיקות ליגת העל',
+    tab_overview: 'עמוד הבית',
+    tab_league: 'ליגה',
+    tab_team: 'קבוצה',
+    tab_player: 'שחקן',
+    tab_analytics: 'ניתוח',
+    an_eyebrow: 'ליגת העל בכדורסל · ניתוח מתקדם',
+    an_title: 'ניתוחים מתקדמים',
+    an_sub: 'כלים להשוואת שחקנים ולאיתור מגמות בכל הליגה.',
+    an_view_label: 'תצוגה',
+    an_view_players: 'שחקנים',
+    an_view_teams: 'קבוצות',
+    an_cmp_kicker: 'השוואת שחקנים',
+    an_cmp_title: 'בחרו עד 4 שחקנים להשוואה',
+    an_cmp_none: '— ריק —',
+    an_cmp_empty: 'בחרו לפחות שחקן אחד למעלה כדי להשוות.',
+    an_radar_kicker: 'השוואת קבוצות',
+    an_radar_title: 'בחרו 2 קבוצות להשוואה',
+    nav_aria: 'ניווט',
+    comp_regular: 'עונה סדירה',
+    comp_playoffs: 'פלייאוף',
+    playoffs_note: (n) => 'הנתונים מוצגים לשלב הפלייאוף בלבד — ' + n + ' מתוך 13 הקבוצות עלו.',
+    flag_count: (n) => n + ' דגלי איכות נתונים',
+    ov_eyebrow: 'ליגת העל בכדורסל',
+    ov_title: 'עונת',
+    ov_teams_tracked: 'קבוצות',
+    ov_players_profiled: 'שחקנים',
+    ov_flags_to_review: 'דגלים לבדיקה',
+    ov_team_offense_kicker: 'ליגה · נקודות למשחק',
+    ov_team_offense_title: 'קבוצות לפי התקפה',
+    ov_leaders_kicker: 'מובילי הליגה · PIR',
+    home_players_kicker: 'מובילי הליגה · שחקנים',
+    home_players_title: 'המובילים לפי שחקן',
+    home_teams_kicker: 'מובילי הליגה · קבוצות',
+    home_teams_title: 'המובילים לפי קבוצה',
+    home_min_note: (n) => 'שחקנים עם ' + n + '+ משחקים בלבד',
+    lead_minutes: 'דקות למשחק',
+    lead_ts: 'אחוז קליעה אמיתי',
+    lead_efg: 'אחוז קליעה משוקלל',
+    lead_fg: 'אחוז קליעה מהשדה',
+    lead_fg3: 'אחוז שלוש',
+    lead_ft: 'אחוז עונשין',
+    lead_asttov: 'יחס אסיסט/איבוד',
+    lead_oreb: 'ריבאונד התקפה',
+    lead_dreb: 'ריבאונד הגנה',
+    lead_fg3m: 'שלשות למשחק',
+    lead_few_tov: 'הכי מעט איבודים',
+    ov_dq_label: 'איכות נתונים',
+    ov_dq_title: (n) => n + ' ' + heCount(n, 'רשומה דורשת בדיקה', 'רשומות דורשות בדיקה'),
+    ov_dq_body: '3PM/3PA עולים על FGM/FGA ב-{n} רשומות שחקן-עונה — מצב שאינו אפשרי בתיעוד משחק אמיתי. eFG% ו-TS% אינם אמינים עבור רשומות אלה עד שעמודות המקור יתוקנו.',
+    ov_dq_link: '← בדיקת שחקנים מסומנים',
+    ov_transfers_title: 'מעברים באמצע העונה',
+    ov_transfers_desc: (n) => n + ' ' + heCount(n, 'שחקן החליף קבוצה', 'שחקנים החליפו קבוצה') + ' השנה — מוצגים שני התאים, עם חלוקת GP אמיתית מ-basket.co.il.',
+    league_eyebrow: 'סך העונה ÷ משחקים',
+    league_title: 'טבלת הליגה',
+    league_sub: (n) => 'כל ' + n + ' הקבוצות, ממוצע למשחק. PIR הוא מדד הביצועים האירופי הסטנדרטי.',
+    col_hash: '#',
+    col_season: 'עונה',
+    col_team: 'קבוצה',
+    col_player: 'שחקן',
+    col_pos: 'עמדה',
+    col_age: 'גיל',
+    col_ht: 'גובה',
+    search_teams: 'חיפוש קבוצה…',
+    search_players: 'חיפוש שחקן…',
+    stat_mode_label: 'תצוגה',
+    stat_mode_totals: 'סה״כ',
+    stat_mode_per_game: 'ממוצע למשחק',
+    stat_mode_per_36: "ל-36 דק'",
+    btn_export: 'ייצוא נתונים',
+    no_results: 'לא נמצאו תוצאות',
+    players_eyebrow: 'ליגת העל בכדורסל · שחקנים',
+    players_title: 'שחקני הליגה',
+    players_sub: (n) => n + ' רשומות שחקן · לחצו על שורה לכרטיס המלא',
+    players_all: 'כל השחקנים',
+    filter_pos_all: 'כל העמדות',
+    filter_team_all: 'כל הקבוצות',
+    stint_note: '* עבר קבוצה באמצע העונה — הנתונים כאן הם עבור התקופה בקבוצה זו בלבד.',
+    team_picker_label: 'קבוצה',
+    team_picker_opt: (t) => '#' + t.rank + ' ' + teamLabel(t) + ' (' + t.player_count + ' ' + heCount(t.player_count, 'שחקן', 'שחקנים') + ')',
+    team_eyebrow: (rank, total) => 'ליגת העל · דירוג ' + rank + ' מתוך ' + total + ' בהתקפה',
+    lbl_points: 'נקודות',
+    lbl_assists: 'אסיסטים',
+    lbl_rebounds: 'ריבאונדים',
+    lbl_blocks: 'חסימות',
+    lbl_turnovers: 'איבודי כדור',
+    lbl_team_pir: 'PIR קבוצתי',
+    lbl_pir: 'PIR',
+    roster_title: 'סגל',
+    roster_sub: (n) => n + ' ' + heCount(n, 'שחקן בסגל', 'שחקנים בסגל') + ' · ממוצע למשחק, לחצו על שורה לפרטים',
+    roster_flag_note: (n) => '● מסמן ' + n + ' ' + heCount(n, 'שחקן בסגל זה ש-3PM/3PA שלו', 'שחקנים בסגל זה ש-3PM/3PA שלהם') + ' עולה על FGM/FGA במקור — פתחו את עמוד השחקן להערה על אחוזי הקליעה.',
+    player_picker_viewing: 'צפייה ב',
+    player_eyebrow: (teamLbl, posName, jersey) => teamLbl + (jersey !== null ? ' · #' + jersey : ''),
+    player_rank_badge: (total) => 'מתוך ' + total + ' · דירוג PIR בליגה',
+    pl_season_kicker: 'פיצול · לפי עונה',
+    pl_season_title: 'סטטיסטיקה לפי עונה',
+    pl_calc_label: 'מוד חישוב',
+    pl_frame_label: 'מסגרת',
+    pl_no_frame_data: 'אין נתונים למסגרת זו בעונה זו.',
+    section_shooting: 'קליעה',
+    flag_banner: (efg, ts, fg3) => 'eFG% ' + efg + ' / TS% ' + ts + ' אינם אמינים עבור שחקן זה — 3PM/3PA במקור (' + fg3 + '% בתיעוד) עולים על סך FGM/FGA של שחקן-עונה זה, ולכן מדדי הקליעה המשולבים מחושבים מעל 100%. FG%/3P%/FT% שלמעלה אינם מושפעים.',
+    section_bio: 'פרטים אישיים',
+    section_usage: 'נתוני משחק',
+    bio_age: 'גיל',
+    bio_height: 'גובה',
+    bio_nationality: 'אזרחות',
+    bio_games: 'משחקים',
+    bio_minutes: 'דקות',
+    bio_on_team: 'ותק בקבוצה',
+    yr: (n) => n + ' ' + heCount(n, 'שנה', 'שנים'),
+    adv_kicker: 'מדדים נוספים · metrics.py',
+    adv_title: 'מדדים מתקדמים',
+    adv_per36_pts: 'נקודות ל-36 דק׳',
+    adv_per36_ast: 'אסיסטים ל-36 דק׳',
+    adv_per36_reb: 'ריבאונדים ל-36 דק׳',
+    cmp_kicker: 'נתוני עונה · metrics.py',
+    cmp_title: (posName) => 'לעומת ממוצע ' + posName,
+    cmp_avg: (posName) => 'ממוצע ' + posName,
+    footer: 'תוצרים אמיתיים מצינור השלב הראשון (<code dir="ltr">ingest.py</code> ואז <code dir="ltr">metrics.py</code>), ' +
+      'המכסים את כל 13 הקבוצות ו-225 רשומות השחקנים (222 שחקנים אמיתיים, 3 מהם עם שתי רשומות בעקבות מעבר קבוצה) מעונת 2023-24 של ליגת העל בכדורסל, בתוספת טבלת קישור ' +
+      '<code dir="ltr">player_transfers</code> עבור 6 השחקנים שהחליפו קבוצה באמצע העונה (ראו סקירה). סגל מכבי תל אביב ' +
+      'הגיע עם הקובץ המקורי <code dir="ltr">data/Basketball_Analytics.xlsx</code> (מאומת מול ' +
+      '<code dir="ltr">data/VIEWS.xlsx</code>); שאר 12 הקבוצות וכל ערכי <code dir="ltr">YearsOnTeam</code> נשאבו מאתר ' +
+      'הליגה הרשמי, basket.co.il, ומוזגו לאותו סכמה. אין תיעוד משחק-אחר-משחק בנתונים, כך שעמוד השחקן משווה קצבי עונה ' +
+      'במקום לבדות משחקים.',
+  },
+  en: {
+    brand: 'Super League Stats',
+    tab_overview: 'Home',
+    tab_league: 'League',
+    tab_team: 'Team',
+    tab_player: 'Player',
+    tab_analytics: 'Analytics',
+    an_eyebrow: 'Israeli Basketball Super League · advanced',
+    an_title: 'Advanced Analytics',
+    an_sub: 'Tools for comparing players and spotting league-wide trends.',
+    an_view_label: 'View',
+    an_view_players: 'Players',
+    an_view_teams: 'Teams',
+    an_cmp_kicker: 'Player comparison',
+    an_cmp_title: 'Pick up to 4 players to compare',
+    an_cmp_none: '— none —',
+    an_cmp_empty: 'Pick at least one player above to compare.',
+    an_radar_kicker: 'Team comparison',
+    an_radar_title: 'Pick 2 teams to compare',
+    nav_aria: 'Sections',
+    comp_regular: 'Regular season',
+    comp_playoffs: 'Playoffs',
+    playoffs_note: (n) => 'Showing playoffs-only data — ' + n + ' of 13 teams qualified.',
+    flag_count: (n) => n + ' data-quality flags',
+    ov_eyebrow: 'Israeli Basketball Super League',
+    ov_title: 'Season',
+    ov_teams_tracked: 'Teams tracked',
+    ov_players_profiled: 'Players profiled',
+    ov_flags_to_review: 'Flags to review',
+    ov_team_offense_kicker: 'League · points per game',
+    ov_team_offense_title: 'Team offense, ranked',
+    ov_leaders_kicker: 'League leaders · PIR',
+    home_players_kicker: 'League leaders · players',
+    home_players_title: 'Leaders by player',
+    home_teams_kicker: 'League leaders · teams',
+    home_teams_title: 'Leaders by team',
+    home_min_note: (n) => n + '+ games played only',
+    lead_minutes: 'Minutes per game',
+    lead_ts: 'True shooting %',
+    lead_efg: 'Effective FG %',
+    lead_fg: 'Field goal %',
+    lead_fg3: '3-point %',
+    lead_ft: 'Free throw %',
+    lead_asttov: 'Assist / turnover',
+    lead_oreb: 'Offensive rebounds',
+    lead_dreb: 'Defensive rebounds',
+    lead_fg3m: '3-pointers per game',
+    lead_few_tov: 'Fewest turnovers',
+    ov_dq_label: 'Data quality',
+    ov_dq_title: (n) => n + ' rows need review',
+    ov_dq_body: '3PM/3PA exceed FGM/FGA on {n} player-season records — impossible in a real box score. eFG% and TS% are unreliable for those rows until the source columns are corrected.',
+    ov_dq_link: 'Review flagged players →',
+    ov_transfers_title: 'Mid-season moves',
+    ov_transfers_desc: (n) => n + ' players changed teams this season — both stints shown, real GP splits from basket.co.il.',
+    league_eyebrow: 'Season totals ÷ games played',
+    league_title: 'League table',
+    league_sub: (n) => 'All ' + n + ' teams, per-game averages. PIR is the standard European performance index rating.',
+    col_hash: '#',
+    col_season: 'Season',
+    col_team: 'Team',
+    col_player: 'Player',
+    col_pos: 'Pos',
+    col_age: 'Age',
+    col_ht: 'Ht',
+    search_teams: 'Search teams…',
+    search_players: 'Search players…',
+    stat_mode_label: 'View',
+    stat_mode_totals: 'Totals',
+    stat_mode_per_game: 'Per Game',
+    stat_mode_per_36: 'Per 36',
+    btn_export: 'Export CSV',
+    no_results: 'No results found',
+    players_eyebrow: 'Israeli Basketball Super League · players',
+    players_title: 'League players',
+    players_sub: (n) => n + ' player rows · click a row for the full card',
+    players_all: 'All players',
+    filter_pos_all: 'All positions',
+    filter_team_all: 'All teams',
+    stint_note: '* Changed teams mid-season — these numbers cover only the stint with this club.',
+    team_picker_label: 'Team',
+    team_picker_opt: (t) => '#' + t.rank + ' ' + teamLabel(t) + ' (' + t.player_count + ' players)',
+    team_eyebrow: (rank, total) => 'Super League · rank ' + rank + ' of ' + total + ' in offense',
+    lbl_points: 'Points',
+    lbl_assists: 'Assists',
+    lbl_rebounds: 'Rebounds',
+    lbl_blocks: 'Blocks',
+    lbl_turnovers: 'Turnovers',
+    lbl_team_pir: 'Team PIR',
+    lbl_pir: 'PIR',
+    roster_title: 'Roster',
+    roster_sub: (n) => n + ' players profiled · per-game averages, click a row for detail',
+    roster_flag_note: (n) => '● marks ' + n + ' player' + (n === 1 ? '' : 's') + ' on this roster whose source 3PM/3PA exceed their FGM/FGA — open their player page for the shooting-percentage caveat.',
+    player_picker_viewing: 'Viewing',
+    player_eyebrow: (teamLbl, posName, jersey) => teamLbl + (jersey !== null ? ' · #' + jersey : ''),
+    player_rank_badge: (total) => 'of ' + total + ' · league PIR rank',
+    pl_season_kicker: 'Splits · by season',
+    pl_season_title: 'Stats by season',
+    pl_calc_label: 'Calculation',
+    pl_frame_label: 'Split',
+    pl_no_frame_data: 'No data for this split in this season.',
+    section_shooting: 'Shooting',
+    flag_banner: (efg, ts, fg3) => 'eFG% ' + efg + ' / TS% ' + ts + ' are unreliable for this player — source 3PM/3PA (' + fg3 + '% on record) exceed total FGM/FGA for this player-season, so the combined shooting metrics compute past 100%. FG%/3P%/FT% above are unaffected.',
+    section_bio: 'Bio',
+    section_usage: 'Playing load',
+    bio_age: 'Age',
+    bio_height: 'Height',
+    bio_nationality: 'Nationality',
+    bio_games: 'Games',
+    bio_minutes: 'Minutes',
+    bio_on_team: 'On team',
+    yr: (n) => n + ' yr',
+    adv_kicker: 'More metrics · metrics.py',
+    adv_title: 'Advanced metrics',
+    adv_per36_pts: 'Points per 36',
+    adv_per36_ast: 'Assists per 36',
+    adv_per36_reb: 'Rebounds per 36',
+    cmp_kicker: 'Season rates · metrics.py',
+    cmp_title: (posName) => 'Vs. ' + posName + ' average',
+    cmp_avg: (posName) => posName + ' average',
+    footer: 'Real output from the Phase 1 pipeline (<code>ingest.py</code> &rarr; <code>metrics.py</code>), covering all 13 ' +
+      'teams and 225 player rows (222 real players, 3 of whom have two rows after a trade) from the 2023-24 Israel Basketball Super League, plus a <code>player_transfers</code> ' +
+      "connection table for the 6 who changed teams mid-season (see Overview). Maccabi Tel Aviv's roster came with the " +
+      'original <code>data/Basketball_Analytics.xlsx</code> (verified against <code>data/VIEWS.xlsx</code>); the other ' +
+      '12 teams and every <code>YearsOnTeam</code> value were sourced from the official league site, basket.co.il, and ' +
+      "merged in with the same schema. There's no per-game log in the data, so the player page compares season rates " +
+      'instead of fabricating games.',
+  },
+};
+
+function heCount(n, singular, plural) { return n === 1 ? singular : plural; }
+function t(key) { return STR[state.lang][key]; }
+
+function teamLabel(team) { return (state.lang === 'he' && team.label_he) ? team.label_he : team.label; }
+function teamName(team) { return (state.lang === 'he' && team.name_he) ? team.name_he : team.name; }
+function teamCity(team) { return (state.lang === 'he' && team.city_he) ? team.city_he : team.city; }
+function playerName(p) { return (state.lang === 'he' && p.name_he) ? p.name_he : p.name; }
+function positionFull(pos) {
+  const g = posGroups(pos);
+  if (!g.length) return '';
+  return state.lang === 'he' ? g.join(' / ') : g.map((c) => POSITION_NAME[c] || c).join(' / ');
+}
+
+/* Source `nationality` is free text and inconsistent ("United States (USA)",
+   "USA", "USA/Israel", "Israel, Finland", "ISR", ...). Map every country that
+   appears in the data to a Hebrew name + ISO-3166 alpha-2 code. Keyed by
+   lowercased country name and by 3-letter code so both the "United States
+   (USA)" and bare "ISR" forms resolve. */
+const COUNTRY = {};
+[
+  ['il', 'ישראל', 'Israel', ['israel', 'isr']],
+  ['us', 'ארצות הברית', 'United States', ['united states', 'usa', 'us']],
+  ['ca', 'קנדה', 'Canada', ['canada', 'can']],
+  ['cu', 'קובה', 'Cuba', ['cuba', 'cub']],
+  ['es', 'ספרד', 'Spain', ['spain', 'esp']],
+  ['fr', 'צרפת', 'France', ['france', 'fra']],
+  ['rs', 'סרביה', 'Serbia', ['serbia', 'srb']],
+  ['se', 'שוודיה', 'Sweden', ['sweden', 'swe']],
+  ['at', 'אוסטריה', 'Austria', ['austria', 'aut']],
+  ['au', 'אוסטרליה', 'Australia', ['australia', 'aus']],
+  ['be', 'בלגיה', 'Belgium', ['belgium', 'bel']],
+  ['am', 'ארמניה', 'Armenia', ['armenia', 'arm']],
+  ['ar', 'ארגנטינה', 'Argentina', ['argentina', 'arg']],
+  ['ao', 'אנגולה', 'Angola', ['angola', 'ago']],
+  ['co', 'קולומביה', 'Colombia', ['colombia', 'col']],
+  ['fi', 'פינלנד', 'Finland', ['finland', 'fin']],
+  ['qa', 'קטאר', 'Qatar', ['qatar', 'qat']],
+  ['ru', 'רוסיה', 'Russia', ['russia', 'rus']],
+  ['lv', 'לטביה', 'Latvia', ['latvia', 'lva']],
+  ['jm', "ג'מייקה", 'Jamaica', ['jamaica', 'jam']],
+  ['pr', 'פוארטו ריקו', 'Puerto Rico', ['puerto rico', 'pri', 'pr']],
+  ['ss', 'דרום סודאן', 'South Sudan', ['south sudan', 'ssd']],
+  ['tt', 'טרינידד וטובגו', 'Trinidad and Tobago', ['trinidad and tobago', 'tto']],
+  ['do', 'הרפובליקה הדומיניקנית', 'Dominican Republic', ['dominican republic', 'dom']],
+].forEach(([cc, he, en, keys]) => keys.forEach((k) => { COUNTRY[k] = { cc, he, en }; }));
+
+/* Windows has no flag-emoji font (regional-indicator pairs render as "IL",
+   "US", ...), so ship real flags as tiny inline SVGs -- hand-built from
+   rects/polys, stylised where a flag carries an emblem, at a size where the
+   simplification never reads. `_hb`/`_vb` = equal horizontal / vertical
+   bands; viewBoxes vary but the .flag-ico box is fixed so it doesn't matter. */
+const _svg = (inner, vb) => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + (vb || '0 0 6 4') + '" preserveAspectRatio="none">' + inner + '</svg>';
+const _hb = (cs) => _svg(cs.map((c, i) => '<rect width="6" height="' + (4 / cs.length) + '" y="' + (i * 4 / cs.length) + '" fill="' + c + '"/>').join(''));
+const _vb = (cs) => _svg(cs.map((c, i) => '<rect width="' + (6 / cs.length) + '" height="4" x="' + (i * 6 / cs.length) + '" fill="' + c + '"/>').join(''));
+const _usStars = (() => { let s = ''; for (let r = 0; r < 4; r++) for (let c = 0; c < 5; c++) s += '<circle cx="' + (3.2 + c * 5.6) + '" cy="' + (2.6 + r * 5) + '" r="1" fill="#fff"/>'; return s; })();
+const _usStripes = (() => { let s = ''; for (let i = 0; i < 13; i += 2) s += '<rect width="76" height="3.08" y="' + (i * 3.077) + '" fill="#b22234"/>'; return s; })();
+const FLAGS = {
+  il: _svg('<rect width="6" height="4" fill="#fff"/><rect width="6" height="0.5" y="0.55" fill="#0038b8"/><rect width="6" height="0.5" y="2.95" fill="#0038b8"/><polygon points="3,1.15 2.28,2.4 3.72,2.4" fill="none" stroke="#0038b8" stroke-width="0.15"/><polygon points="3,2.85 2.28,1.6 3.72,1.6" fill="none" stroke="#0038b8" stroke-width="0.15"/>'),
+  us: _svg('<rect width="76" height="40" fill="#fff"/>' + _usStripes + '<rect width="30.4" height="21.54" fill="#3c3b6e"/>' + _usStars, '0 0 76 40'),
+  ca: _svg('<rect width="6" height="4" fill="#fff"/><rect width="1.5" height="4" fill="#d52b1e"/><rect x="4.5" width="1.5" height="4" fill="#d52b1e"/><path d="M3 0.75l0.3 0.95 0.78-0.2-0.38 0.8 0.42 0.24-0.95 0.6 0.16 0.55-0.71-0.14v0.65h-0.28l0.05-0.65-0.71 0.14 0.16-0.55-0.95-0.6 0.42-0.24-0.38-0.8 0.78 0.2z" fill="#d52b1e"/>'),
+  cu: _svg('<rect width="6" height="4" fill="#fff"/><rect width="6" height="0.8" fill="#002a8f"/><rect width="6" height="0.8" y="1.6" fill="#002a8f"/><rect width="6" height="0.8" y="3.2" fill="#002a8f"/><polygon points="0,0 2.6,2 0,4" fill="#cf142b"/><polygon points="0.55,1.4 0.93,2.5 0,1.83 1.1,1.83 0.17,2.5" fill="#fff"/>'),
+  es: _svg('<rect width="6" height="4" fill="#aa151b"/><rect width="6" height="2" y="1" fill="#f1bf00"/>'),
+  fr: _vb(['#002654', '#ffffff', '#ce1126']),
+  rs: _hb(['#c6363c', '#0c4076', '#ffffff']),
+  se: _svg('<rect width="6" height="4" fill="#006aa7"/><rect x="1.7" width="0.9" height="4" fill="#fecc00"/><rect y="1.55" width="6" height="0.9" fill="#fecc00"/>'),
+  at: _hb(['#ed2939', '#ffffff', '#ed2939']),
+  au: _svg('<rect width="6" height="4" fill="#00247d"/><path d="M0 0l3 2M3 0l-3 2" stroke="#fff" stroke-width="0.4"/><path d="M0 0l3 2M3 0l-3 2" stroke="#cf142b" stroke-width="0.2"/><path d="M1.5 0v2M0 1h3" stroke="#fff" stroke-width="0.55"/><path d="M1.5 0v2M0 1h3" stroke="#cf142b" stroke-width="0.3"/><circle cx="1.5" cy="3.1" r="0.34" fill="#fff"/><circle cx="4.3" cy="1" r="0.17" fill="#fff"/><circle cx="5.1" cy="2.1" r="0.17" fill="#fff"/><circle cx="4.5" cy="3.2" r="0.17" fill="#fff"/><circle cx="5.4" cy="0.6" r="0.13" fill="#fff"/>'),
+  be: _vb(['#000000', '#fae042', '#ed2939']),
+  am: _hb(['#d90012', '#0033a0', '#f2a800']),
+  ar: _svg('<rect width="6" height="4" fill="#fff"/><rect width="6" height="1.333" fill="#74acdf"/><rect width="6" height="1.333" y="2.667" fill="#74acdf"/><circle cx="3" cy="2" r="0.42" fill="#f6b40e"/>'),
+  ao: _svg('<rect width="6" height="4" fill="#cc092f"/><rect width="6" height="2" y="2" fill="#000"/><circle cx="3" cy="2" r="0.5" fill="none" stroke="#ffcb00" stroke-width="0.14"/>'),
+  co: _svg('<rect width="6" height="4" fill="#fcd116"/><rect width="6" height="1" y="2" fill="#003893"/><rect width="6" height="1" y="3" fill="#ce1126"/>'),
+  fi: _svg('<rect width="6" height="4" fill="#fff"/><rect x="1.7" width="0.9" height="4" fill="#003580"/><rect y="1.55" width="6" height="0.9" fill="#003580"/>'),
+  qa: _svg('<rect width="6" height="4" fill="#8d1b3d"/><rect width="2" height="4" fill="#fff"/>'),
+  ru: _hb(['#ffffff', '#0039a6', '#d52b1e']),
+  lv: _svg('<rect width="6" height="4" fill="#9e3039"/><rect width="6" height="1.2" y="1.4" fill="#fff"/>'),
+  jm: _svg('<rect width="6" height="4" fill="#009b3a"/><polygon points="0,0 6,0 3,2" fill="#000"/><polygon points="0,4 6,4 3,2" fill="#000"/><path d="M0 0l6 4M6 0l-6 4" stroke="#fed100" stroke-width="0.7"/>'),
+  pr: _svg('<rect width="6" height="4" fill="#fff"/><rect width="6" height="0.8" fill="#ed0000"/><rect width="6" height="0.8" y="1.6" fill="#ed0000"/><rect width="6" height="0.8" y="3.2" fill="#ed0000"/><polygon points="0,0 2.6,2 0,4" fill="#0050f0"/><polygon points="0.55,1.4 0.93,2.5 0,1.83 1.1,1.83 0.17,2.5" fill="#fff"/>'),
+  ss: _svg('<rect width="6" height="4" fill="#fff"/><rect width="6" height="1.15" fill="#000"/><rect width="6" height="1.15" y="1.42" fill="#da121a"/><rect width="6" height="1.15" y="2.85" fill="#078930"/><polygon points="0,0 2.4,2 0,4" fill="#0f47af"/><polygon points="0.5,1.55 0.9,2.5 0.05,1.9 0.95,1.9 0.1,2.5" fill="#fcdd09"/>'),
+  tt: _svg('<rect width="6" height="4" fill="#da1a35"/><path d="M0.3 0 L1.7 0 L6 3.4 L6 4 L4.3 4 L0 0.6 Z" fill="#fff"/><path d="M0.65 0 L1.4 0 L6 3.62 L6 4 L5.15 4 L0 0.33 Z" fill="#000"/>'),
+  do: _svg('<rect width="6" height="4" fill="#002d62"/><rect x="3" width="3" height="2" fill="#ce1126"/><rect y="2" width="3" height="2" fill="#ce1126"/><rect x="3" y="2" width="3" height="2" fill="#002d62"/><rect x="2.55" width="0.9" height="4" fill="#fff"/><rect y="1.55" width="6" height="0.9" fill="#fff"/>'),
+};
+
+/** Resolve a raw nationality string to a flag country code (first country) +
+ * a display name that follows the active language. Falls back to raw text. */
+function nationalityDisplay(raw) {
+  if (!raw) return { cc: '', text: '—' };
+  const list = raw.split(/[/,]/)
+    .map((part) => COUNTRY[part.replace(/\(.*?\)/g, '').trim().toLowerCase()])
+    .filter(Boolean);
+  if (!list.length) return { cc: '', text: raw };
+  return { cc: list[0].cc, text: list.map((c) => (state.lang === 'he' ? c.he : c.en)).join(' / ') };
+}
+
+/* competition: 'regular_season' (default, all 13 teams, ~29-30 GP) or
+   'playoffs' (only the 8 teams that qualified). Two stages of the same
+   Winner League competition, not separate tournaments -- see DATA.playoffs,
+   which mirrors DATA's own shape (teams/players/by_position/bad_split_count). */
+function activeTeams() { return state.competition === 'playoffs' ? DATA.playoffs.teams : DATA.teams; }
+function activePlayersRaw() { return state.competition === 'playoffs' ? DATA.playoffs.players : DATA.players; }
+function activeByPosition() { return state.competition === 'playoffs' ? DATA.playoffs.by_position : DATA.by_position; }
+function activeBadSplitCount() { return state.competition === 'playoffs' ? DATA.playoffs.bad_split_count : DATA.bad_split_count; }
+function getAllPlayers() { return [...activePlayersRaw()].sort((a, b) => b.avg_pir - a.avg_pir); }
+
+function getTeam(id) { const teams = activeTeams(); return teams.find(t => t.id === id) || teams[0]; }
+function getTeamRoster(id) { return getAllPlayers().filter(p => p.team_id === id); }
+
+/* A player name on more than one row = a mid-season move: each row is that
+   player's stint at one club, its stats scoped to that stint (there is no
+   combined row). Marked with a * next to the name wherever the full
+   per-stint table is shown -- team roster, all-players table, the player
+   card's season row -- rather than in one collected place. */
+let _multiStintNames = null;
+function multiStintNames() {
+  if (!_multiStintNames) {
+    const c = {};
+    DATA.players.forEach((p) => { c[p.name] = (c[p.name] || 0) + 1; });
+    _multiStintNames = new Set(Object.keys(c).filter((n) => c[n] > 1));
+  }
+  return _multiStintNames;
+}
+function isMultiStint(p) { return multiStintNames().has(p.name); }
+
+/** Keep the selected team/player valid whenever the active competition's
+ * dataset changes (a team/player may simply not exist in playoffs). */
+function normalizeSelection() {
+  const teams = activeTeams();
+  if (!teams.find(t => t.id === state.teamId)) state.teamId = teams[0].id;
+  const roster = getTeamRoster(state.teamId);
+  if (!getAllPlayers().find(p => p.id === state.playerId)) {
+    state.playerId = (roster[0] || getAllPlayers()[0]).id;
+  }
+  const validIds = new Set(activePlayersRaw().map((p) => p.id));
+  state.cmpPlayerIds = (state.cmpPlayerIds || [null, null, null, null])
+    .map((id) => (id !== null && validIds.has(id)) ? id : null);
+  if (state.cmpPlayerIds.every((id) => id === null)) {
+    const top = getAllPlayers().slice(0, 2).map((p) => p.id);
+    state.cmpPlayerIds = [top[0] ?? null, top[1] ?? null, null, null];
+  }
+  const validTeamIds = new Set(teams.map((tm) => tm.id));
+  if (state.playersTeam && !validTeamIds.has(state.playersTeam)) state.playersTeam = '';
+  state.radarTeamIds = (state.radarTeamIds || [null, null])
+    .map((id) => (id !== null && validTeamIds.has(id)) ? id : null);
+  if (state.radarTeamIds.every((id) => id === null)) {
+    const topTeams = [...teams].sort((a, b) => b.avg_pir - a.avg_pir).slice(0, 2).map((tm) => tm.id);
+    state.radarTeamIds = [topTeams[0] ?? null, topTeams[1] ?? null];
+  }
+}
+
+/* ---------------- state ---------------- */
+let savedLang = 'he';
+try { savedLang = localStorage.getItem('sls-lang') || 'he'; } catch (e) {}
+let savedCompetition = 'regular_season';
+try { savedCompetition = localStorage.getItem('sls-competition') || 'regular_season'; } catch (e) {}
+const state = {
+  // teamId / playerId are seeded from DATA in boot() via normalizeSelection()
+  // once ./data.json has loaded.
+  tab: 'overview', teamId: null, playerId: null,
+  lang: savedLang, competition: savedCompetition,
+  leagueSortKey: null, leagueSortDir: null, leagueQuery: '',
+  rosterSortKey: null, rosterSortDir: null, rosterQuery: '',
+  cmpPlayerIds: [null, null, null, null],
+  radarTeamIds: [null, null],
+  statMode: 'per_game',
+  playerCalcMode: 'per_game',
+  playerFramework: 'regular_season',
+  analyticsView: 'players',
+  playerView: 'list',
+  playersQuery: '', playersPos: '', playersTeam: '',
+  playersSortKey: 'pts', playersSortDir: 'desc',
+};
+
+/* ---------------- utilities ---------------- */
+function fmt(n, d) {
+  if (n === null || n === undefined || Number.isNaN(n)) return '—';
+  return Number(n).toFixed(d === undefined ? 1 : d);
+}
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function pct(v) { return Math.min(100, Math.max(2, v || 0)); }
+
+/** Percentile rank (0-1) of `value` within `pool`, ties sharing the middle of
+ * their tied band. `invert` flips it for "lower is better" stats (turnovers). */
+function percentileOf(value, pool, invert) {
+  if (!pool.length) return 0;
+  const below = pool.filter((v) => v < value).length;
+  const equal = pool.filter((v) => v === value).length;
+  let p = pool.length > 1 ? (below + equal / 2) / pool.length : 1;
+  if (invert) p = 1 - p;
+  return Math.max(0, Math.min(1, p));
+}
+/** Background wash for a percentile-tinted table cell -- sequential, single
+ * hue (the app's own accent), opacity only; text keeps its normal ink color
+ * (the mark spec's "text never wears the data color" applied to a table). */
+function percentileBg(value, pool, invert) {
+  const p = percentileOf(value, pool, invert);
+  return `rgba(var(--accent-rgb), ${(0.06 + p * 0.34).toFixed(3)})`;
+}
+
+/** Totals / Per Game / Per 36 -- reads the right field off a player object
+ * for whichever mode is active. `base` is the metric's own name without a
+ * prefix (e.g. 'points'); callers pass the matching totals/per_36 field
+ * names since they don't share one naming convention in the embedded data. */
+function statValue(player, totalsField, avgField, per36Field) {
+  if (state.statMode === 'totals') return player[totalsField];
+  if (state.statMode === 'per_36') return player[per36Field];
+  return player[avgField];
+}
+/** index-based percentile cut, mirrors the design doc's highlight logic */
+function cutValue(values, percentile) {
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.min(sorted.length - 1, Math.floor((percentile / 100) * sorted.length))];
+}
+/* Per-table search / sort is transient UI state, not a saved preference --
+   clear it on navigation so a stale query doesn't silently filter the next
+   team's roster (or the league) down to "no results". */
+function resetRosterUI() { state.rosterQuery = ''; state.rosterSortKey = null; state.rosterSortDir = null; }
+function resetLeagueUI() { state.leagueQuery = ''; state.leagueSortKey = null; state.leagueSortDir = null; }
+function resetPlayersUI() {
+  state.playersQuery = ''; state.playersPos = ''; state.playersTeam = '';
+  state.playersSortKey = 'pts'; state.playersSortDir = 'desc';
+}
+
+function goTab(tab) {
+  state.tab = tab;
+  if (tab === 'player') { state.playerView = 'list'; resetPlayersUI(); }  // nav to the Player tab lands on a fresh full list
+  if (tab === 'team') resetRosterUI();
+  if (tab === 'league') resetLeagueUI();
+  render();
+  window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+}
+function goTeam(id) { state.teamId = id; state.tab = 'team'; resetRosterUI(); render(); window.scrollTo({ top: 0 }); }
+function goPlayer(id) {
+  state.playerId = id;
+  const p = activePlayersRaw().find(x => x.id === id);
+  if (p) state.teamId = p.team_id;
+  state.tab = 'player';
+  state.playerView = 'detail';
+  render();
+  window.scrollTo({ top: 0 });
+}
+function setLang(lang) {
+  if (lang === state.lang) return;
+  state.lang = lang;
+  try { localStorage.setItem('sls-lang', lang); } catch (e) {}
+  document.documentElement.setAttribute('lang', lang);
+  document.documentElement.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('data-lang', lang);
+  document.title = t('brand');
+  renderChrome();
+  render();
+}
+function setCompetition(comp) {
+  if (comp === state.competition) return;
+  state.competition = comp;
+  try { localStorage.setItem('sls-competition', comp); } catch (e) {}
+  normalizeSelection();
+  resetRosterUI(); resetLeagueUI(); resetPlayersUI();  // a stale query would hide the new dataset's rows
+  renderChrome();
+  render();
+}
+
+/* ---------------- chrome ---------------- */
+const TAB_KEYS = [
+  { id: 'overview', key: 'tab_overview' },
+  { id: 'league', key: 'tab_league' },
+  { id: 'team', key: 'tab_team' },
+  { id: 'player', key: 'tab_player' },
+  { id: 'analytics', key: 'tab_analytics' },
+];
+const tabsNav = document.getElementById('tabs');
+const langSwitch = document.getElementById('lang-switch');
+const compSwitch = document.getElementById('comp-switch');
+
+function renderChrome() {
+  document.title = t('brand');
+  document.getElementById('brand-name').textContent = t('brand');
+  document.getElementById('season-chip').textContent =
+    DATA.season + (state.competition === 'playoffs' ? ' · ' + t('comp_playoffs') : '');
+  document.getElementById('flag-count-text').textContent = t('flag_count')(activeBadSplitCount());
+  tabsNav.setAttribute('aria-label', t('nav_aria'));
+
+  tabsNav.innerHTML = '';
+  TAB_KEYS.forEach((tb) => {
+    const btn = el('button', null, t(tb.key));
+    btn.type = 'button';
+    btn.setAttribute('role', 'tab');
+    btn.addEventListener('click', () => goTab(tb.id));
+    tabsNav.appendChild(btn);
+  });
+  syncTabs();
+
+  [...langSwitch.querySelectorAll('button')].forEach((btn) => {
+    btn.setAttribute('aria-pressed', btn.dataset.lang === state.lang ? 'true' : 'false');
+  });
+  [...compSwitch.querySelectorAll('button')].forEach((btn) => {
+    btn.textContent = t(btn.dataset.comp === 'playoffs' ? 'comp_playoffs' : 'comp_regular');
+    btn.setAttribute('aria-pressed', btn.dataset.comp === state.competition ? 'true' : 'false');
+  });
+
+  document.getElementById('footer-note').innerHTML = t('footer');
+}
+langSwitch.addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-lang]');
+  if (btn) setLang(btn.dataset.lang);
+});
+compSwitch.addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-comp]');
+  if (btn) setCompetition(btn.dataset.comp);
+});
+
+function syncTabs() {
+  [...tabsNav.children].forEach((btn, i) => {
+    btn.setAttribute('aria-current', TAB_KEYS[i].id === state.tab ? 'true' : 'false');
+  });
+}
+
+/* ---------------- Overview ---------------- */
+/* One "leader card": category label, the #1 big, then ranks 2-5 as a list.
+   `rows` is pre-sorted best-first; `val`/`name`/`meta`/`go` are accessors so
+   the same card serves both players and teams. */
+function leaderCard(catLabel, rows, val, name, meta, go) {
+  const card = el('div', 'leader-card');
+  card.appendChild(el('div', 'leader-card-cat', catLabel));
+  const top = rows[0];
+  const topRow = el('button', 'leader-card-top');
+  topRow.type = 'button';
+  topRow.addEventListener('click', () => go(top));
+  const who = el('div', 'lc-who');
+  who.appendChild(el('div', 'lc-name', name(top)));
+  who.appendChild(el('div', 'lc-meta', meta(top)));
+  topRow.appendChild(who);
+  topRow.appendChild(el('div', 'lc-val', val(top)));
+  card.appendChild(topRow);
+  const rest = el('div', 'leader-card-rest');
+  rows.slice(1, 5).forEach((row, i) => {
+    const r = el('button', 'lc-row');
+    r.type = 'button';
+    r.addEventListener('click', () => go(row));
+    r.appendChild(el('span', 'lc-rk', String(i + 2)));
+    r.appendChild(el('span', 'lc-rn', name(row)));
+    r.appendChild(el('span', 'lc-rv', val(row)));
+    rest.appendChild(r);
+  });
+  card.appendChild(rest);
+  return card;
+}
+
+function renderOverview(root) {
+  const teams = activeTeams();
+
+  const hero = el('div', 'hero-row');
+  const heroLeft = el('div');
+  heroLeft.appendChild(el('div', 'eyebrow', t('ov_eyebrow')));
+  const title = el('div', 'display-xl');
+  title.appendChild(document.createTextNode(t('ov_title')));
+  title.appendChild(document.createElement('br'));
+  const outline = el('span', 'display-outline', DATA.season);
+  title.appendChild(outline);
+  heroLeft.appendChild(title);
+  hero.appendChild(heroLeft);
+
+  if (state.competition === 'playoffs') {
+    const note = el('div', null, t('playoffs_note')(teams.length));
+    note.style.cssText = 'font:600 12px/1.5 var(--font-body);color:var(--accent);margin-top:14px';
+    heroLeft.appendChild(note);
+  }
+
+  const statRow = el('div', 'stat-row');
+  [
+    { num: String(teams.length), lbl: t('ov_teams_tracked') },
+    { num: String(activePlayersRaw().length), lbl: t('ov_players_profiled') },
+    activeBadSplitCount() > 0 ? { num: String(activeBadSplitCount()), lbl: t('ov_flags_to_review'), hi: true } : null,
+  ].filter(Boolean).forEach((s) => {
+    const box = el('div');
+    const num = el('div', 'num', s.num);
+    if (s.hi) num.style.color = 'var(--accent)';
+    box.appendChild(num);
+    box.appendChild(el('div', 'lbl', s.lbl));
+    statRow.appendChild(box);
+  });
+  hero.appendChild(statRow);
+  root.appendChild(hero);
+
+  const minGP = Math.max(3, Math.round(0.4 * Math.max(...activePlayersRaw().map((pl) => pl.gp))));
+  const qualified = activePlayersRaw().filter((pl) => pl.gp >= minGP);
+
+  /* ---- player leaders ---- */
+  const pSec = el('div');
+  pSec.style.marginTop = '20px';
+  const pHead = el('div', 'panel-head');
+  pHead.style.cssText = 'padding:0 0 18px;border:0';
+  pHead.appendChild(el('div', 'panel-kicker', t('home_players_kicker')));
+  pHead.appendChild(el('div', 'panel-title', t('home_players_title')));
+  const pNote = el('div', null, t('home_min_note')(minGP));
+  pNote.style.cssText = 'font:400 12px/1.5 var(--font-body);color:var(--ink-3);margin-top:8px';
+  pHead.appendChild(pNote);
+  pSec.appendChild(pHead);
+  const pGrid = el('div', 'leaders-grid');
+  const pName = (pl) => playerName(pl);
+  const pMeta = (pl) => teamLabel(getTeam(pl.team_id)) + ' · ' + positionFull(pl.position);
+  const pGo = (pl) => goPlayer(pl.id);
+  [
+    ['lbl_points', 'avg_points', 1], ['lbl_rebounds', 'avg_rebounds', 1], ['lbl_assists', 'avg_assists', 1],
+    ['lbl_pir', 'avg_pir', 1], ['lead_minutes', 'avg_minutes', 1], ['lead_ts', 'ts_pct', 1],
+    ['lead_efg', 'efg_pct', 1], ['lead_fg', 'fg_pct', 1], ['lead_fg3', 'fg3_pct', 1],
+    ['lead_ft', 'ft_pct', 1], ['lead_asttov', 'ast_to_tov', 2],
+  ].forEach(([labelKey, field, dec]) => {
+    const seen = new Set();
+    const rows = [...qualified]
+      .sort((a, b) => b[field] - a[field])
+      .filter((pl) => (seen.has(pl.name) ? false : seen.add(pl.name)))  // one row per player (trade = 2 rows)
+      .slice(0, 5);
+    if (rows.length) pGrid.appendChild(leaderCard(t(labelKey), rows, (pl) => fmt(pl[field], dec), pName, pMeta, pGo));
+  });
+  pSec.appendChild(pGrid);
+  root.appendChild(pSec);
+
+  /* ---- team leaders (same categories, one row per team) ---- */
+  const tSec = el('div');
+  tSec.style.marginTop = '40px';
+  const tHead = el('div', 'panel-head');
+  tHead.style.cssText = 'padding:0 0 18px;border:0';
+  tHead.appendChild(el('div', 'panel-kicker', t('home_teams_kicker')));
+  tHead.appendChild(el('div', 'panel-title', t('home_teams_title')));
+  tSec.appendChild(tHead);
+  const tGrid = el('div', 'leaders-grid');
+  const tName = (tm) => teamLabel(tm);
+  const tMeta = (tm) => '#' + tm.rank + ' · ' + teamCity(tm);
+  const tGo = (tm) => goTeam(tm.id);
+  [
+    ['lbl_points', 'avg_points', 1, false], ['lbl_assists', 'avg_assists', 1, false],
+    ['lbl_rebounds', 'avg_rebounds', 1, false], ['lead_oreb', 'avg_oreb', 1, false],
+    ['lead_dreb', 'avg_dreb', 1, false], ['lbl_blocks', 'avg_blocks', 1, false],
+    ['lead_few_tov', 'avg_turnovers', 1, true], ['lbl_pir', 'avg_pir', 1, false],
+    ['lead_fg3m', 'avg_fg3m', 1, false], ['lead_fg3', 'fg3_pct', 1, false],
+  ].forEach(([labelKey, field, dec, asc]) => {
+    const rows = [...teams].sort((a, b) => (asc ? a[field] - b[field] : b[field] - a[field])).slice(0, 5);
+    tGrid.appendChild(leaderCard(t(labelKey), rows, (tm) => fmt(tm[field], dec), tName, tMeta, tGo));
+  });
+  tSec.appendChild(tGrid);
+  root.appendChild(tSec);
+
+  if (activeBadSplitCount() > 0) {
+    const dqPanel = el('div', 'panel');
+    dqPanel.style.marginTop = '40px';
+    const dq = el('div', 'dq-card');
+    const dqh = el('div', 'dq-head');
+    dqh.appendChild(el('span', 'flag-dot'));
+    dqh.appendChild(el('span', 'lbl', t('ov_dq_label')));
+    dq.appendChild(dqh);
+    dq.appendChild(el('div', 'dq-title', t('ov_dq_title')(activeBadSplitCount())));
+    dq.appendChild(el('div', 'dq-body', t('ov_dq_body').replace('{n}', activeBadSplitCount())));
+    const dqLink = el('button', 'dq-link', t('ov_dq_link'));
+    dqLink.type = 'button';
+    dqLink.addEventListener('click', () => goTab('league'));
+    dq.appendChild(dqLink);
+    dqPanel.appendChild(dq);
+    root.appendChild(dqPanel);
+  }
+
+  /* Mid-season moves used to be a panel here; they're now surfaced in context
+     -- a * next to the player's name in the team roster / all-players table /
+     player card -- rather than collected on the Home page. */
+}
+
+/* ---------------- sortable / searchable tables ---------------- */
+const LEAGUE_COLUMNS = [
+  { key: 'rank', label: () => t('col_hash'), right: false, get: (row) => row.rank },
+  { key: 'name', label: () => t('col_team'), right: false, text: true, get: (row) => teamLabel(row) },
+  { key: 'avg_points', label: () => 'Pts', right: true, get: (row) => row.avg_points },
+  { key: 'avg_assists', label: () => 'Ast', right: true, get: (row) => row.avg_assists },
+  { key: 'avg_rebounds', label: () => 'Reb', right: true, get: (row) => row.avg_rebounds },
+  { key: 'avg_blocks', label: () => 'Blk', right: true, get: (row) => row.avg_blocks },
+  { key: 'avg_turnovers', label: () => 'Tov', right: true, get: (row) => row.avg_turnovers },
+  { key: 'avg_pir', label: () => 'PIR', right: true, accent: true, get: (row) => row.avg_pir },
+];
+const modeSuffix = () => (state.statMode === 'per_36' ? '/36' : '');
+const ROSTER_COLUMNS = [
+  { key: 'jersey', label: () => STR[state.lang].col_hash, right: false, get: (row) => row.jersey },
+  { key: 'name', label: () => STR[state.lang].col_player, right: false, text: true, get: (row) => playerName(row) },
+  { key: 'position', label: () => STR[state.lang].col_pos, right: false, text: true, get: (row) => posLabel(row.position) },
+  { key: 'age', label: () => STR[state.lang].col_age, right: true, get: (row) => row.age },
+  { key: 'height_m', label: () => STR[state.lang].col_ht, right: true, get: (row) => row.height_m },
+  { key: 'gp', label: () => 'GP', right: true, get: (row) => row.gp },
+  { key: 'avg_points', label: () => 'Pts' + modeSuffix(), right: true, get: (row) => statValue(row, 'pts', 'avg_points', 'per_36_points') },
+  { key: 'avg_assists', label: () => 'Ast' + modeSuffix(), right: true, get: (row) => statValue(row, 'ast', 'avg_assists', 'per_36_assists') },
+  { key: 'avg_rebounds', label: () => 'Reb' + modeSuffix(), right: true, get: (row) => statValue(row, 'reb', 'avg_rebounds', 'per_36_rebounds') },
+  { key: 'avg_pir', label: () => 'PIR' + modeSuffix(), right: true, accent: true, get: (row) => statValue(row, 'pir', 'avg_pir', 'per_36_pir') },
+];
+
+/* Columns for the league-wide all-players table (Player tab default view).
+   Counting stats follow state.statMode (totals / per game / per 36); the
+   shooting rates don't. `min` totals = avg_minutes x GP. */
+const PLAYERS_COLUMNS = [
+  { key: 'name', label: () => t('col_player'), text: true, get: (r) => playerName(r) },
+  { key: 'team', label: () => t('col_team'), text: true, get: (r) => teamLabel(getTeam(r.team_id)) },
+  { key: 'position', label: () => t('col_pos'), text: true, get: (r) => posLabel(r.position) },
+  { key: 'age', label: () => t('col_age'), right: true, get: (r) => r.age },
+  { key: 'gp', label: () => 'GP', right: true, get: (r) => r.gp },
+  { key: 'min', label: () => 'MIN', right: true, get: (r) => (state.statMode === 'totals' ? r.avg_minutes * r.gp : r.avg_minutes) },
+  { key: 'pts', label: () => 'PTS' + modeSuffix(), right: true, get: (r) => statValue(r, 'pts', 'avg_points', 'per_36_points') },
+  { key: 'reb', label: () => 'REB' + modeSuffix(), right: true, get: (r) => statValue(r, 'reb', 'avg_rebounds', 'per_36_rebounds') },
+  { key: 'ast', label: () => 'AST' + modeSuffix(), right: true, get: (r) => statValue(r, 'ast', 'avg_assists', 'per_36_assists') },
+  { key: 'pir', label: () => 'PIR' + modeSuffix(), right: true, accent: true, get: (r) => statValue(r, 'pir', 'avg_pir', 'per_36_pir') },
+  { key: 'fg_pct', label: () => 'FG%', right: true, get: (r) => r.fg_pct },
+  { key: 'fg3_pct', label: () => '3P%', right: true, get: (r) => r.fg3_pct },
+  { key: 'ts_pct', label: () => 'TS%', right: true, get: (r) => r.ts_pct },
+];
+
+function sortRows(rows, columns, sortKey, sortDir) {
+  const col = columns.find((c) => c.key === sortKey);
+  if (!col) return rows;
+  const locale = state.lang === 'he' ? 'he' : 'en';
+  return [...rows].sort((a, b) => {
+    const av = col.get(a), bv = col.get(b);
+    let cmp;
+    if (col.text) cmp = String(av).localeCompare(String(bv), locale);
+    else cmp = (av === null || av === undefined ? -Infinity : av) - (bv === null || bv === undefined ? -Infinity : bv);
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+}
+function toggleSort(keyField, dirField, columns, clickedKey) {
+  const col = columns.find((c) => c.key === clickedKey);
+  if (state[keyField] === clickedKey) {
+    state[dirField] = state[dirField] === 'asc' ? 'desc' : 'asc';
+  } else {
+    state[keyField] = clickedKey;
+    state[dirField] = col.text ? 'asc' : 'desc';
+  }
+  render();
+}
+function buildSortableHead(columns, colsClass, keyField, dirField, onSort) {
+  const head = el('div', 'grid-head ' + colsClass);
+  columns.forEach((col) => {
+    const active = state[keyField] === col.key;
+    const label = col.label() + (active ? (state[dirField] === 'asc' ? ' ▲' : ' ▼') : '');
+    const btn = el('button', 'sort-head' + (col.right ? ' cell-right' : '') + (active ? ' active' : ''), label);
+    btn.type = 'button';
+    if (col.accent) btn.style.color = 'var(--accent)';
+    btn.addEventListener('click', () => onSort(col.key));
+    head.appendChild(btn);
+  });
+  return head;
+}
+function filterRows(rows, query, getText) {
+  const q = query.trim().toLowerCase();
+  if (!q) return rows;
+  return rows.filter((row) => getText(row).toLowerCase().includes(q));
+}
+/* Each keystroke re-runs render(), which rebuilds the whole view subtree --
+   so the <input> the user is typing in is destroyed and recreated. Stash the
+   caret position here on input; render() reads it back and restores focus to
+   the fresh .search-input so typing is never interrupted. Only ever set for
+   the single render() call triggered by the keystroke itself. */
+let searchFocus = null;
+
+function buildSearchToolbar(query, placeholder, onInput, onExport) {
+  const toolbar = el('div', 'table-toolbar');
+  const input = document.createElement('input');
+  input.type = 'search';
+  input.className = 'search-input';
+  input.placeholder = placeholder;
+  input.value = query;
+  input.autocomplete = 'off';
+  input.spellcheck = false;
+  input.addEventListener('input', (e) => {
+    searchFocus = { start: e.target.selectionStart, end: e.target.selectionEnd };
+    onInput(e.target.value);
+  });
+  toolbar.appendChild(input);
+  if (onExport) {
+    const btn = el('button', 'export-btn', t('btn_export'));
+    btn.type = 'button';
+    btn.addEventListener('click', onExport);
+    toolbar.appendChild(btn);
+  }
+  return toolbar;
+}
+
+/** Build an RFC-4180-ish CSV string and hand the browser a download. A
+ * leading UTF-8 BOM keeps Hebrew readable when the file is opened in Excel.
+ * (Works when dashboard.html is opened as a local file; a sandboxed artifact
+ * iframe blocks script-triggered downloads.) */
+function downloadCSV(filename, headers, rows) {
+  const esc = (v) => {
+    const s = v === null || v === undefined ? '' : String(v);
+    return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const body = [headers, ...rows].map((r) => r.map(esc).join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF' + body], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+/** A stat-table cell whose background is tinted by `value`'s percentile
+ * within `pool` (always the FULL active team/roster, never the
+ * search-filtered subset -- a tint should reflect true league-wide standing
+ * even mid-search). `invert` for "lower is better" stats (turnovers). */
+function buildStatCell(cls, value, pool, invert) {
+  const cell = el('span', cls + ' pct-cell cell-right', fmt(value));
+  cell.style.background = percentileBg(value, pool, invert);
+  return cell;
+}
+
+/* ---------------- League ---------------- */
+function renderLeague(root) {
+  const teams = activeTeams();
+  root.appendChild(el('div', 'eyebrow', t('league_eyebrow')));
+  root.appendChild(el('div', 'display-xl', t('league_title')));
+  const sub = el('div', null, t('league_sub')(teams.length));
+  sub.style.cssText = 'font:400 13px/1.5 var(--font-body);color:var(--ink-3);margin:8px 0 30px;max-width:560px';
+  root.appendChild(sub);
+
+  // percentile pools: always the full active team set, never the
+  // search-filtered subset, so tints reflect true league-wide standing
+  const pools = {
+    avg_points: teams.map((tm) => tm.avg_points),
+    avg_assists: teams.map((tm) => tm.avg_assists),
+    avg_rebounds: teams.map((tm) => tm.avg_rebounds),
+    avg_blocks: teams.map((tm) => tm.avg_blocks),
+    avg_turnovers: teams.map((tm) => tm.avg_turnovers),
+    avg_pir: teams.map((tm) => tm.avg_pir),
+  };
+
+  const filtered = filterRows(teams, state.leagueQuery, (row) => teamLabel(row));
+  const sorted = state.leagueSortKey
+    ? sortRows(filtered, LEAGUE_COLUMNS, state.leagueSortKey, state.leagueSortDir)
+    : filtered;
+
+  const exportLeague = () => downloadCSV('league_stats.csv',
+    ['#', t('col_team'), 'PTS', 'AST', 'REB', 'BLK', 'TOV', 'PIR'],
+    sorted.map((tm) => [tm.rank, teamLabel(tm),
+      fmt(tm.avg_points), fmt(tm.avg_assists), fmt(tm.avg_rebounds),
+      fmt(tm.avg_blocks), fmt(tm.avg_turnovers), fmt(tm.avg_pir)]));
+
+  root.appendChild(buildSearchToolbar(state.leagueQuery, t('search_teams'), (v) => {
+    state.leagueQuery = v; render();
+  }, exportLeague));
+
+  const panel = el('div', 'panel');
+  if (sorted.length === 0) {
+    panel.appendChild(el('div', 'empty-state', t('no_results')));
+    root.appendChild(panel);
+    return;
+  }
+  const wrap = el('div', 'table-wrap');
+  wrap.appendChild(buildSortableHead(LEAGUE_COLUMNS, 'league-cols', 'leagueSortKey', 'leagueSortDir',
+    (key) => toggleSort('leagueSortKey', 'leagueSortDir', LEAGUE_COLUMNS, key)));
+  sorted.forEach((t) => {
+    const row = el('button', 'grid-row league-cols');
+    row.type = 'button';
+    row.addEventListener('click', () => goTeam(t.id));
+    row.appendChild(el('span', 'rank-num', String(t.rank)));
+    row.appendChild(el('span', 'team-name-cell', teamLabel(t)));
+    row.appendChild(buildStatCell('stat-strong', t.avg_points, pools.avg_points));
+    row.appendChild(buildStatCell('stat-soft', t.avg_assists, pools.avg_assists));
+    row.appendChild(buildStatCell('stat-soft', t.avg_rebounds, pools.avg_rebounds));
+    row.appendChild(buildStatCell('stat-soft', t.avg_blocks, pools.avg_blocks));
+    row.appendChild(buildStatCell('stat-soft', t.avg_turnovers, pools.avg_turnovers, true));
+    row.appendChild(buildStatCell('pir-cell', t.avg_pir, pools.avg_pir));
+    wrap.appendChild(row);
+  });
+  panel.appendChild(wrap);
+  root.appendChild(panel);
+}
+
+/* ---------------- Team ---------------- */
+function renderTeam(root) {
+  const teams = activeTeams();
+  const t = getTeam(state.teamId);
+  const roster = getTeamRoster(t.id).sort((a, b) => b.avg_pir - a.avg_pir);
+
+  const picker = el('div', 'player-picker');
+  picker.appendChild(el('label', null, STR[state.lang].team_picker_label));
+  const select = document.createElement('select');
+  [...teams].sort((a, b) => a.rank - b.rank).forEach((team) => {
+    const opt = document.createElement('option');
+    opt.value = team.id;
+    opt.textContent = STR[state.lang].team_picker_opt(team);
+    if (team.id === t.id) opt.selected = true;
+    select.appendChild(opt);
+  });
+  select.addEventListener('change', (e) => goTeam(e.target.value));
+  picker.appendChild(select);
+  root.appendChild(picker);
+
+  const hero = el('div', 'panel team-hero');
+  hero.appendChild(Object.assign(el('div'), { className: 'ring ring-accent' }));
+  hero.appendChild(Object.assign(el('div'), { className: 'ring ring-soft' }));
+  hero.appendChild(el('div', 'edge-accent'));
+  const inner = el('div', 'team-hero-inner');
+  const left = el('div');
+  left.appendChild(el('div', 'eyebrow', STR[state.lang].team_eyebrow(t.rank, teams.length)));
+  const titleWrap = el('div', 'team-hero-title');
+  titleWrap.appendChild(document.createTextNode(teamName(t)));
+  titleWrap.appendChild(document.createElement('br'));
+  titleWrap.appendChild(el('span', 'display-outline', teamCity(t)));
+  left.appendChild(titleWrap);
+  inner.appendChild(left);
+
+  const quad = el('div', 'team-quad');
+  [
+    ['avg_points', STR[state.lang].lbl_points], ['avg_assists', STR[state.lang].lbl_assists], ['avg_rebounds', STR[state.lang].lbl_rebounds],
+    ['avg_blocks', STR[state.lang].lbl_blocks], ['avg_turnovers', STR[state.lang].lbl_turnovers], ['avg_pir', STR[state.lang].lbl_team_pir],
+  ].forEach(([key, lbl]) => {
+    const box = el('div');
+    const num = el('div', 'num' + (key === 'avg_pir' ? ' hi' : ''), fmt(t[key]));
+    box.appendChild(num);
+    box.appendChild(el('div', 'lbl', lbl));
+    quad.appendChild(box);
+  });
+  inner.appendChild(quad);
+  hero.appendChild(inner);
+  root.appendChild(hero);
+
+  const rosterPanel = el('div', 'panel');
+  const rh = el('div', 'panel-head');
+  rh.style.display = 'flex'; rh.style.alignItems = 'baseline'; rh.style.justifyContent = 'space-between';
+  rh.appendChild(el('div', 'panel-title sm', STR[state.lang].roster_title));
+  rh.appendChild(el('div', null, STR[state.lang].roster_sub(roster.length)));
+  rh.lastChild.style.cssText = 'font:400 11.5px/1 var(--font-body);color:var(--ink-3)';
+  rosterPanel.appendChild(rh);
+
+  const modeRow = el('div', 'stat-mode-row');
+  modeRow.appendChild(el('label', null, STR[state.lang].stat_mode_label));
+  const modeSwitch = el('div', 'lang-switch');
+  [['totals', STR[state.lang].stat_mode_totals], ['per_game', STR[state.lang].stat_mode_per_game], ['per_36', STR[state.lang].stat_mode_per_36]]
+    .forEach(([mode, label]) => {
+      const btn = el('button', null, label);
+      btn.type = 'button';
+      btn.setAttribute('aria-pressed', state.statMode === mode ? 'true' : 'false');
+      btn.addEventListener('click', () => { state.statMode = mode; render(); });
+      modeSwitch.appendChild(btn);
+    });
+  modeRow.appendChild(modeSwitch);
+  rosterPanel.appendChild(modeRow);
+
+  const filteredRoster = filterRows(roster, state.rosterQuery, (row) => playerName(row));
+  const sortedRoster = state.rosterSortKey
+    ? sortRows(filteredRoster, ROSTER_COLUMNS, state.rosterSortKey, state.rosterSortDir)
+    : filteredRoster;
+
+  // CSV of exactly what's on screen: filtered + sorted rows, columns and
+  // values following the active Totals / Per Game / Per 36 mode.
+  const exportRoster = () => {
+    const sfx = modeSuffix();
+    const d = state.statMode === 'totals' ? 0 : 1;
+    const S = STR[state.lang];  // `t` is shadowed by the team object in renderTeam
+    downloadCSV('team_roster_stats.csv',
+      ['#', S.col_player, S.col_pos, S.col_age, S.col_ht, 'GP',
+       'PTS' + sfx, 'AST' + sfx, 'REB' + sfx, 'PIR' + sfx],
+      sortedRoster.map((p) => [
+        p.jersey !== null ? p.jersey : '', playerName(p), posLabel(p.position),
+        p.age !== null ? p.age : '', fmt(p.height_m, 2), p.gp,
+        fmt(statValue(p, 'pts', 'avg_points', 'per_36_points'), d),
+        fmt(statValue(p, 'ast', 'avg_assists', 'per_36_assists'), d),
+        fmt(statValue(p, 'reb', 'avg_rebounds', 'per_36_rebounds'), d),
+        fmt(statValue(p, 'pir', 'avg_pir', 'per_36_pir'), d),
+      ]));
+  };
+
+  rosterPanel.appendChild(buildSearchToolbar(state.rosterQuery, STR[state.lang].search_players, (v) => {
+    state.rosterQuery = v; render();
+  }, exportRoster));
+
+  // percentile pools: always the full roster, never the search-filtered subset
+  const rosterPools = {
+    avg_points: roster.map((p) => statValue(p, 'pts', 'avg_points', 'per_36_points')),
+    avg_assists: roster.map((p) => statValue(p, 'ast', 'avg_assists', 'per_36_assists')),
+    avg_rebounds: roster.map((p) => statValue(p, 'reb', 'avg_rebounds', 'per_36_rebounds')),
+    avg_pir: roster.map((p) => statValue(p, 'pir', 'avg_pir', 'per_36_pir')),
+  };
+
+  if (sortedRoster.length === 0) {
+    rosterPanel.appendChild(el('div', 'empty-state', STR[state.lang].no_results));
+    root.appendChild(rosterPanel);
+    return;
+  }
+
+  const wrap = el('div', 'table-wrap');
+  wrap.appendChild(buildSortableHead(ROSTER_COLUMNS, 'roster-cols', 'rosterSortKey', 'rosterSortDir',
+    (key) => toggleSort('rosterSortKey', 'rosterSortDir', ROSTER_COLUMNS, key)));
+  sortedRoster.forEach((p) => {
+    const row = el('button', 'grid-row roster-cols');
+    row.type = 'button';
+    row.addEventListener('click', () => goPlayer(p.id));
+    row.appendChild(el('span', 'rank-num sm', p.jersey !== null ? '#' + p.jersey : '—'));
+    const nameCell = el('span', 'player-name-cell');
+    if (p.bad_split) nameCell.appendChild(el('span', 'row-flag'));
+    nameCell.appendChild(document.createTextNode(playerName(p)));
+    if (isMultiStint(p)) nameCell.appendChild(el('span', 'stint-star', '*'));
+    row.appendChild(nameCell);
+    row.appendChild(el('span', 'pos-cell', posLabel(p.position)));
+    row.appendChild(el('span', 'stat-soft sm cell-right', p.age !== null ? String(p.age) : '—'));
+    row.appendChild(el('span', 'stat-soft sm cell-right', fmt(p.height_m, 2)));
+    row.appendChild(el('span', 'stat-soft sm cell-right', String(p.gp)));
+    row.appendChild(buildStatCell('stat-strong sm', statValue(p, 'pts', 'avg_points', 'per_36_points'), rosterPools.avg_points));
+    row.appendChild(buildStatCell('stat-soft sm', statValue(p, 'ast', 'avg_assists', 'per_36_assists'), rosterPools.avg_assists));
+    row.appendChild(buildStatCell('stat-soft sm', statValue(p, 'reb', 'avg_rebounds', 'per_36_rebounds'), rosterPools.avg_rebounds));
+    row.appendChild(buildStatCell('pir-cell sm', statValue(p, 'pir', 'avg_pir', 'per_36_pir'), rosterPools.avg_pir));
+    wrap.appendChild(row);
+  });
+  rosterPanel.appendChild(wrap);
+  const flagged = roster.filter(p => p.bad_split).length;
+  if (flagged > 0) {
+    const note = el('div', 'team-note');
+    note.appendChild(document.createTextNode(STR[state.lang].roster_flag_note(flagged)));
+    rosterPanel.appendChild(note);
+  }
+  // NB: `t` is the team object in this function, not the i18n helper -- use STR.
+  if (roster.some(isMultiStint)) rosterPanel.appendChild(el('div', 'team-note', STR[state.lang].stint_note));
+  root.appendChild(rosterPanel);
+}
+
+/* ---------------- Player ---------------- */
+/* The Player tab has two views: the league-wide filterable/sortable table
+   (default, `list`) and one player's full card (`detail`, reached by clicking
+   a row anywhere). */
+function renderPlayer(root) {
+  if (state.playerView === 'detail') renderPlayerCard(root);
+  else renderPlayerList(root);
+}
+
+function renderPlayerList(root) {
+  root.appendChild(el('div', 'eyebrow', t('players_eyebrow')));
+  root.appendChild(el('div', 'display-xl', t('players_title')));
+  const sub = el('div', null, t('players_sub')(activePlayersRaw().length));
+  sub.style.cssText = 'font:400 13px/1.5 var(--font-body);color:var(--ink-3);margin:8px 0 26px';
+  root.appendChild(sub);
+
+  const filters = el('div', 'players-filters');
+
+  const search = document.createElement('input');
+  search.type = 'search';
+  search.className = 'search-input';
+  search.placeholder = t('search_players');
+  search.value = state.playersQuery;
+  search.autocomplete = 'off';
+  search.spellcheck = false;
+  search.addEventListener('input', (e) => {
+    searchFocus = { start: e.target.selectionStart, end: e.target.selectionEnd };
+    state.playersQuery = e.target.value;
+    render();
+  });
+  filters.appendChild(search);
+
+  const present = new Set();
+  activePlayersRaw().forEach((p) => posGroups(p.position).forEach((g) => present.add(g)));
+  const posSel = document.createElement('select');
+  posSel.appendChild(new Option(t('filter_pos_all'), ''));
+  POS_SLOTS.filter((pp) => present.has(pp)).forEach((pp) => posSel.appendChild(new Option(pp, pp)));
+  posSel.value = state.playersPos;
+  posSel.addEventListener('change', (e) => { state.playersPos = e.target.value; render(); });
+  filters.appendChild(posSel);
+
+  const teamSel = document.createElement('select');
+  teamSel.appendChild(new Option(t('filter_team_all'), ''));
+  [...activeTeams()].sort((a, b) => a.rank - b.rank).forEach((tm) => teamSel.appendChild(new Option(teamLabel(tm), tm.id)));
+  teamSel.value = state.playersTeam;
+  teamSel.addEventListener('change', (e) => { state.playersTeam = e.target.value; render(); });
+  filters.appendChild(teamSel);
+
+  const modeSwitch = el('div', 'lang-switch');
+  [['totals', t('stat_mode_totals')], ['per_game', t('stat_mode_per_game')], ['per_36', t('stat_mode_per_36')]]
+    .forEach(([m, lbl]) => {
+      const b = el('button', null, lbl);
+      b.type = 'button';
+      b.setAttribute('aria-pressed', state.statMode === m ? 'true' : 'false');
+      b.addEventListener('click', () => { state.statMode = m; render(); });
+      modeSwitch.appendChild(b);
+    });
+  filters.appendChild(modeSwitch);
+  root.appendChild(filters);
+
+  let rows = activePlayersRaw().slice();
+  if (state.playersTeam) rows = rows.filter((p) => p.team_id === state.playersTeam);
+  if (state.playersPos) rows = rows.filter((p) => posGroups(p.position).includes(state.playersPos));
+  rows = filterRows(rows, state.playersQuery, (r) => playerName(r));
+  rows = sortRows(rows, PLAYERS_COLUMNS, state.playersSortKey, state.playersSortDir);
+
+  const panel = el('div', 'panel');
+  if (!rows.length) {
+    panel.appendChild(el('div', 'empty-state', t('no_results')));
+    root.appendChild(panel);
+    return;
+  }
+  const wrap = el('div', 'table-wrap');
+  wrap.appendChild(buildSortableHead(PLAYERS_COLUMNS, 'players-cols', 'playersSortKey', 'playersSortDir',
+    (key) => toggleSort('playersSortKey', 'playersSortDir', PLAYERS_COLUMNS, key)));
+  const dec = state.statMode === 'totals' ? 0 : 1;
+  rows.forEach((p) => {
+    const row = el('button', 'grid-row players-cols');
+    row.type = 'button';
+    row.addEventListener('click', () => goPlayer(p.id));
+    const nameCell = el('span', 'player-name-cell');
+    if (p.bad_split) nameCell.appendChild(el('span', 'row-flag'));
+    nameCell.appendChild(document.createTextNode(playerName(p)));
+    if (isMultiStint(p)) nameCell.appendChild(el('span', 'stint-star', '*'));
+    row.appendChild(nameCell);
+    row.appendChild(el('span', 'stat-soft sm ellip', teamLabel(getTeam(p.team_id))));
+    row.appendChild(el('span', 'pos-cell', posLabel(p.position)));
+    row.appendChild(el('span', 'stat-soft sm cell-right', p.age !== null ? String(p.age) : '—'));
+    row.appendChild(el('span', 'stat-soft sm cell-right', String(p.gp)));
+    row.appendChild(el('span', 'stat-soft sm cell-right', state.statMode === 'totals' ? String(Math.round(p.avg_minutes * p.gp)) : fmt(p.avg_minutes, 1)));
+    row.appendChild(el('span', 'stat-strong sm cell-right', fmt(statValue(p, 'pts', 'avg_points', 'per_36_points'), dec)));
+    row.appendChild(el('span', 'stat-soft sm cell-right', fmt(statValue(p, 'reb', 'avg_rebounds', 'per_36_rebounds'), dec)));
+    row.appendChild(el('span', 'stat-soft sm cell-right', fmt(statValue(p, 'ast', 'avg_assists', 'per_36_assists'), dec)));
+    row.appendChild(el('span', 'pir-cell sm cell-right', fmt(statValue(p, 'pir', 'avg_pir', 'per_36_pir'), dec)));
+    row.appendChild(el('span', 'stat-soft sm cell-right', fmt(p.fg_pct, 1)));
+    row.appendChild(el('span', 'stat-soft sm cell-right', fmt(p.fg3_pct, 1)));
+    row.appendChild(el('span', 'stat-soft sm cell-right', fmt(p.ts_pct, 1)));
+    wrap.appendChild(row);
+  });
+  panel.appendChild(wrap);
+  if (rows.some(isMultiStint)) panel.appendChild(el('div', 'team-note', t('stint_note')));
+  root.appendChild(panel);
+}
+
+function renderPlayerCard(root) {
+  const players = activePlayersRaw();
+  const teams = activeTeams();
+  const p = players.find(x => x.id === state.playerId) || getAllPlayers()[0];
+  const team = getTeam(p.team_id);
+  const roster = getTeamRoster(team.id).sort((a, b) => b.avg_pir - a.avg_pir);
+  const displayName = playerName(p);
+  const nameParts = displayName.split(' ');
+  const firstName = nameParts[0];
+  const restName = nameParts.slice(1).join(' ');
+
+  const back = el('button', 'back-link', (state.lang === 'he' ? '→ ' : '← ') + t('players_all'));
+  back.type = 'button';
+  back.addEventListener('click', () => { state.playerView = 'list'; render(); window.scrollTo({ top: 0 }); });
+  root.appendChild(back);
+
+  const picker = el('div', 'player-picker');
+  picker.appendChild(el('label', null, STR[state.lang].player_picker_viewing));
+  const teamSelect = document.createElement('select');
+  [...teams].sort((a, b) => a.rank - b.rank).forEach((t) => {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = teamLabel(t);
+    if (t.id === team.id) opt.selected = true;
+    teamSelect.appendChild(opt);
+  });
+  teamSelect.addEventListener('change', (e) => {
+    const r = getTeamRoster(e.target.value).sort((a, b) => b.avg_pir - a.avg_pir);
+    if (r.length) goPlayer(r[0].id);
+  });
+  picker.appendChild(teamSelect);
+  const select = document.createElement('select');
+  roster.forEach((rp) => {
+    const opt = document.createElement('option');
+    opt.value = String(rp.id);
+    opt.textContent = (rp.jersey !== null ? '#' + rp.jersey + ' ' : '') + playerName(rp);
+    if (rp.id === p.id) opt.selected = true;
+    select.appendChild(opt);
+  });
+  select.addEventListener('change', (e) => goPlayer(Number(e.target.value)));
+  picker.appendChild(select);
+  root.appendChild(picker);
+
+  const card = el('div', 'panel');
+  const hero = el('div', 'player-hero');
+  hero.appendChild(Object.assign(el('div'), { className: 'ring ring-accent' }));
+  hero.appendChild(Object.assign(el('div'), { className: 'ring ring-soft' }));
+  hero.appendChild(el('div', 'edge-accent'));
+  const inner = el('div', 'player-hero-inner');
+  const left = el('div');
+  left.appendChild(el('div', 'eyebrow', STR[state.lang].player_eyebrow(teamLabel(team), positionFull(p.position), p.jersey)));
+  const nameEl = el('div', 'player-name');
+  nameEl.appendChild(document.createTextNode(firstName));
+  if (restName) {
+    nameEl.appendChild(document.createElement('br'));
+    nameEl.appendChild(el('span', 'display-outline', restName));
+  }
+  left.appendChild(nameEl);
+  if (p.position) left.appendChild(el('div', 'player-pos', positionFull(p.position)));
+  inner.appendChild(left);
+  const badge = el('div', 'rank-badge');
+  badge.appendChild(el('div', 'big', p.pir_rank_league !== null ? String(p.pir_rank_league) : '—'));
+  badge.appendChild(el('div', 'lbl', STR[state.lang].player_rank_badge(players.length)));
+  inner.appendChild(badge);
+  hero.appendChild(inner);
+  card.appendChild(hero);
+
+  const quad = el('div', 'quad4');
+  [
+    ['avg_points', STR[state.lang].lbl_points], ['avg_assists', STR[state.lang].lbl_assists], ['avg_rebounds', STR[state.lang].lbl_rebounds], ['avg_pir', STR[state.lang].lbl_pir, true],
+  ].forEach(([key, lbl, hi]) => {
+    const box = el('div');
+    box.appendChild(el('div', 'num' + (hi ? ' hi' : ''), fmt(p[key])));
+    box.appendChild(el('div', 'lbl', lbl));
+    quad.appendChild(box);
+  });
+  card.appendChild(quad);
+
+  const bioCell = (lbl, val) => {
+    const box = el('div');
+    box.appendChild(el('div', 'section-lbl', lbl));
+    const num = el('div', 'num');
+    if (typeof val === 'string') num.textContent = val; else num.appendChild(val);
+    box.appendChild(num);
+    return box;
+  };
+
+  const lower = el('div', 'player-lower');
+
+  /* left column: everything about how the season went -- shooting + playing load */
+  const shootCol = el('div');
+  shootCol.style.display = 'flex'; shootCol.style.flexDirection = 'column'; shootCol.style.gap = '13px';
+  shootCol.appendChild(el('div', 'section-lbl', STR[state.lang].section_shooting));
+  [
+    ['FG%', p.fg_pct, false], ['3PT%', p.fg3_pct, true], ['FT%', p.ft_pct, false],
+  ].forEach(([k, v, accent]) => {
+    const line = el('div', 'bar-line');
+    line.appendChild(el('span', 'k', k));
+    const track = el('span', 'tr');
+    const fill = el('span', 'fl' + (accent ? '' : ' white'));
+    fill.style.width = pct(v) + '%';
+    track.appendChild(fill);
+    line.appendChild(track);
+    line.appendChild(el('span', 'v', fmt(v)));
+    shootCol.appendChild(line);
+  });
+  if (p.bad_split) {
+    const banner = el('div', 'flag-banner');
+    banner.appendChild(document.createTextNode('⚠️ '));
+    const b = el('b', null, STR[state.lang].flag_banner(fmt(p.efg_pct), fmt(p.ts_pct), p.fg3_pct));
+    banner.appendChild(b);
+    shootCol.appendChild(banner);
+  }
+  const usageLbl = el('div', 'section-lbl', STR[state.lang].section_usage);
+  usageLbl.style.cssText = 'margin-top:9px;padding-top:20px;border-top:1px solid var(--hair)';
+  shootCol.appendChild(usageLbl);
+  const usage = el('div', 'bio-grid cols-2');
+  [
+    bioCell(STR[state.lang].bio_games, String(p.gp)),
+    bioCell(STR[state.lang].bio_minutes, fmt(p.avg_minutes)),
+  ].forEach((box) => usage.appendChild(box));
+  shootCol.appendChild(usage);
+  lower.appendChild(shootCol);
+
+  /* right column: who the player is -- fixed personal details only */
+  const nat = nationalityDisplay(p.nationality);
+  const natVal = el('span');
+  if (nat.cc && FLAGS[nat.cc]) { const f = el('span', 'flag-ico'); f.innerHTML = FLAGS[nat.cc]; natVal.appendChild(f); }
+  natVal.appendChild(document.createTextNode(nat.text));
+
+  const bioCol = el('div');
+  bioCol.appendChild(el('div', 'section-lbl', STR[state.lang].section_bio));
+  const bio = el('div', 'bio-grid cols-2');
+  bio.style.marginTop = '13px';
+  [
+    bioCell(STR[state.lang].bio_age, p.age !== null ? String(p.age) : '—'),
+    bioCell(STR[state.lang].bio_height, fmt(p.height_m, 2) + 'm'),
+    bioCell(STR[state.lang].bio_nationality, natVal),
+    bioCell(STR[state.lang].bio_on_team, p.years_on_team !== null ? STR[state.lang].yr(p.years_on_team) : '—'),
+  ].forEach((box) => bio.appendChild(box));
+  bioCol.appendChild(bio);
+  lower.appendChild(bioCol);
+  card.appendChild(lower);
+  root.appendChild(card);
+
+  /* ---- stats by season (NBA-style splits) ----
+     Headline numbers above are the season-total "general" line; this panel
+     lets you pick a calculation mode (totals / per game / per 36) and a
+     split (regular season / playoffs) and reads it back one row per season.
+     Only 2023-24 exists today -- `seasonRows` is the single place to extend
+     once more seasons are ingested. */
+  const seasonPanel = el('div', 'panel');
+  seasonPanel.style.marginTop = '24px';
+  const sh = el('div', 'panel-head');
+  sh.appendChild(el('div', 'panel-kicker', STR[state.lang].pl_season_kicker));
+  sh.appendChild(el('div', 'panel-title sm', STR[state.lang].pl_season_title));
+  seasonPanel.appendChild(sh);
+
+  const ctrlRow = el('div', 'stat-mode-row');
+  ctrlRow.style.paddingTop = '16px';
+  ctrlRow.appendChild(el('label', null, STR[state.lang].pl_calc_label));
+  const calcSwitch = el('div', 'lang-switch');
+  [['totals', STR[state.lang].stat_mode_totals], ['per_game', STR[state.lang].stat_mode_per_game], ['per_36', STR[state.lang].stat_mode_per_36]]
+    .forEach(([mode, label]) => {
+      const btn = el('button', null, label);
+      btn.type = 'button';
+      btn.setAttribute('aria-pressed', state.playerCalcMode === mode ? 'true' : 'false');
+      btn.addEventListener('click', () => { state.playerCalcMode = mode; render(); });
+      calcSwitch.appendChild(btn);
+    });
+  ctrlRow.appendChild(calcSwitch);
+  ctrlRow.appendChild(el('span', 'gap'));
+  ctrlRow.appendChild(el('label', null, STR[state.lang].pl_frame_label));
+  const frameSwitch = el('div', 'lang-switch');
+  [['regular_season', STR[state.lang].comp_regular], ['playoffs', STR[state.lang].comp_playoffs]]
+    .forEach(([fw, label]) => {
+      const btn = el('button', null, label);
+      btn.type = 'button';
+      btn.setAttribute('aria-pressed', state.playerFramework === fw ? 'true' : 'false');
+      btn.addEventListener('click', () => { state.playerFramework = fw; render(); });
+      frameSwitch.appendChild(btn);
+    });
+  ctrlRow.appendChild(frameSwitch);
+  seasonPanel.appendChild(ctrlRow);
+
+  const fwPlayers = state.playerFramework === 'playoffs' ? DATA.playoffs.players : DATA.players;
+  const fwTeams = state.playerFramework === 'playoffs' ? DATA.playoffs.teams : DATA.teams;
+  const seasonRows = [{ season: DATA.season, row: fwPlayers.find((x) => x.id === p.id) }]
+    .filter((s) => s.row);
+
+  if (seasonRows.length === 0) {
+    seasonPanel.appendChild(el('div', 'empty-state', STR[state.lang].pl_no_frame_data));
+  } else {
+    const dec = state.playerCalcMode === 'totals' ? 0 : 1;
+    const CALC = {
+      totals: { p: 'pts', r: 'reb', a: 'ast', pir: 'pir' },
+      per_game: { p: 'avg_points', r: 'avg_rebounds', a: 'avg_assists', pir: 'avg_pir' },
+      per_36: { p: 'per_36_points', r: 'per_36_rebounds', a: 'per_36_assists', pir: 'per_36_pir' },
+    }[state.playerCalcMode];
+    const heads = [
+      [STR[state.lang].col_season, false], [STR[state.lang].col_team, false], [STR[state.lang].col_age, true],
+      ['GP', true], ['MIN', true], ['PTS', true], ['REB', true], ['AST', true], ['PIR', true],
+      ['FG%', true], ['3P%', true], ['FT%', true], ['eFG%', true], ['TS%', true],
+    ];
+    const wrap = el('div', 'table-wrap');
+    const head = el('div', 'grid-head player-season-cols');
+    heads.forEach(([label, right]) => head.appendChild(el('span', right ? 'cell-right' : null, label)));
+    wrap.appendChild(head);
+    seasonRows.forEach(({ season, row }) => {
+      const tm = fwTeams.find((x) => x.id === row.team_id);
+      const minVal = state.playerCalcMode === 'totals'
+        ? String(Math.round(row.avg_minutes * row.gp))
+        : fmt(row.avg_minutes, 1);
+      const r = el('div', 'grid-row static player-season-cols');
+      r.appendChild(el('span', 'stat-strong sm', season));
+      r.appendChild(el('span', 'team-name-cell', tm ? teamLabel(tm) : '—'));
+      r.appendChild(el('span', 'stat-soft sm cell-right', row.age !== null ? String(row.age) : '—'));
+      r.appendChild(el('span', 'stat-soft sm cell-right', String(row.gp)));
+      r.appendChild(el('span', 'stat-soft sm cell-right', minVal));
+      r.appendChild(el('span', 'stat-strong sm cell-right', fmt(row[CALC.p], dec)));
+      r.appendChild(el('span', 'stat-soft sm cell-right', fmt(row[CALC.r], dec)));
+      r.appendChild(el('span', 'stat-soft sm cell-right', fmt(row[CALC.a], dec)));
+      r.appendChild(el('span', 'pir-cell sm cell-right', fmt(row[CALC.pir], dec)));
+      r.appendChild(el('span', 'stat-soft sm cell-right', fmt(row.fg_pct, 1)));
+      r.appendChild(el('span', 'stat-soft sm cell-right', fmt(row.fg3_pct, 1)));
+      r.appendChild(el('span', 'stat-soft sm cell-right', fmt(row.ft_pct, 1)));
+      r.appendChild(el('span', 'stat-soft sm cell-right', fmt(row.efg_pct, 1)));
+      r.appendChild(el('span', 'stat-soft sm cell-right', fmt(row.ts_pct, 1)));
+      wrap.appendChild(r);
+    });
+    seasonPanel.appendChild(wrap);
+  }
+  if (isMultiStint(p)) seasonPanel.appendChild(el('div', 'team-note', t('stint_note')));
+  root.appendChild(seasonPanel);
+
+  /* advanced metrics -- already computed in DATA, just never rendered before */
+  const advPanel = el('div', 'panel');
+  advPanel.style.marginTop = '24px';
+  const ah = el('div', 'panel-head');
+  ah.appendChild(el('div', 'panel-kicker', STR[state.lang].adv_kicker));
+  ah.appendChild(el('div', 'panel-title sm', STR[state.lang].adv_title));
+  advPanel.appendChild(ah);
+  const advGrid = el('div', 'bio-grid');
+  advGrid.style.cssText = 'padding:22px 28px 26px';
+  [
+    [STR[state.lang].adv_per36_pts, fmt(p.per_36_points)],
+    [STR[state.lang].adv_per36_ast, fmt(p.per_36_assists)],
+    [STR[state.lang].adv_per36_reb, fmt(p.per_36_rebounds)],
+    ['EFF', fmt(p.efficiency, 0)],
+    ['AST/TOV', fmt(p.ast_to_tov, 2)],
+  ].forEach(([lbl, val]) => {
+    const box = el('div');
+    box.appendChild(el('div', 'section-lbl', lbl));
+    box.appendChild(el('div', 'num', val));
+    advGrid.appendChild(box);
+  });
+  advPanel.appendChild(advGrid);
+  root.appendChild(advPanel);
+
+  /* vs position average, honest substitute for a fabricated game log --
+     may not exist (e.g. no other playoff player shares this exact position
+     code), in which case the comparison panel is simply skipped. */
+  const posAvg = activeByPosition().find(x => x.position === p.position);
+  if (!posAvg) return;
+  const cmpPanel = el('div', 'panel');
+  cmpPanel.style.marginTop = '24px';
+  const ch = el('div', 'panel-head');
+  ch.appendChild(el('div', 'panel-kicker', STR[state.lang].cmp_kicker));
+  ch.appendChild(el('div', 'panel-title sm', STR[state.lang].cmp_title(positionFull(p.position))));
+  cmpPanel.appendChild(ch);
+  const cmpBody = el('div', 'cmp-panel');
+  const legend = el('div', 'cmp-legend');
+  const l1 = el('span'); l1.appendChild(Object.assign(document.createElement('i'), { style: 'background:var(--accent)' })); l1.appendChild(document.createTextNode(firstName));
+  const l2 = el('span'); l2.appendChild(Object.assign(document.createElement('i'), { style: 'background:rgba(255,255,255,.3)' })); l2.appendChild(document.createTextNode(STR[state.lang].cmp_avg(positionFull(p.position))));
+  legend.appendChild(l1); legend.appendChild(l2);
+  cmpBody.appendChild(legend);
+  [
+    [STR[state.lang].lbl_points, p.avg_points, posAvg.avg_points],
+    [STR[state.lang].lbl_assists, p.avg_assists, posAvg.avg_assists],
+    [STR[state.lang].lbl_rebounds, p.avg_rebounds, posAvg.avg_rebounds],
+  ].forEach(([lbl, pv, av]) => {
+    const maxv = Math.max(pv, av) * 1.15 || 1;
+    const row = el('div', 'cmp-row');
+    row.appendChild(el('span', 'k', lbl));
+    const t1 = el('span', 'tr');
+    const f1 = el('span', 'fl'); f1.style.width = pct((pv / maxv) * 100) + '%'; f1.style.background = 'var(--accent)';
+    t1.appendChild(f1);
+    row.appendChild(t1);
+    const t2 = el('span', 'tr');
+    const f2 = el('span', 'fl'); f2.style.width = pct((av / maxv) * 100) + '%'; f2.style.background = 'rgba(255,255,255,.3)';
+    t2.appendChild(f2);
+    row.appendChild(t2);
+    row.appendChild(el('span', 'v', fmt(pv)));
+    cmpBody.appendChild(row);
+  });
+  cmpPanel.appendChild(cmpBody);
+  root.appendChild(cmpPanel);
+}
+
+/* ---------------- Analytics ---------------- */
+const CMP_COLORS = ['var(--accent)', '#3987e5', '#199e70', '#c98500'];
+
+function renderAnalytics(root) {
+  const players = activePlayersRaw();
+
+  root.appendChild(el('div', 'eyebrow', t('an_eyebrow')));
+  root.appendChild(el('div', 'display-xl', t('an_title')));
+  const sub = el('div', null, t('an_sub'));
+  sub.style.cssText = 'font:400 13px/1.5 var(--font-body);color:var(--ink-3);margin:8px 0 30px;max-width:620px';
+  root.appendChild(sub);
+
+  /* players / teams switch -- one analysis surface shows at a time,
+     players first by default */
+  const viewRow = el('div', 'an-toggle');
+  viewRow.appendChild(el('label', null, t('an_view_label')));
+  const viewSwitch = el('div', 'lang-switch');
+  [['players', t('an_view_players')], ['teams', t('an_view_teams')]].forEach(([mode, label]) => {
+    const btn = el('button', null, label);
+    btn.type = 'button';
+    btn.setAttribute('aria-pressed', state.analyticsView === mode ? 'true' : 'false');
+    btn.addEventListener('click', () => { state.analyticsView = mode; render(); });
+    viewSwitch.appendChild(btn);
+  });
+  viewRow.appendChild(viewSwitch);
+  root.appendChild(viewRow);
+
+  if (state.analyticsView === 'players') {
+  /* ---- player comparison ---- */
+  const cmpPanel = el('div', 'panel');
+  const cph = el('div', 'panel-head');
+  cph.appendChild(el('div', 'panel-kicker', t('an_cmp_kicker')));
+  cph.appendChild(el('div', 'panel-title sm', t('an_cmp_title')));
+  cmpPanel.appendChild(cph);
+
+  const sortedPlayers = [...players].sort((a, b) =>
+    playerName(a).localeCompare(playerName(b), state.lang === 'he' ? 'he' : 'en'));
+
+  const pickerRow = el('div', 'cmp-picker-row');
+  state.cmpPlayerIds.forEach((selId, slotIdx) => {
+    const slot = el('div', 'cmp-picker-slot');
+    const swatch = el('span', 'cmp-picker-swatch');
+    swatch.style.background = CMP_COLORS[slotIdx];
+    slot.appendChild(swatch);
+    const select = document.createElement('select');
+    const noneOpt = document.createElement('option');
+    noneOpt.value = '';
+    noneOpt.textContent = STR[state.lang].an_cmp_none;
+    select.appendChild(noneOpt);
+    sortedPlayers.forEach((p) => {
+      const opt = document.createElement('option');
+      opt.value = String(p.id);
+      opt.textContent = playerName(p) + ' — ' + teamLabel(getTeam(p.team_id));
+      if (p.id === selId) opt.selected = true;
+      select.appendChild(opt);
+    });
+    select.addEventListener('change', (e) => {
+      state.cmpPlayerIds[slotIdx] = e.target.value ? Number(e.target.value) : null;
+      render();
+    });
+    slot.appendChild(select);
+    pickerRow.appendChild(slot);
+  });
+  cmpPanel.appendChild(pickerRow);
+
+  const selected = state.cmpPlayerIds
+    .map((id, i) => (id !== null ? { player: players.find((p) => p.id === id), color: CMP_COLORS[i] } : null))
+    .filter((x) => x && x.player);
+
+  const cmpBody = el('div', 'cmp-chart');
+  if (selected.length === 0) {
+    cmpBody.appendChild(el('div', 'empty-state', STR[state.lang].an_cmp_empty));
+  } else {
+    const legend = el('div', 'cmp-legend');
+    selected.forEach(({ player, color }) => {
+      const item = el('span');
+      const i = document.createElement('i');
+      i.style.background = color;
+      item.appendChild(i);
+      item.appendChild(document.createTextNode(playerName(player)));
+      legend.appendChild(item);
+    });
+    cmpBody.appendChild(legend);
+
+    const metrics = [
+      ['avg_points', STR[state.lang].lbl_points, 1],
+      ['avg_rebounds', STR[state.lang].lbl_rebounds, 1],
+      ['avg_assists', STR[state.lang].lbl_assists, 1],
+      ['avg_pir', STR[state.lang].lbl_pir, 1],
+      ['ts_pct', 'TS%', 1],
+    ];
+    metrics.forEach(([key, label, dec]) => {
+      const group = el('div', 'cmp-group');
+      group.appendChild(el('div', 'cmp-group-label', label));
+      const maxv = Math.max(...selected.map((s) => s.player[key])) * 1.15 || 1;
+      selected.forEach(({ player, color }) => {
+        const val = player[key];
+        const row = el('div', 'cmp-bar-row');
+        row.appendChild(el('span', 'cmp-bar-name', playerName(player).split(' ')[0]));
+        const track = el('span', 'cmp-bar-track');
+        const fill = el('span', 'cmp-bar-fill');
+        fill.style.width = pct((val / maxv) * 100) + '%';
+        fill.style.background = color;
+        track.appendChild(fill);
+        row.appendChild(track);
+        row.appendChild(el('span', 'cmp-bar-value', fmt(val, dec)));
+        group.appendChild(row);
+      });
+      cmpBody.appendChild(group);
+    });
+  }
+  cmpPanel.appendChild(cmpBody);
+  root.appendChild(cmpPanel);
+  }
+
+  if (state.analyticsView === 'teams') {
+  /* ---- team comparison radar ---- */
+  const teams = activeTeams();
+  const radarPanel = el('div', 'panel');
+  const rph = el('div', 'panel-head');
+  rph.appendChild(el('div', 'panel-kicker', t('an_radar_kicker')));
+  rph.appendChild(el('div', 'panel-title sm', t('an_radar_title')));
+  radarPanel.appendChild(rph);
+
+  const teamPickerRow = el('div', 'cmp-picker-row');
+  state.radarTeamIds.forEach((selId, slotIdx) => {
+    const slot = el('div', 'cmp-picker-slot');
+    const swatch = el('span', 'cmp-picker-swatch');
+    swatch.style.background = CMP_COLORS[slotIdx];
+    slot.appendChild(swatch);
+    const select = document.createElement('select');
+    const noneOpt = document.createElement('option');
+    noneOpt.value = '';
+    noneOpt.textContent = STR[state.lang].an_cmp_none;
+    select.appendChild(noneOpt);
+    [...teams].sort((a, b) => a.rank - b.rank).forEach((tm) => {
+      const opt = document.createElement('option');
+      opt.value = tm.id;
+      opt.textContent = teamLabel(tm);
+      if (tm.id === selId) opt.selected = true;
+      select.appendChild(opt);
+    });
+    select.addEventListener('change', (e) => {
+      state.radarTeamIds[slotIdx] = e.target.value || null;
+      render();
+    });
+    slot.appendChild(select);
+    teamPickerRow.appendChild(slot);
+  });
+  radarPanel.appendChild(teamPickerRow);
+
+  const selectedTeams = state.radarTeamIds
+    .map((id, i) => (id !== null ? { team: teams.find((tm) => tm.id === id), color: CMP_COLORS[i] } : null))
+    .filter((x) => x && x.team);
+
+  const radarBody = el('div', 'cmp-chart');
+  if (selectedTeams.length === 0) {
+    radarBody.appendChild(el('div', 'empty-state', STR[state.lang].an_cmp_empty));
+  } else {
+    radarBody.appendChild(buildTeamRadar(selectedTeams, teams));
+  }
+  radarPanel.appendChild(radarBody);
+  root.appendChild(radarPanel);
+  }
+}
+
+const RADAR_METRICS = [
+  ['avg_points', 'lbl_points', false],
+  ['avg_assists', 'lbl_assists', false],
+  ['avg_rebounds', 'lbl_rebounds', false],
+  ['avg_blocks', 'lbl_blocks', false],
+  ['avg_turnovers', 'lbl_turnovers', true], // lower is better -- inverted so a bigger spike always means "better"
+  ['avg_pir', 'lbl_team_pir', false],
+];
+
+/** 2-team radar (inspired by the project's original notebook, which compared
+ * its top-2 teams by PIR the same way) -- min-max normalized per metric
+ * across the full active team set, inline SVG, hand-rolled like every other
+ * chart in this file. Colors are CMP_COLORS[0]/[1] (app accent + blue),
+ * already validated (dataviz skill's validate_palette.js, --pairs all,
+ * against this page's real dark surface). */
+function buildTeamRadar(selectedTeams, allTeams) {
+  const wrap = el('div', 'radar-wrap');
+
+  const legend = el('div', 'cmp-legend');
+  selectedTeams.forEach(({ team, color }) => {
+    const item = el('span');
+    const i = document.createElement('i');
+    i.style.background = color;
+    item.appendChild(i);
+    const nameBtn = document.createElement('button');
+    nameBtn.type = 'button';
+    nameBtn.className = 'radar-legend-name';
+    nameBtn.textContent = teamLabel(team);
+    nameBtn.addEventListener('click', () => goTeam(team.id));
+    item.appendChild(nameBtn);
+    legend.appendChild(item);
+  });
+  wrap.appendChild(legend);
+
+  const n = RADAR_METRICS.length;
+  const ranges = RADAR_METRICS.map(([key]) => {
+    const vals = allTeams.map((tm) => tm[key]);
+    return [Math.min(...vals), Math.max(...vals)];
+  });
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 460, H = 460, cx = W / 2, cy = H / 2, R = 155;
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('class', 'radar-svg');
+  svg.setAttribute('role', 'img');
+  svg.setAttribute('aria-label', STR[state.lang].an_radar_title);
+
+  const angleFor = (i) => -Math.PI / 2 + i * (2 * Math.PI / n);
+  const pointFor = (i, frac) => {
+    const a = angleFor(i);
+    return [cx + Math.cos(a) * R * frac, cy + Math.sin(a) * R * frac];
+  };
+
+  [0.25, 0.5, 0.75, 1].forEach((frac) => {
+    const poly = document.createElementNS(NS, 'polygon');
+    poly.setAttribute('points', RADAR_METRICS.map((_, i) => pointFor(i, frac).join(',')).join(' '));
+    poly.setAttribute('fill', 'none');
+    poly.setAttribute('stroke', 'var(--hair-strong)');
+    poly.setAttribute('stroke-width', '1');
+    svg.appendChild(poly);
+  });
+
+  RADAR_METRICS.forEach(([, labelKey], i) => {
+    const [x1, y1] = pointFor(i, 1);
+    const axisLine = document.createElementNS(NS, 'line');
+    axisLine.setAttribute('x1', cx); axisLine.setAttribute('y1', cy);
+    axisLine.setAttribute('x2', x1); axisLine.setAttribute('y2', y1);
+    axisLine.setAttribute('stroke', 'var(--hair-strong)');
+    axisLine.setAttribute('stroke-width', '1');
+    svg.appendChild(axisLine);
+    const [lx, ly] = pointFor(i, 1.2);
+    const label = document.createElementNS(NS, 'text');
+    label.setAttribute('x', lx); label.setAttribute('y', ly);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('class', 'radar-axis-label');
+    label.textContent = STR[state.lang][labelKey];
+    svg.appendChild(label);
+  });
+
+  selectedTeams.forEach(({ team, color }, teamIdx) => {
+    const coords = RADAR_METRICS.map(([key, , invert], i) => {
+      const [min, max] = ranges[i];
+      let frac = max > min ? (team[key] - min) / (max - min) : 0.5;
+      if (invert) frac = 1 - frac;
+      return pointFor(i, Math.max(0.04, frac));
+    });
+    const poly = document.createElementNS(NS, 'polygon');
+    poly.setAttribute('points', coords.map((p) => p.join(',')).join(' '));
+    poly.setAttribute('fill', color);
+    poly.setAttribute('fill-opacity', '0.16');
+    poly.setAttribute('stroke', color);
+    poly.setAttribute('stroke-width', '2');
+    svg.appendChild(poly);
+
+    coords.forEach(([x, y], i) => {
+      const dot = document.createElementNS(NS, 'circle');
+      dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('r', '3.5');
+      dot.setAttribute('fill', color);
+      svg.appendChild(dot);
+
+      // offset each team's value label by both angle AND radius so two
+      // labels stay legibly apart even when both teams score nearly the
+      // same on an axis (their vertices sit almost on top of each other)
+      const labelAngle = angleFor(i) + (teamIdx === 0 ? -0.18 : 0.18);
+      const labelDist = teamIdx === 0 ? 13 : 24;
+      const lx = x + Math.cos(labelAngle) * labelDist;
+      const ly = y + Math.sin(labelAngle) * labelDist;
+      const val = document.createElementNS(NS, 'text');
+      val.setAttribute('x', lx); val.setAttribute('y', ly);
+      val.setAttribute('text-anchor', 'middle');
+      val.setAttribute('class', 'radar-value-label');
+      val.setAttribute('fill', color);
+      val.textContent = fmt(team[RADAR_METRICS[i][0]]);
+      svg.appendChild(val);
+    });
+  });
+
+  wrap.appendChild(svg);
+  return wrap;
+}
+
+/* ---------------- router ---------------- */
+function render() {
+  const refocus = searchFocus;
+  searchFocus = null;
+  syncTabs();
+  const root = document.getElementById('view');
+  root.innerHTML = '';
+  if (state.tab === 'overview') renderOverview(root);
+  else if (state.tab === 'league') renderLeague(root);
+  else if (state.tab === 'team') renderTeam(root);
+  else if (state.tab === 'player') renderPlayer(root);
+  else if (state.tab === 'analytics') renderAnalytics(root);
+  if (refocus) {
+    const si = root.querySelector('.search-input');
+    if (si) {
+      si.focus({ preventScroll: true });
+      try { si.setSelectionRange(refocus.start, refocus.end); } catch (e) {}
+    }
+  }
+}
+async function boot() {
+  try {
+    const res = await fetch('./data.json', { cache: 'no-cache' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const raw = await res.json();
+    DATA = raw && raw.seasons ? raw.seasons[raw.default_season] : raw;
+    normalizeSelection();
+  } catch (err) {
+    const v = document.getElementById('view');
+    if (v) v.innerHTML = '<div style="padding:2.5rem 1rem;text-align:center;color:var(--muted,#667);font:15px/1.5 system-ui,sans-serif">'
+      + 'Could not load data.json &mdash; ' + String(err && err.message || err)
+      + '<br>Serve this page over HTTP (not file://) so the browser can fetch it.</div>';
+    return;
+  }
+  renderChrome();
+  render();
+}
+boot();
+</script>

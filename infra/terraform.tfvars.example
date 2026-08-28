@@ -1,0 +1,16 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is git-ignored.
+
+region  = "eu-central-1"
+project = "bball"
+
+# The DB is never publicly_accessible. Primary DB-job path is `aws ecs run-task`.
+# Flip this on for a tiny SSM jump host to tunnel psql/a GUI from your laptop
+# (~$3/mo for a t4g.nano — stop it in the console when idle).
+create_bastion = false
+
+# db_deletion_protection = true
+
+# --- CI deploy identity (optional) ---
+# github_repo                 = "your-org/basketball-analytics"
+# create_github_oidc_provider = true   # false if the account already has the GitHub OIDC provider
+# create_deploy_user          = false
