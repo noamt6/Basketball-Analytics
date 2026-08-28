@@ -7,3 +7,6 @@ pandas==2.3.3
 python-dotenv==1.2.3
 openpyxl==3.1.5
 boto3==1.43.81   # only used when DB_SECRET_ARN / DB_SECRET_NAME is set (AWS Secrets Manager)
+requests==2.32.3        # scrape_league.py only
+beautifulsoup4==4.13.4  # scrape_league.py only
+lxml==5.3.0             # scrape_league.py only (fast BeautifulSoup parser)
