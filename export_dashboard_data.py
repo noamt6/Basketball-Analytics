@@ -102,6 +102,17 @@ def _r(value, ndigits):
     return round(_num(value), ndigits)
 
 
+def _pct(value):
+    """Shooting percentage: 1 dp (how the dashboard displays it), but keep a
+    genuine NULL as None so the UI shows '—' for a shot type never attempted."""
+    if value is None or (isinstance(value, float) and math.isnan(value)):
+        return None
+    try:
+        return round(float(value), 1)
+    except (TypeError, ValueError):
+        return None
+
+
 def _age(birth_date, as_of: date) -> int:
     if birth_date is None or (isinstance(birth_date, float) and math.isnan(birth_date)):
         return 0
@@ -120,24 +131,32 @@ def _efficiency(row, include_tov: bool):
     return float(base - misses)
 
 
-def _rank_map(series: pd.Series) -> dict:
-    """player_id -> 1-based rank by descending value (ties share the lower rank)."""
-    ordered = series.sort_values(ascending=False)
-    return {pid: i + 1 for i, pid in enumerate(ordered.index)}
+def _rank_by(pids, value_of, tiebreak_of) -> dict:
+    """player_id -> 1-based rank, highest value first, ties broken by
+    `tiebreak_of` ascending (spreadsheet row order)."""
+    ordered = sorted(pids, key=lambda pid: (-value_of(pid), tiebreak_of(pid)))
+    return {pid: i + 1 for i, pid in enumerate(ordered)}
 
 
-def build_players(df: pd.DataFrame, *, hebrew: dict, as_of: date, include_tov: bool,
-                  order_index: dict) -> list[dict]:
+def build_players(df: pd.DataFrame, *, hebrew: dict, he_by_name: dict, as_of: date,
+                  include_tov: bool, order_index: dict) -> list[dict]:
     if df.empty:
         return []
     df = df.copy()
     pg = metrics.player_per_game_stats(df)
 
-    league_pir_rank = _rank_map(df.set_index("player_id")["pir"])
+    # Ranks are by PIR *per game*, rounded to the displayed 2 dp, ties broken by
+    # source row order — matches the dashboard's "#N in the league" convention.
+    avg_pir = {int(r.player_id): round(_num(r.pir) / r.gp, 2) if r.gp else 0.0
+               for r in df.itertuples()}
+    team_of = {int(r.player_id): r.team_id for r in df.itertuples()}
+    tb = lambda pid: order_index.get((team_of[pid], pid), 10_000 + pid)
+
+    league_pir_rank = _rank_by(avg_pir.keys(), avg_pir.get, tb)
     team_pir_rank: dict = {}
     for team_id, grp in df.groupby("team_id"):
-        for pid, rnk in _rank_map(grp.set_index("player_id")["pir"]).items():
-            team_pir_rank[pid] = rnk
+        pids = [int(x) for x in grp["player_id"]]
+        team_pir_rank.update(_rank_by(pids, avg_pir.get, tb))
 
     out = []
     for _, row in pg.iterrows():
@@ -148,8 +167,8 @@ def build_players(df: pd.DataFrame, *, hebrew: dict, as_of: date, include_tov: b
             "name": f"{row['first_name']} {row['last_name']}".strip(),
             "team_id": row["team_id"],
             "position": row["position"],
-            "jersey": int(row["jersey_number"]) if pd.notna(row["jersey_number"]) else 0,
-            "years_on_team": int(row["years_on_team"]) if pd.notna(row["years_on_team"]) else 0,
+            "jersey": int(row["jersey_number"]) if pd.notna(row["jersey_number"]) else None,
+            "years_on_team": int(row["years_on_team"]) if pd.notna(row["years_on_team"]) else None,
             "nationality": row["nationality"] or "",
             "age": _age(row["birth_date"], as_of),
             "height_m": _r(row["height_m"], 2),
@@ -162,18 +181,19 @@ def build_players(df: pd.DataFrame, *, hebrew: dict, as_of: date, include_tov: b
             "per_36_points": _r(row["per_36_points"], 2),
             "per_36_assists": _r(row["per_36_assists"], 2),
             "per_36_rebounds": _r(row["per_36_rebounds"], 2),
-            "fg_pct": _r(row["fg_pct"], 2),
-            "fg3_pct": _r(row["fg3_pct"], 1),
-            "ft_pct": _r(row["ft_pct"], 1),
-            "efg_pct": _r(row["efg_pct"], 2),
-            "ts_pct": _r(row["ts_pct"], 2),
+            "fg_pct": _pct(row["fg_pct"]),
+            "fg3_pct": _pct(row["fg3_pct"]),
+            "ft_pct": _pct(row["ft_pct"]),
+            "efg_pct": _pct(row["efg_pct"]),
+            "ts_pct": _pct(row["ts_pct"]),
             "ast_to_tov": _r(row["ast_to_tov"], 2),
             "efficiency": _efficiency(row, include_tov),
             "pir": int(_num(row["pir"])),
             "bad_split": bad_split,
             "pir_rank_on_team": team_pir_rank.get(pid, 0),
             "pir_rank_league": league_pir_rank.get(pid, 0),
-            "name_he": hebrew.get("players", {}).get(str(pid), ""),
+            "name_he": (hebrew.get("players", {}).get(str(pid))
+                        or he_by_name.get(f"{row['first_name']} {row['last_name']}".strip(), "")),
             "pts": int(_num(row["pts"])),
             "reb": int(_num(row["reb"])),
             "ast": int(_num(row["ast"])),
@@ -212,7 +232,7 @@ def build_teams(df: pd.DataFrame, *, hebrew: dict, rank_map: dict, roster_counts
             "avg_dreb": _r(row["avg_dreb"], 2),
             "avg_fg3a": _r(row["avg_fg3a"], 2),
             "avg_fg3m": _r(row["avg_fg3m"], 2),
-            "fg3_pct": _r(row["fg3_pct"], 1),
+            "fg3_pct": _pct(row["fg3_pct"]),
             "player_count": roster_counts.get(tid, 0),
             "name_he": he.get("name_he", ""),
             "city_he": he.get("city_he", ""),
@@ -237,13 +257,17 @@ def build_by_position(df: pd.DataFrame) -> list[dict]:
     ]
 
 
-def build_transfers(engine, season: str, *, teams_by_id: dict, name_to_pid: dict, hebrew: dict) -> list[dict]:
+def build_transfers(engine, season: str, *, teams_by_id: dict, name_to_pid: dict,
+                    hebrew: dict, he_by_name: dict) -> list[dict]:
     df = pd.read_sql(TRANSFER_SQL, engine, params={"season": season})
+    he_players = hebrew.get("players", {})
     out = []
     for _, row in df.iterrows():
         pid = row["player_id"]
         if pid is None or (isinstance(pid, float) and math.isnan(pid)):
             pid = name_to_pid.get(row["player_name"])
+        name_he = (he_players.get(str(pid)) if pid is not None else "") \
+            or he_by_name.get(row["player_name"], "")
         out.append({
             "player_name": row["player_name"],
             "team_a": row["team_id_a"],
@@ -253,7 +277,7 @@ def build_transfers(engine, season: str, *, teams_by_id: dict, name_to_pid: dict
             "team_b_label": teams_by_id.get(row["team_id_b"], row["team_id_b"]),
             "gp_b": int(row["gp_b"]) if pd.notna(row["gp_b"]) else 0,
             "note": row["note"] or "",
-            "player_name_he": hebrew.get("players", {}).get(str(pid), "") if pid is not None else "",
+            "player_name_he": name_he,
         })
     return out
 
@@ -276,15 +300,27 @@ def build_season(engine, season: str, *, hebrew: dict, supplement: dict, include
     reg_roster_counts = reg_players.groupby("team_id")["player_id"].count().to_dict()
     po_roster_counts = po_players.groupby("team_id")["player_id"].count().to_dict()
 
-    reg_p = build_players(reg_players, hebrew=hebrew, as_of=as_of, include_tov=include_tov, order_index=order_index)
-    po_p = build_players(po_players, hebrew=hebrew, as_of=as_of, include_tov=include_tov, order_index=order_index)
+    # name -> name_he, so a traded player whose surviving row carries the other
+    # team's source id still resolves (hebrew_names.json is keyed by source id).
+    he_players = hebrew.get("players", {})
+    he_by_name = {}
+    for r in reg_players.itertuples():
+        he = he_players.get(str(int(r.player_id)))
+        if he:
+            he_by_name[f"{r.first_name} {r.last_name}".strip()] = he
+
+    reg_p = build_players(reg_players, hebrew=hebrew, he_by_name=he_by_name, as_of=as_of,
+                          include_tov=include_tov, order_index=order_index)
+    po_p = build_players(po_players, hebrew=hebrew, he_by_name=he_by_name, as_of=as_of,
+                         include_tov=include_tov, order_index=order_index)
 
     return {
         "season": season,
         "teams": build_teams(reg_teams, hebrew=hebrew, rank_map=rank_map, roster_counts=reg_roster_counts),
         "players": reg_p,
         "by_position": build_by_position(reg_players),
-        "transfers": build_transfers(engine, season, teams_by_id=teams_by_id, name_to_pid=name_to_pid, hebrew=hebrew),
+        "transfers": build_transfers(engine, season, teams_by_id=teams_by_id, name_to_pid=name_to_pid,
+                                     hebrew=hebrew, he_by_name=he_by_name),
         "bad_split_count": sum(1 for p in reg_p if p["bad_split"]),
         "player_count": int(reg_players["player_id"].nunique()),
         "playoffs": {

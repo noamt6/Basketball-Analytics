@@ -94,10 +94,6 @@
   nav.tabs button:hover { color: var(--ink-2); background: rgba(255,255,255,.06); }
   nav.tabs button[aria-current="true"] { background: var(--accent); color: #fff; }
   nav.tabs button[aria-current="true"]:hover { background: var(--accent-hover); color: #fff; }
-  .flag-indicator {
-    display: flex; align-items: center; gap: 9px; font: 500 11px/1 var(--font-body);
-    color: var(--ink-3); white-space: nowrap; flex: none;
-  }
   .flag-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; display: block; }
   .topbar-right { display: flex; align-items: center; gap: 18px; flex: none; }
   .lang-switch {
@@ -110,9 +106,9 @@
   }
   .lang-switch button:hover { color: var(--ink-2); }
   .lang-switch button[aria-pressed="true"] { background: var(--accent); color: #fff; }
-  @media (max-width: 980px) { .flag-indicator, .season-chip { display: none; } }
+  @media (max-width: 980px) { .season-chip { display: none; } }
 
-  .view { padding: 44px 40px 0; max-width: 1360px; margin: 0 auto; }
+  .view { padding: 44px 40px 56px; max-width: 1360px; margin: 0 auto; }
 
   /* ---------- Hero ---------- */
   .hero-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; margin-bottom: 34px; flex-wrap: wrap; }
@@ -407,11 +403,6 @@
   }
   .back-link:hover, .back-link:focus-visible { color: var(--accent); outline: none; }
 
-  .footer-note {
-    max-width: 1360px; margin: 28px auto 0; padding: 0 40px; font: 400 12px/1.7 var(--font-body); color: var(--ink-3);
-  }
-  .footer-note code { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; background: rgba(255,255,255,.06); padding: 1px 5px; border-radius: 3px; color: var(--ink-2); }
-
   /* ---------- Mobile (<=640px) ---------- */
   @media (max-width: 640px) {
     .topbar { flex-wrap: wrap; height: auto; padding: 10px 16px; row-gap: 8px; position: static; }
@@ -429,8 +420,7 @@
     }
     .lang-switch button { padding: 9px 12px; min-height: 40px; }
 
-    .view { padding: 24px 16px 0; }
-    .footer-note { padding: 0 16px; }
+    .view { padding: 24px 16px 40px; }
     .panel-head { padding: 16px 14px 12px; }
     .grid-head, .grid-row { padding: 0 14px; }
     .team-note { padding: 14px; }
@@ -492,8 +482,7 @@
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   html[data-mobile] .lang-switch button { padding: 9px 12px; min-height: 40px; }
-  html[data-mobile] .view { padding: 24px 16px 0; }
-  html[data-mobile] .footer-note { padding: 0 16px; }
+  html[data-mobile] .view { padding: 24px 16px 40px; }
   html[data-mobile] .panel-head { padding: 16px 14px 12px; }
   html[data-mobile] .grid-head, html[data-mobile] .grid-row { padding: 0 14px; }
   html[data-mobile] .team-note { padding: 14px; }
@@ -525,7 +514,6 @@
     </div>
     <nav class="tabs" id="tabs" role="tablist" aria-label="Sections"></nav>
     <div class="topbar-right">
-      <div class="flag-indicator"><span class="flag-dot"></span><span id="flag-count-text"></span></div>
       <div class="lang-switch" id="comp-switch" role="group">
         <button type="button" data-comp="regular_season"></button>
         <button type="button" data-comp="playoffs"></button>
@@ -538,8 +526,6 @@
   </div>
 
   <div id="view" class="view"></div>
-
-  <div class="footer-note" id="footer-note"></div>
 </div>
 
 <script>
@@ -587,7 +573,6 @@ const STR = {
     comp_regular: 'עונה סדירה',
     comp_playoffs: 'פלייאוף',
     playoffs_note: (n) => 'הנתונים מוצגים לשלב הפלייאוף בלבד — ' + n + ' מתוך 13 הקבוצות עלו.',
-    flag_count: (n) => n + ' דגלי איכות נתונים',
     ov_eyebrow: 'ליגת העל בכדורסל',
     ov_title: 'עונת',
     ov_teams_tracked: 'קבוצות',
@@ -675,21 +660,14 @@ const STR = {
     bio_minutes: 'דקות',
     bio_on_team: 'ותק בקבוצה',
     yr: (n) => n + ' ' + heCount(n, 'שנה', 'שנים'),
-    adv_kicker: 'מדדים נוספים · metrics.py',
+    adv_kicker: 'מדדים נוספים',
     adv_title: 'מדדים מתקדמים',
     adv_per36_pts: 'נקודות ל-36 דק׳',
     adv_per36_ast: 'אסיסטים ל-36 דק׳',
     adv_per36_reb: 'ריבאונדים ל-36 דק׳',
-    cmp_kicker: 'נתוני עונה · metrics.py',
+    cmp_kicker: 'נתוני עונה',
     cmp_title: (posName) => 'לעומת ממוצע ' + posName,
     cmp_avg: (posName) => 'ממוצע ' + posName,
-    footer: 'תוצרים אמיתיים מצינור השלב הראשון (<code dir="ltr">ingest.py</code> ואז <code dir="ltr">metrics.py</code>), ' +
-      'המכסים את כל 13 הקבוצות ו-225 רשומות השחקנים (222 שחקנים אמיתיים, 3 מהם עם שתי רשומות בעקבות מעבר קבוצה) מעונת 2023-24 של ליגת העל בכדורסל, בתוספת טבלת קישור ' +
-      '<code dir="ltr">player_transfers</code> עבור 6 השחקנים שהחליפו קבוצה באמצע העונה (ראו סקירה). סגל מכבי תל אביב ' +
-      'הגיע עם הקובץ המקורי <code dir="ltr">data/Basketball_Analytics.xlsx</code> (מאומת מול ' +
-      '<code dir="ltr">data/VIEWS.xlsx</code>); שאר 12 הקבוצות וכל ערכי <code dir="ltr">YearsOnTeam</code> נשאבו מאתר ' +
-      'הליגה הרשמי, basket.co.il, ומוזגו לאותו סכמה. אין תיעוד משחק-אחר-משחק בנתונים, כך שעמוד השחקן משווה קצבי עונה ' +
-      'במקום לבדות משחקים.',
   },
   en: {
     brand: 'Super League Stats',
@@ -714,7 +692,6 @@ const STR = {
     comp_regular: 'Regular season',
     comp_playoffs: 'Playoffs',
     playoffs_note: (n) => 'Showing playoffs-only data — ' + n + ' of 13 teams qualified.',
-    flag_count: (n) => n + ' data-quality flags',
     ov_eyebrow: 'Israeli Basketball Super League',
     ov_title: 'Season',
     ov_teams_tracked: 'Teams tracked',
@@ -802,21 +779,14 @@ const STR = {
     bio_minutes: 'Minutes',
     bio_on_team: 'On team',
     yr: (n) => n + ' yr',
-    adv_kicker: 'More metrics · metrics.py',
+    adv_kicker: 'More metrics',
     adv_title: 'Advanced metrics',
     adv_per36_pts: 'Points per 36',
     adv_per36_ast: 'Assists per 36',
     adv_per36_reb: 'Rebounds per 36',
-    cmp_kicker: 'Season rates · metrics.py',
+    cmp_kicker: 'Season rates',
     cmp_title: (posName) => 'Vs. ' + posName + ' average',
     cmp_avg: (posName) => posName + ' average',
-    footer: 'Real output from the Phase 1 pipeline (<code>ingest.py</code> &rarr; <code>metrics.py</code>), covering all 13 ' +
-      'teams and 225 player rows (222 real players, 3 of whom have two rows after a trade) from the 2023-24 Israel Basketball Super League, plus a <code>player_transfers</code> ' +
-      "connection table for the 6 who changed teams mid-season (see Overview). Maccabi Tel Aviv's roster came with the " +
-      'original <code>data/Basketball_Analytics.xlsx</code> (verified against <code>data/VIEWS.xlsx</code>); the other ' +
-      '12 teams and every <code>YearsOnTeam</code> value were sourced from the official league site, basket.co.il, and ' +
-      "merged in with the same schema. There's no per-game log in the data, so the player page compares season rates " +
-      'instead of fabricating games.',
   },
 };
 
@@ -1103,7 +1073,6 @@ function renderChrome() {
   document.getElementById('brand-name').textContent = t('brand');
   document.getElementById('season-chip').textContent =
     DATA.season + (state.competition === 'playoffs' ? ' · ' + t('comp_playoffs') : '');
-  document.getElementById('flag-count-text').textContent = t('flag_count')(activeBadSplitCount());
   tabsNav.setAttribute('aria-label', t('nav_aria'));
 
   tabsNav.innerHTML = '';
@@ -1123,8 +1092,6 @@ function renderChrome() {
     btn.textContent = t(btn.dataset.comp === 'playoffs' ? 'comp_playoffs' : 'comp_regular');
     btn.setAttribute('aria-pressed', btn.dataset.comp === state.competition ? 'true' : 'false');
   });
-
-  document.getElementById('footer-note').innerHTML = t('footer');
 }
 langSwitch.addEventListener('click', (e) => {
   const btn = e.target.closest('button[data-lang]');
