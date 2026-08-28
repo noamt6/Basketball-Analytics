@@ -113,6 +113,16 @@ def _pct(value):
         return None
 
 
+def _rate(value, *attempts):
+    """A shooting percentage, but collapsed to None (renders as '—' in the UI)
+    when the shot was never attempted. ``metrics._safe_div`` returns 0.0 on a
+    zero denominator, which would otherwise surface as a misleading "0.0%" for
+    a player who, say, never took a three."""
+    if all(_num(a) == 0 for a in attempts):
+        return None
+    return _pct(value)
+
+
 def _age(birth_date, as_of: date) -> int:
     if birth_date is None or (isinstance(birth_date, float) and math.isnan(birth_date)):
         return 0
@@ -181,11 +191,11 @@ def build_players(df: pd.DataFrame, *, hebrew: dict, he_by_name: dict, as_of: da
             "per_36_points": _r(row["per_36_points"], 2),
             "per_36_assists": _r(row["per_36_assists"], 2),
             "per_36_rebounds": _r(row["per_36_rebounds"], 2),
-            "fg_pct": _pct(row["fg_pct"]),
-            "fg3_pct": _pct(row["fg3_pct"]),
-            "ft_pct": _pct(row["ft_pct"]),
-            "efg_pct": _pct(row["efg_pct"]),
-            "ts_pct": _pct(row["ts_pct"]),
+            "fg_pct": _rate(row["fg_pct"], row["fga"]),
+            "fg3_pct": _rate(row["fg3_pct"], row["fg3a"]),
+            "ft_pct": _rate(row["ft_pct"], row["fta"]),
+            "efg_pct": _rate(row["efg_pct"], row["fga"]),
+            "ts_pct": _rate(row["ts_pct"], row["fga"], row["fta"]),
             "ast_to_tov": _r(row["ast_to_tov"], 2),
             "efficiency": _efficiency(row, include_tov),
             "pir": int(_num(row["pir"])),

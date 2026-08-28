@@ -161,7 +161,7 @@
   .leader-val.hi { color: var(--accent); }
 
   /* ---------- Home: league-leader cards ---------- */
-  .leaders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: 16px; }
+  .leaders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
   .leader-card { background: var(--panel); border: 1px solid var(--hair); padding: 18px 20px 12px; display: flex; flex-direction: column; }
   .leader-card-cat { font: 600 10px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 14px; }
   .leader-card-top {
@@ -195,7 +195,7 @@
   .dq-link { display: inline-block; margin-top: 18px; font: 600 11px/1 var(--font-body); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; border: 0; background: none; padding: 0; }
 
   /* ---------- Tables ---------- */
-  .table-wrap { overflow-x: auto; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
   .grid-table { width: 100%; border-collapse: collapse; min-width: 640px; }
   .grid-head {
     display: grid; gap: 0; padding: 0 28px; border-bottom: 1px solid var(--hair-strong); height: 46px; align-items: center;
@@ -372,6 +372,20 @@
   /* ---------- percentile-tinted table cells ---------- */
   .pct-cell { padding: 2px 6px; border-radius: 4px; }
 
+  /* Numbers, percentages, ratios and negative differentials must never take
+     part in the surrounding RTL bidi run -- otherwise "58.3%" renders as
+     "%58.3" and "-2.4" flips its sign to the wrong edge under dir="rtl".
+     `unicode-bidi: isolate` (the CSS equivalent of wrapping each value in
+     <bdi>) plus an explicit LTR direction keeps every stat cell reading
+     left-to-right regardless of the active language. */
+  .stat-strong, .stat-soft, .pir-cell, .rank-num, .lc-val, .lc-rv, .leader-val,
+  .cmp-bar-value, .cmp-row .v, .bar-line .v, .team-bar-row .vl, .team-bar-row .rk,
+  .stat-row .num, .team-quad .num, .quad4 .num, .pct-cell,
+  .radar-value-label {
+    unicode-bidi: isolate;
+    direction: ltr;
+  }
+
   /* ---------- Roster Per Mode toggle ---------- */
   .stat-mode-row { display: flex; align-items: center; gap: 10px; padding: 0 28px 14px; flex-wrap: wrap; }
   .stat-mode-row label { font: 600 10px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
@@ -455,6 +469,10 @@
        was dropped rather than shipped broken). */
     .league-cols { grid-template-columns: 44px minmax(120px, 1fr) repeat(6, 84px); }
     .roster-cols { grid-template-columns: 44px minmax(120px, 1fr) 44px 60px 66px 56px repeat(3, 68px) 72px; }
+
+    /* league-leader cards: collapse to a single clean column so the 21 cards
+       never force horizontal overflow on a phone */
+    .leaders-grid { grid-template-columns: 1fr; gap: 12px; }
   }
 
   /* Same rules as the @media block above, duplicated behind a JS-measured
@@ -501,6 +519,7 @@
   html[data-mobile] .cmp-row { grid-template-columns: 72px 1fr 1fr 32px; gap: 8px; }
   html[data-mobile] .league-cols { grid-template-columns: 44px minmax(120px, 1fr) repeat(6, 84px); }
   html[data-mobile] .roster-cols { grid-template-columns: 44px minmax(120px, 1fr) 44px 60px 66px 56px repeat(3, 68px) 72px; }
+  html[data-mobile] .leaders-grid { grid-template-columns: 1fr; gap: 12px; }
 
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -621,6 +640,8 @@ const STR = {
     stat_mode_per_36: "ל-36 דק'",
     btn_export: 'ייצוא נתונים',
     no_results: 'לא נמצאו תוצאות',
+    no_players_match: 'לא נמצאו שחקנים התואמים לסינון',
+    eff_formula: '(נק׳ + ריב׳ + אס׳ + חט׳ + חס׳) − (זריקות שדה שהוחמצו + עונשין שהוחמצו + איבודי כדור)',
     players_eyebrow: 'ליגת העל בכדורסל · שחקנים',
     players_title: 'שחקני הליגה',
     players_sub: (n) => n + ' רשומות שחקן · לחצו על שורה לכרטיס המלא',
@@ -642,7 +663,7 @@ const STR = {
     roster_sub: (n) => n + ' ' + heCount(n, 'שחקן בסגל', 'שחקנים בסגל') + ' · ממוצע למשחק, לחצו על שורה לפרטים',
     roster_flag_note: (n) => '● מסמן ' + n + ' ' + heCount(n, 'שחקן בסגל זה ש-3PM/3PA שלו', 'שחקנים בסגל זה ש-3PM/3PA שלהם') + ' עולה על FGM/FGA במקור — פתחו את עמוד השחקן להערה על אחוזי הקליעה.',
     player_picker_viewing: 'צפייה ב',
-    player_eyebrow: (teamLbl, posName, jersey) => teamLbl + (jersey !== null ? ' · #' + jersey : ''),
+    player_eyebrow: (teamLbl, posName, jersey) => teamLbl + (hasJersey(jersey) ? ' · #' + jersey : ''),
     player_rank_badge: (total) => 'מתוך ' + total + ' · דירוג PIR בליגה',
     pl_season_kicker: 'פיצול · לפי עונה',
     pl_season_title: 'סטטיסטיקה לפי עונה',
@@ -740,6 +761,8 @@ const STR = {
     stat_mode_per_36: 'Per 36',
     btn_export: 'Export CSV',
     no_results: 'No results found',
+    no_players_match: 'No players match the current filters',
+    eff_formula: '(PTS + REB + AST + STL + BLK) − (missed FG + missed FT + TOV)',
     players_eyebrow: 'Israeli Basketball Super League · players',
     players_title: 'League players',
     players_sub: (n) => n + ' player rows · click a row for the full card',
@@ -761,7 +784,7 @@ const STR = {
     roster_sub: (n) => n + ' players profiled · per-game averages, click a row for detail',
     roster_flag_note: (n) => '● marks ' + n + ' player' + (n === 1 ? '' : 's') + ' on this roster whose source 3PM/3PA exceed their FGM/FGA — open their player page for the shooting-percentage caveat.',
     player_picker_viewing: 'Viewing',
-    player_eyebrow: (teamLbl, posName, jersey) => teamLbl + (jersey !== null ? ' · #' + jersey : ''),
+    player_eyebrow: (teamLbl, posName, jersey) => teamLbl + (hasJersey(jersey) ? ' · #' + jersey : ''),
     player_rank_badge: (total) => 'of ' + total + ' · league PIR rank',
     pl_season_kicker: 'Splits · by season',
     pl_season_title: 'Stats by season',
@@ -797,6 +820,15 @@ function teamLabel(team) { return (state.lang === 'he' && team.label_he) ? team.
 function teamName(team) { return (state.lang === 'he' && team.name_he) ? team.name_he : team.name; }
 function teamCity(team) { return (state.lang === 'he' && team.city_he) ? team.city_he : team.city; }
 function playerName(p) { return (state.lang === 'he' && p.name_he) ? p.name_he : p.name; }
+/* Search haystack for a player: BOTH the English and Hebrew names, so a query
+   typed in one script still matches while the UI is showing the other (and a
+   partial/misspelt half of a name still hits). */
+function playerHay(p) { return (p.name || '') + ' ' + (p.name_he || ''); }
+/* A jersey number is optional in the source data -- treat null, undefined and
+   NaN identically so the UI shows a clean "—" (or simply omits the "#") and
+   never "#null" / "#NaN". */
+function hasJersey(j) { return j !== null && j !== undefined && !(typeof j === 'number' && Number.isNaN(j)); }
+function teamHay(tm) { return [tm.label, tm.label_he, tm.name, tm.name_he, tm.city, tm.city_he].filter(Boolean).join(' '); }
 function positionFull(pos) {
   const g = posGroups(pos);
   if (!g.length) return '';
@@ -1422,7 +1454,7 @@ function renderLeague(root) {
     avg_pir: teams.map((tm) => tm.avg_pir),
   };
 
-  const filtered = filterRows(teams, state.leagueQuery, (row) => teamLabel(row));
+  const filtered = filterRows(teams, state.leagueQuery, teamHay);
   const sorted = state.leagueSortKey
     ? sortRows(filtered, LEAGUE_COLUMNS, state.leagueSortKey, state.leagueSortDir)
     : filtered;
@@ -1535,7 +1567,7 @@ function renderTeam(root) {
   modeRow.appendChild(modeSwitch);
   rosterPanel.appendChild(modeRow);
 
-  const filteredRoster = filterRows(roster, state.rosterQuery, (row) => playerName(row));
+  const filteredRoster = filterRows(roster, state.rosterQuery, playerHay);
   const sortedRoster = state.rosterSortKey
     ? sortRows(filteredRoster, ROSTER_COLUMNS, state.rosterSortKey, state.rosterSortDir)
     : filteredRoster;
@@ -1550,7 +1582,7 @@ function renderTeam(root) {
       ['#', S.col_player, S.col_pos, S.col_age, S.col_ht, 'GP',
        'PTS' + sfx, 'AST' + sfx, 'REB' + sfx, 'PIR' + sfx],
       sortedRoster.map((p) => [
-        p.jersey !== null ? p.jersey : '', playerName(p), posLabel(p.position),
+        hasJersey(p.jersey) ? p.jersey : '', playerName(p), posLabel(p.position),
         p.age !== null ? p.age : '', fmt(p.height_m, 2), p.gp,
         fmt(statValue(p, 'pts', 'avg_points', 'per_36_points'), d),
         fmt(statValue(p, 'ast', 'avg_assists', 'per_36_assists'), d),
@@ -1572,7 +1604,7 @@ function renderTeam(root) {
   };
 
   if (sortedRoster.length === 0) {
-    rosterPanel.appendChild(el('div', 'empty-state', STR[state.lang].no_results));
+    rosterPanel.appendChild(el('div', 'empty-state', STR[state.lang].no_players_match));
     root.appendChild(rosterPanel);
     return;
   }
@@ -1584,7 +1616,7 @@ function renderTeam(root) {
     const row = el('button', 'grid-row roster-cols');
     row.type = 'button';
     row.addEventListener('click', () => goPlayer(p.id));
-    row.appendChild(el('span', 'rank-num sm', p.jersey !== null ? '#' + p.jersey : '—'));
+    row.appendChild(el('span', 'rank-num sm', hasJersey(p.jersey) ? '#' + p.jersey : '—'));
     const nameCell = el('span', 'player-name-cell');
     if (p.bad_split) nameCell.appendChild(el('span', 'row-flag'));
     nameCell.appendChild(document.createTextNode(playerName(p)));
@@ -1675,12 +1707,12 @@ function renderPlayerList(root) {
   let rows = activePlayersRaw().slice();
   if (state.playersTeam) rows = rows.filter((p) => p.team_id === state.playersTeam);
   if (state.playersPos) rows = rows.filter((p) => posGroups(p.position).includes(state.playersPos));
-  rows = filterRows(rows, state.playersQuery, (r) => playerName(r));
+  rows = filterRows(rows, state.playersQuery, playerHay);
   rows = sortRows(rows, PLAYERS_COLUMNS, state.playersSortKey, state.playersSortDir);
 
   const panel = el('div', 'panel');
   if (!rows.length) {
-    panel.appendChild(el('div', 'empty-state', t('no_results')));
+    panel.appendChild(el('div', 'empty-state', t('no_players_match')));
     root.appendChild(panel);
     return;
   }
@@ -1751,7 +1783,7 @@ function renderPlayerCard(root) {
   roster.forEach((rp) => {
     const opt = document.createElement('option');
     opt.value = String(rp.id);
-    opt.textContent = (rp.jersey !== null ? '#' + rp.jersey + ' ' : '') + playerName(rp);
+    opt.textContent = (hasJersey(rp.jersey) ? '#' + rp.jersey + ' ' : '') + playerName(rp);
     if (rp.id === p.id) opt.selected = true;
     select.appendChild(opt);
   });
@@ -1964,11 +1996,14 @@ function renderPlayerCard(root) {
     [STR[state.lang].adv_per36_pts, fmt(p.per_36_points)],
     [STR[state.lang].adv_per36_ast, fmt(p.per_36_assists)],
     [STR[state.lang].adv_per36_reb, fmt(p.per_36_rebounds)],
-    ['EFF', fmt(p.efficiency, 0)],
+    ['EFF', fmt(p.efficiency, 0), STR[state.lang].eff_formula],
     ['AST/TOV', fmt(p.ast_to_tov, 2)],
-  ].forEach(([lbl, val]) => {
+  ].forEach(([lbl, val, tip]) => {
     const box = el('div');
-    box.appendChild(el('div', 'section-lbl', lbl));
+    if (tip) box.title = lbl + ': ' + tip;
+    const lblEl = el('div', 'section-lbl', lbl);
+    if (tip) lblEl.style.cursor = 'help';
+    box.appendChild(lblEl);
     box.appendChild(el('div', 'num', val));
     advGrid.appendChild(box);
   });
@@ -2325,7 +2360,10 @@ function render() {
 }
 async function boot() {
   try {
-    const res = await fetch('./data.json', { cache: 'no-cache' });
+    // Cache-bust so a redeploy of data.json is picked up immediately: a unique
+    // query string sidesteps any stale disk/proxy copy, and `no-store` keeps
+    // the browser from caching the response at all.
+    const res = await fetch('./data.json?v=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const raw = await res.json();
     DATA = raw && raw.seasons ? raw.seasons[raw.default_season] : raw;
