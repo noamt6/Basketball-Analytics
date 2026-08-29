@@ -600,6 +600,15 @@
   .players-filters .lang-switch { margin-inline-start: auto; }
   .players-cols .ellip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .stint-star { color: var(--accent); font-weight: 700; margin-inline-start: 3px; }
+  /* mid-season transfer: the player's row is a full-season aggregate that
+     spans more than one club */
+  .mt-badge {
+    display: inline-block; flex: none; margin-inline-start: 6px; vertical-align: 1px;
+    padding: 2px 6px; border-radius: 3px; white-space: nowrap;
+    font: 700 8.5px/1.35 var(--font-body); letter-spacing: .04em; text-transform: uppercase;
+    background: var(--accent-wash); color: var(--accent-hover); border: 1px solid var(--accent-ring);
+  }
+  .mt-badge.lg { font-size: 10px; padding: 4px 9px; margin: 14px 0 0; vertical-align: baseline; }
   .back-link {
     border: 0; background: none; padding: 0; margin-bottom: 18px; cursor: pointer;
     font: 600 11px/1 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
@@ -1039,7 +1048,9 @@ const STR = {
     players_all: 'כל השחקנים',
     filter_pos_all: 'כל העמדות',
     filter_team_all: 'כל הקבוצות',
-    stint_note: '* עבר קבוצה באמצע העונה — הנתונים כאן הם עבור התקופה בקבוצה זו בלבד.',
+    stint_note: 'עבר קבוצה באמצע העונה — הנתונים כאן הם עבור התקופה בקבוצה זו בלבד.',
+    mt_badge: 'שיחק ב-2 קבוצות העונה',
+    mt_badge_short: '2 קבוצות',
     team_picker_label: 'קבוצה',
     team_picker_opt: (t) => '#' + t.rank + ' ' + teamLabel(t) + ' (' + t.player_count + ' ' + heCount(t.player_count, 'שחקן', 'שחקנים') + ')',
     team_eyebrow: (rank, total) => 'ליגת העל · דירוג ' + rank + ' מתוך ' + total + ' בהתקפה',
@@ -1257,7 +1268,9 @@ const STR = {
     players_all: 'All players',
     filter_pos_all: 'All positions',
     filter_team_all: 'All teams',
-    stint_note: '* Changed teams mid-season — these numbers cover only the stint with this club.',
+    stint_note: 'Changed teams mid-season — these numbers cover only the stint with this club.',
+    mt_badge: 'Multi-team season',
+    mt_badge_short: '2 teams',
     team_picker_label: 'Team',
     team_picker_opt: (t) => '#' + t.rank + ' ' + teamLabel(t) + ' (' + t.player_count + ' players)',
     team_eyebrow: (rank, total) => 'Super League · rank ' + rank + ' of ' + total + ' in offense',
@@ -1432,6 +1445,14 @@ function nationalityDisplay(raw) {
    'playoffs' (only the 8 teams that qualified). Two stages of the same
    Winner League competition, not separate tournaments -- see DATA.playoffs,
    which mirrors DATA's own shape (teams/players/by_position/bad_split_count). */
+/* SINGLE SOURCE OF TRUTH for team metrics. Every team stat shown anywhere on
+   the site (standings, team profile, roster summary, H2H, Four Factors, Shot
+   Diet, possession / pace / efficiency) MUST read straight off these records --
+   they carry the official basket.co.il team box score
+   (data/official_team_stats.json, applied by scripts/scrape_official_team_stats.py).
+   NEVER recompute a team total or average by summing active-roster player rows:
+   a mid-season transfer carries his whole-season totals to one club and would
+   inflate it (this is exactly the Bnei Herzliya 101.3-vs-93.1 bug). */
 function activeTeams() { return state.competition === 'playoffs' ? DATA.playoffs.teams : DATA.teams; }
 function activePlayersRaw() { return state.competition === 'playoffs' ? DATA.playoffs.players : DATA.players; }
 function activeByPosition() { return state.competition === 'playoffs' ? DATA.playoffs.by_position : DATA.by_position; }
@@ -1456,6 +1477,13 @@ function multiStintNames() {
   return _multiStintNames;
 }
 function isMultiStint(p) { return multiStintNames().has(p.name); }
+/* "Multi-team season" pill — a player row whose totals span >1 club this
+   season, so users read the numbers as a full-season aggregate. */
+function mtBadge(large) {
+  const b = el('span', 'mt-badge' + (large ? ' lg' : ''), large ? t('mt_badge') : t('mt_badge_short'));
+  b.title = t('mt_badge');
+  return b;
+}
 
 /** Keep the selected team/player valid whenever the active competition's
  * dataset changes (a team/player may simply not exist in playoffs). */
@@ -2314,6 +2342,9 @@ function renderTeam(root) {
     state.rosterQuery = v; render();
   }, exportRoster));
 
+  // per-cell heat pools only -- a player's value vs his TEAMMATES. This is NOT
+  // a team total (those come straight off the official team record, see the
+  // team-quad above); it just colours the roster grid.
   // percentile pools: always the full roster, never the search-filtered subset
   const rosterPools = {
     avg_points: roster.map((p) => statValue(p, 'pts', 'avg_points', 'per_36_points')),
@@ -2339,7 +2370,7 @@ function renderTeam(root) {
     const nameCell = el('span', 'player-name-cell');
     if (p.bad_split) nameCell.appendChild(el('span', 'row-flag'));
     nameCell.appendChild(document.createTextNode(playerName(p)));
-    if (isMultiStint(p)) nameCell.appendChild(el('span', 'stint-star', '*'));
+    if (isMultiStint(p)) nameCell.appendChild(mtBadge(false));
     row.appendChild(nameCell);
     if (state.statMode === 'per_36' && isSmallSample(p)) nameCell.appendChild(sampleWarn());
     row.appendChild(el('span', 'pos-cell', posLabel(p.position)));
@@ -2447,7 +2478,7 @@ function renderPlayerList(root) {
     const nameCell = el('span', 'player-name-cell');
     if (p.bad_split) nameCell.appendChild(el('span', 'row-flag'));
     nameCell.appendChild(document.createTextNode(playerName(p)));
-    if (isMultiStint(p)) nameCell.appendChild(el('span', 'stint-star', '*'));
+    if (isMultiStint(p)) nameCell.appendChild(mtBadge(false));
     row.appendChild(nameCell);
     if (state.statMode === 'per_36' && isSmallSample(p)) nameCell.appendChild(sampleWarn());
     row.appendChild(el('span', 'stat-soft sm ellip', teamLabel(getTeam(p.team_id))));
@@ -2528,6 +2559,7 @@ function renderPlayerCard(root) {
   }
   left.appendChild(nameEl);
   if (p.position) left.appendChild(el('div', 'player-pos', positionFull(p.position)));
+  if (isMultiStint(p)) left.appendChild(mtBadge(true));
   inner.appendChild(left);
   const badge = el('div', 'rank-badge');
   badge.appendChild(el('div', 'big', p.pir_rank_league !== null ? String(p.pir_rank_league) : '—'));
@@ -3193,6 +3225,8 @@ function mkLegendDot(color, text) {
   i.style.cssText = 'width:10px;height:10px;border-radius:50%;background:' + color;
   s.appendChild(i); s.appendChild(document.createTextNode(text)); return s;
 }
+/* Official team box-score totals for the possession / pace / four-factors math.
+   Reads only the team_season_stats record -- never a roster player sum. */
 function teamTotalsFor(tid) {
   const tm = activeTeams().find((x) => String(x.id) === String(tid));
   if (!tm) return null;
