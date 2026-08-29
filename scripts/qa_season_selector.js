@@ -54,8 +54,13 @@ const fails = [];
 
   for (const s of seasons) {
     await page.selectOption('#season-select', s);
-    await page.waitForFunction((sv) => document.getElementById('season-chip').textContent.startsWith(sv), s, { timeout: 4000 })
-      .catch(() => fails.push(`${s}: season-chip did not update`));
+    // the static season chip was removed in the 3-zone-header cleanup; the
+    // dropdown value + the active-season state are now the source of truth.
+    await page.waitForFunction(
+      (sv) => document.getElementById('season-select').value === sv
+        && typeof state !== 'undefined' && state.season === sv,
+      s, { timeout: 4000 },
+    ).catch(() => fails.push(`${s}: season did not switch`));
     const url = new URL(page.url());
     if (url.searchParams.get('season') !== s) fails.push(`${s}: ?season= not synced (${url.searchParams.get('season')})`);
 

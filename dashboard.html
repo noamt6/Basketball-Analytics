@@ -3215,7 +3215,7 @@ function renderLoadTS(root) {
   const S = STR[state.lang];
   const panel = advPanel(S.adv_load_tab, S.adv_load_title, S.adv_load_sub);
   const pool = analysisPool(activePlayersRaw())
-    .filter((p) => num0(p.fga) > 0 && num0(totalMin(p)) > 0 && num0(p.ts_pct) > 0);
+    .filter((p) => num0(p.fga) >= 20 && num0(totalMin(p)) > 0 && num0(p.ts_pct) > 0);
   const body = el('div', 'sc-body');
   if (pool.length < 4) body.appendChild(el('div', 'empty-state', S.sc_empty));
   else body.appendChild(buildBubble(pool));
@@ -3391,7 +3391,7 @@ function renderShotDiet(root) {
   });
   modeRow.appendChild(sw); panel.appendChild(modeRow);
 
-  const src = isTeams ? [...activeTeams()] : analysisPool(activePlayersRaw());
+  const src = isTeams ? [...activeTeams()] : analysisPool(activePlayersRaw()).filter((p) => num0(p.fga) >= 20);
   const rows = src.map((e) => {
     const fga = num0(e.fga), fg3a = num0(e.fg3a), fta = num0(e.fta);
     const twoA = Math.max(0, fga - fg3a);
@@ -3676,7 +3676,7 @@ function courtPool(base, pos) {
 function renderShotCourt(root) {
   const S = STR[state.lang];
   const panel = advPanel(S.adv_court_tab, S.adv_court_title, S.adv_court_sub);
-  const players = analysisPool(activePlayersRaw()).filter((p) => num0(p.fga) > 0);
+  const players = analysisPool(activePlayersRaw()).filter((p) => num0(p.fga) >= 20);
   if (players.length < 3) {
     const b = el('div', 'sc-body'); b.appendChild(el('div', 'empty-state', S.sc_empty));
     panel.appendChild(b); root.appendChild(panel); return;
