@@ -104,7 +104,7 @@
   .brand-logo { width: 30px; height: 30px; display: block; flex: none; }
   .brand-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
   .brand-name {
-    font: 400 19px/1 var(--font-display); letter-spacing: .02em; text-transform: uppercase; white-space: nowrap;
+    margin: 0; font: 400 19px/1 var(--font-display); letter-spacing: .02em; text-transform: uppercase; white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis; max-width: 100%;
   }
   .brand-tagline {
@@ -819,7 +819,7 @@
         </g>
       </svg>
       <span class="brand-text">
-        <span class="brand-name" id="brand-name"></span>
+        <h1 class="brand-name" id="brand-name"></h1>
         <span class="brand-tagline" id="brand-tagline"></span>
       </span>
     </div>
