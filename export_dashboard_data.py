@@ -248,7 +248,14 @@ def build_teams(df: pd.DataFrame, *, hebrew: dict, rank_map: dict, roster_counts
             "city_he": he.get("city_he", ""),
             "label_he": he.get("label_he", ""),
         })
-    out.sort(key=lambda t: t["rank"] or 999)
+    # Every team must carry a real 1..N rank so the dashboard never shows "#0".
+    # Seasons with a scraped/curated standings map fill it above; for anything
+    # still missing, append it after the ranked teams, ordered by season avg PIR.
+    ranked = sorted((t for t in out if t["rank"]), key=lambda t: t["rank"])
+    unranked = sorted((t for t in out if not t["rank"]), key=lambda t: -t["avg_pir"])
+    for i, t in enumerate(ranked + unranked, start=1):
+        t["rank"] = i
+    out.sort(key=lambda t: t["rank"])
     return out
 
 
@@ -378,6 +385,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT, help=f"output path (default: {DEFAULT_OUT})")
     parser.add_argument("--season", default="2023-2024", help="season to export (default: 2023-2024)")
+    parser.add_argument("--all-seasons", action="store_true",
+                        help="export every season present in the DB into one season-keyed file; "
+                             "--season then only picks default_season (the season the dashboard opens on)")
     parser.add_argument("--efficiency-includes-tov", action=argparse.BooleanOptionalAction, default=True,
                         help="efficiency subtracts turnovers (metrics.efficiency_index). Default on; "
                              "--no-efficiency-includes-tov reproduces the legacy hand-built data.json value.")
@@ -388,14 +398,28 @@ def main() -> None:
     args = parser.parse_args()
 
     hebrew = _load_json(HEBREW_PATH, {})
-    supplement = _load_json(SUPPLEMENT_PATH, {}).get(args.season, {})
-    if not supplement:
-        print(f"note: no dashboard_supplement.json entry for {args.season} — team.rank and row order will be unset.")
+    supplement_all = _load_json(SUPPLEMENT_PATH, {})
 
     engine = get_engine()
-    season_blob = build_season(engine, args.season, hebrew=hebrew,
-                               supplement=supplement, include_tov=args.efficiency_includes_tov)
-    doc = {"default_season": args.season, "seasons": {args.season: season_blob}}
+
+    if args.all_seasons:
+        seasons = pd.read_sql(
+            "SELECT DISTINCT season FROM player_season_stats ORDER BY season", engine
+        )["season"].tolist()
+    else:
+        seasons = [args.season]
+
+    blobs: dict[str, dict] = {}
+    for s in seasons:
+        supp = supplement_all.get(s, {})
+        if not supp:
+            print(f"note: no dashboard_supplement.json entry for {s} — team.rank and row order will be unset.")
+        blobs[s] = build_season(engine, s, hebrew=hebrew,
+                                supplement=supp, include_tov=args.efficiency_includes_tov)
+
+    default_season = args.season if args.season in blobs else seasons[-1]
+    doc = {"default_season": default_season, "seasons": blobs}
+    season_blob = blobs[default_season]
 
     if args.check:
         ref = _load_json(args.check, None)
@@ -426,7 +450,8 @@ def main() -> None:
 
     s = season_blob
     print(
-        f"Wrote {args.out} — season {args.season}: {len(s['teams'])} teams, {len(s['players'])} players, "
+        f"Wrote {args.out} — {len(blobs)} season(s) {sorted(blobs)}, default={default_season}: "
+        f"{len(s['teams'])} teams, {len(s['players'])} players, "
         f"{len(s['transfers'])} transfers, {len(s['playoffs']['players'])} playoff players."
     )
 

@@ -303,12 +303,17 @@ def parse_team_roster(html: str) -> list[dict]:
 
         img = box.find("img", alt=True)
         role_name = box.find("div", class_="role_name")
+        name = ""
         if img and _clean(img["alt"]):
             name = _clean(img["alt"])
-        elif role_name:
+        elif role_name and _clean(role_name.get_text(" ")):
             name = _clean(role_name.get_text(" "))
-        else:
+        elif _clean(a.get_text(" ")):
             name = _clean(a.get_text(" "))
+        if not name:
+            # academy / youth call-ups sometimes have no English name registered
+            # on the site (empty img alt + empty role_name). Keep the row valid.
+            name = f"Unknown #{pid}"
 
         num = box.find("div", class_="role_num")
         jersey = int(_NUM.search(num.get_text()).group()) if num and _NUM.search(num.get_text()) else None

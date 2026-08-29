@@ -25,7 +25,10 @@ __pycache__/
 
 # --- scrape_league.py ---
 .scrape_cache/
+.hebrew_cache/
 /data/scraped/
+# raw scrape output; merged into hebrew_names.json
+/data/hebrew_names_scraped.json
 
 # --- Terraform (infra/) ---
 *.tfstate
