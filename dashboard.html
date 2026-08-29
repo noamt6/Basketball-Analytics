@@ -521,6 +521,50 @@
   .h2h-bar-wrap.left { justify-content: flex-end; }
   .h2h-bar { display: block; height: 100%; border-radius: 2px; }
 
+  /* ---------- Analytics: advanced sub-views ---------- */
+  .an-adv-nav { margin: -8px 0 22px; flex-wrap: wrap; }
+  .sc-bubble { fill-opacity: .62; stroke: rgba(255,255,255,.35); stroke-width: .75; cursor: pointer; transition: fill-opacity .1s ease; }
+  .sc-bubble:hover { fill-opacity: .95; }
+  .sample-warn { color: #e0a53a; margin-inline-start: 5px; cursor: help; font-size: 11px; }
+  /* Four Factors matrix */
+  .ff-wrap { padding: 8px 20px 24px; overflow-x: auto; }
+  .ff-row { display: grid; grid-template-columns: 132px repeat(4, minmax(96px, 1fr)); align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--hair-soft); min-width: 560px; }
+  .ff-row:last-child { border-bottom: 0; }
+  .ff-head { border-bottom: 1px solid var(--hair-strong); }
+  .ff-head .ff-cell { font: 600 9.5px/1.3 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); display: block; }
+  .ff-team { font: 600 12px/1.2 var(--font-body); color: var(--ink-2); background: none; border: 0; text-align: start; cursor: pointer; padding: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ff-team:hover { color: var(--accent); }
+  .ff-cell { display: flex; align-items: center; gap: 8px; }
+  .ff-track { position: relative; flex: 1; height: 12px; background: var(--track); border-radius: 2px; }
+  .ff-mid { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--ink-3); }
+  .ff-fill { position: absolute; top: 0; height: 100%; border-radius: 2px; }
+  .ff-val { font: 600 11px/1 var(--font-body); font-variant-numeric: tabular-nums; color: var(--ink-2); unicode-bidi: isolate; direction: ltr; width: 34px; text-align: end; flex: none; }
+  /* PPR diverging bars */
+  .ppr-list { display: flex; flex-direction: column; gap: 2px; }
+  .ppr-row, .diet-row { display: grid; grid-template-columns: 150px 1fr 58px; align-items: center; gap: 12px; padding: 6px 0; }
+  .ppr-name, .diet-name { font: 600 12px/1.25 var(--font-body); color: var(--ink-2); background: none; border: 0; text-align: start; cursor: pointer; padding: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ppr-name:hover, .diet-name:hover { color: var(--accent); }
+  .ppr-track { position: relative; height: 12px; background: var(--track); border-radius: 2px; }
+  .ppr-mid { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--ink-3); }
+  .ppr-fill { position: absolute; top: 0; height: 100%; border-radius: 2px; }
+  .ppr-val { font: 600 12px/1 var(--font-body); font-variant-numeric: tabular-nums; text-align: end; color: #00E5FF; unicode-bidi: isolate; direction: ltr; }
+  .ppr-val.neg { color: #FF5722; }
+  /* Shot diet 100% stacked */
+  .diet-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+  .diet-row { grid-template-columns: 150px 1fr 120px; }
+  .diet-bar { display: flex; height: 14px; border-radius: 2px; overflow: hidden; background: var(--track); }
+  .diet-seg { height: 100%; }
+  .diet-chip { font: 600 9.5px/1.3 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); text-align: end; }
+  /* Glass dominance meters */
+  .glass-meter { margin: 14px 0 4px; }
+  .glass-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .glass-label { font: 600 10px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  .glass-num { font: 700 16px/1 var(--font-body); font-variant-numeric: tabular-nums; unicode-bidi: isolate; direction: ltr; }
+  .glass-track { position: relative; height: 14px; background: var(--track); border-radius: 3px; overflow: visible; }
+  .glass-fill { height: 100%; border-radius: 3px; }
+  .glass-tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); }
+  .glass-cap { margin-top: 5px; font: 500 10.5px/1 var(--font-body); color: var(--ink-3); }
+
   /* ---------- All-players table (Player tab default view) ---------- */
   .players-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 18px; }
   .players-filters .search-input { max-width: 220px; }
@@ -571,6 +615,16 @@
     .view { padding: 24px 16px 40px; }
     .panel-head { padding: 16px 14px 12px; }
     .grid-head, .grid-row { padding: 0 14px; }
+    /* directional scroll-shadows: the cover gradients (background-attachment:
+       local) retract as you scroll, revealing the fixed edge shadows to
+       signal there's more table to swipe to. */
+    .table-wrap {
+      background:
+        linear-gradient(to right, var(--panel), rgba(17,22,29,0)) 0 0 / 28px 100% no-repeat local,
+        linear-gradient(to left, var(--panel), rgba(17,22,29,0)) 100% 0 / 28px 100% no-repeat local,
+        radial-gradient(farthest-side at 0 50%, rgba(0,0,0,.45), rgba(0,0,0,0)) 0 0 / 14px 100% no-repeat scroll,
+        radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,.45), rgba(0,0,0,0)) 100% 0 / 14px 100% no-repeat scroll;
+    }
     .team-note { padding: 14px; }
     .team-hero, .player-hero { padding: 24px 16px 20px; }
     .player-lower { padding: 20px 16px 24px; }
@@ -638,6 +692,13 @@
   html[data-mobile] .view { padding: 24px 16px 40px; }
   html[data-mobile] .panel-head { padding: 16px 14px 12px; }
   html[data-mobile] .grid-head, html[data-mobile] .grid-row { padding: 0 14px; }
+  html[data-mobile] .table-wrap {
+    background:
+      linear-gradient(to right, var(--panel), rgba(17,22,29,0)) 0 0 / 28px 100% no-repeat local,
+      linear-gradient(to left, var(--panel), rgba(17,22,29,0)) 100% 0 / 28px 100% no-repeat local,
+      radial-gradient(farthest-side at 0 50%, rgba(0,0,0,.45), rgba(0,0,0,0)) 0 0 / 14px 100% no-repeat scroll,
+      radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,.45), rgba(0,0,0,0)) 100% 0 / 14px 100% no-repeat scroll;
+  }
   html[data-mobile] .team-note { padding: 14px; }
   html[data-mobile] .team-hero, html[data-mobile] .player-hero { padding: 24px 16px 20px; }
   html[data-mobile] .player-lower { padding: 20px 16px 24px; }
@@ -759,6 +820,37 @@ const STR = {
     tr_3par: '3PA למשחק',
     tr_pace: 'נק׳ ממוצע לקבוצה',
     tr_ft: 'אחוז עונשין',
+    an_sec_advanced: 'מדדים מתקדמים',
+    small_sample_note: 'מדגם קטן — פחות מ-50 דקות בעונה; מדדי ל-36 דקות אינם יציבים.',
+    adv_load_tab: 'עומס התקפי מול TS',
+    adv_ff_tab: 'ארבעת הגורמים',
+    adv_ppr_tab: 'יחס יצירה טהור',
+    adv_diet_tab: 'תמהיל זריקות',
+    adv_glass_tab: 'שליטה בלוח',
+    adv_load_title: 'עומס התקפי מול אחוז קליעה אמיתי',
+    adv_load_sub: 'גודל הבועה = נק׳ למשחק · צבע = יחס אסיסט/איבוד',
+    adv_load_x: 'עומס התקפי משוער %',
+    adv_load_q_engine: 'מנוע התקפי ראשי',
+    adv_load_q_finisher: 'סוגר עלית',
+    adv_load_q_ineff: 'נפח גבוה, לא יעיל',
+    adv_load_q_limited: 'תפקיד מוגבל',
+    adv_load_leg_hi: 'יחס אס/איב גבוה',
+    adv_load_leg_lo: 'יחס אס/איב נמוך',
+    adv_load_leg_size: 'גודל = נק׳ למשחק',
+    adv_ff_title: 'ארבעת הגורמים של דין אוליבר (קבוצות)',
+    adv_ff_sub: 'כל עמודה מול חציון הליגה (µ). ירוק = טוב מהחציון, כתום = מתחת.',
+    adv_ppr_title: 'יחס יצירה טהור (PPR)',
+    adv_ppr_sub: '100 · ((2/3)·אסיסטים − איבודים) ÷ דקות. חיובי בציאן, שלילי בכתום.',
+    adv_diet_title: 'תמהיל זריקות ופרישׂה',
+    adv_diet_sub: 'חלוקת הניסיונות: זריקות שתיים, שלוש, ועונשין (100%).',
+    adv_diet_2p: 'שתיים', adv_diet_3p: 'שלוש', adv_diet_ftl: 'עונשין',
+    adv_diet_spacer: 'פורש מרחב', adv_diet_rim: 'תוקף סל', adv_diet_balanced: 'מאוזן',
+    adv_glass_title: 'מדד שליטה בלוח',
+    adv_glass_sub: 'אחוז ריבאונד התקפי/הגנתי מתוך ההזדמנויות במגרש, מול ממוצע העמדה.',
+    adv_glass_orb: 'ORB% — ריבאונד התקפי',
+    adv_glass_drb: 'DRB% — ריבאונד הגנתי',
+    adv_glass_posavg: 'ממוצע עמדה',
+    adv_glass_top: 'מובילי הלוח (ORB%+DRB%)',
     an_cmp_kicker: 'השוואת שחקנים',
     an_cmp_title: 'בחרו עד 4 שחקנים להשוואה',
     an_cmp_none: '— ריק —',
@@ -923,6 +1015,37 @@ const STR = {
     tr_3par: '3PA per game',
     tr_pace: 'Avg points per team',
     tr_ft: 'Free-throw %',
+    an_sec_advanced: 'Advanced metrics',
+    small_sample_note: 'Small sample — under 50 minutes this season; Per-36 rates are unstable.',
+    adv_load_tab: 'Load vs TS',
+    adv_ff_tab: 'Four Factors',
+    adv_ppr_tab: 'Pure Playmaking',
+    adv_diet_tab: 'Shot Diet',
+    adv_glass_tab: 'Glass Dominance',
+    adv_load_title: 'Offensive load vs true shooting %',
+    adv_load_sub: 'Bubble size = points per game · colour = assist-to-turnover ratio',
+    adv_load_x: 'Est. offensive load %',
+    adv_load_q_engine: 'Primary engine',
+    adv_load_q_finisher: 'Elite finisher',
+    adv_load_q_ineff: 'High-volume, inefficient',
+    adv_load_q_limited: 'Limited role',
+    adv_load_leg_hi: 'High AST/TOV',
+    adv_load_leg_lo: 'Low AST/TOV',
+    adv_load_leg_size: 'Size = points/game',
+    adv_ff_title: "Dean Oliver's Four Factors (teams)",
+    adv_ff_sub: 'Each column vs the league median (µ). Green = better than median, orange = below.',
+    adv_ppr_title: 'Pure Playmaking Ratio (PPR)',
+    adv_ppr_sub: '100 · ((2/3)·AST − TOV) ÷ MIN. Positive in cyan, negative in orange.',
+    adv_diet_title: 'Shot diet & spacing profile',
+    adv_diet_sub: 'Attempt allocation: 2PT, 3PT and free throws (100%).',
+    adv_diet_2p: '2PT', adv_diet_3p: '3PT', adv_diet_ftl: 'FT',
+    adv_diet_spacer: 'Perimeter spacer', adv_diet_rim: 'Rim attacker', adv_diet_balanced: 'Balanced',
+    adv_glass_title: 'Glass Dominance Index',
+    adv_glass_sub: 'Offensive / defensive rebound rate vs available on-court chances, against the positional average.',
+    adv_glass_orb: 'ORB% — offensive rebound rate',
+    adv_glass_drb: 'DRB% — defensive rebound rate',
+    adv_glass_posavg: 'Position avg',
+    adv_glass_top: 'Glass leaders (ORB%+DRB%)',
     an_cmp_kicker: 'Player comparison',
     an_cmp_title: 'Pick up to 4 players to compare',
     an_cmp_none: '— none —',
@@ -1215,10 +1338,10 @@ function normalizeSelection() {
 }
 
 /* ---------------- state ---------------- */
-let savedLang = 'he';
-try { savedLang = localStorage.getItem('sls-lang') || 'he'; } catch (e) {}
-let savedCompetition = 'regular_season';
-try { savedCompetition = localStorage.getItem('sls-competition') || 'regular_season'; } catch (e) {}
+function lsGet(k, dflt) { try { return localStorage.getItem(k) || dflt; } catch (e) { return dflt; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+let savedLang = lsGet('sls-lang', 'he');
+let savedCompetition = lsGet('sls-competition', 'regular_season');
 // Season is resolved in boot() once RAW is loaded: ?season= query param wins,
 // then localStorage, then RAW.default_season, then '2023-2024'.
 let savedSeason = null;
@@ -1227,17 +1350,18 @@ if (!savedSeason) { try { savedSeason = localStorage.getItem('sls-season'); } ca
 const state = {
   // teamId / playerId are seeded from DATA in boot() via normalizeSelection()
   // once ./data.json has loaded.
-  tab: 'overview', teamId: null, playerId: null, season: null,
+  tab: lsGet('sls-tab', 'overview'), teamId: null, playerId: null, season: null,
   lang: savedLang, competition: savedCompetition,
   leagueSortKey: null, leagueSortDir: null, leagueQuery: '',
   rosterSortKey: null, rosterSortDir: null, rosterQuery: '',
   cmpPlayerIds: [null, null, null, null],
   radarTeamIds: [null, null],
-  statMode: 'per_game',
+  statMode: lsGet('sls-statmode', 'per_game'),
   playerCalcMode: 'per_game',
   playerFramework: 'regular_season',
-  analyticsView: 'players',
-  anSection: 'scatter',
+  analyticsView: lsGet('sls-anview', 'players'),
+  anSection: lsGet('sls-ansection', 'scatter'),
+  anAdv: lsGet('sls-anadv', 'load'),
   scTeam: '', scPos: '', scMinGp: 5,
   playerView: 'list',
   playersQuery: '', playersPos: '', playersTeam: '',
@@ -1246,8 +1370,36 @@ const state = {
 
 /* ---------------- utilities ---------------- */
 function fmt(n, d) {
-  if (n === null || n === undefined || Number.isNaN(n)) return '—';
+  if (n === null || n === undefined || !Number.isFinite(Number(n))) return '—';
   return Number(n).toFixed(d === undefined ? 1 : d);
+}
+/* ---- QA: division-by-zero / NaN / Infinity guards for the advanced views ----
+ * Every derived rate below collapses a 0 (or missing) denominator to 0 rather
+ * than NaN / Infinity, so a player with FGA==0 or MIN==0 reads "0.0", never
+ * "NaN%" or "∞". */
+function num0(v) { const n = Number(v); return Number.isFinite(n) ? n : 0; }
+function safeDiv(a, b) { a = Number(a); b = Number(b); return (Number.isFinite(a) && Number.isFinite(b) && b !== 0) ? a / b : 0; }
+function tsPctOf(pts, fga, fta) { return safeDiv(num0(pts), 2 * (num0(fga) + 0.44 * num0(fta))) * 100; }
+function efgPctOf(fgm, fg3m, fga) { return safeDiv(num0(fgm) + 0.5 * num0(fg3m), num0(fga)) * 100; }
+function per36Of(stat, min) { return safeDiv(num0(stat) * 36, num0(min)); }
+function totalMin(p) { return Number.isFinite(p.min) ? p.min : Math.round(num0(p.avg_minutes) * num0(p.gp)); }
+const SMALL_SAMPLE_MIN = 50;
+function isSmallSample(p) { return totalMin(p) < SMALL_SAMPLE_MIN; }
+/* Playoff series are short (2-8 games) -- drop the qualifying-GP floor so
+ * percentile pools don't collapse to a handful of players. */
+function qualGpFloor() { return state.competition === 'playoffs' ? 2 : 3; }
+function analysisPool(players) { return players.filter((p) => p.gp >= qualGpFloor()); }
+/* Tooltip placement that flips inward near any container edge and clamps so a
+ * chart tooltip is never clipped by the panel. */
+function placeTip(tip, wrap, ev) {
+  const r = wrap.getBoundingClientRect();
+  const tw = tip.offsetWidth || 180, th = tip.offsetHeight || 60, pad = 8;
+  let x = ev.clientX - r.left + 14;
+  let y = ev.clientY - r.top + 14;
+  if (x + tw + pad > r.width) x = ev.clientX - r.left - 14 - tw;
+  if (y + th + pad > r.height) y = ev.clientY - r.top - 14 - th;
+  tip.style.left = Math.max(pad, Math.min(x, r.width - tw - pad)) + 'px';
+  tip.style.top = Math.max(pad, Math.min(y, r.height - th - pad)) + 'px';
 }
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -1411,6 +1563,7 @@ function resetPlayersUI() {
 
 function goTab(tab) {
   state.tab = tab;
+  lsSet('sls-tab', tab);
   if (tab === 'player') { state.playerView = 'list'; resetPlayersUI(); }  // nav to the Player tab lands on a fresh full list
   if (tab === 'team') resetRosterUI();
   if (tab === 'league') resetLeagueUI();
@@ -1979,7 +2132,7 @@ function renderTeam(root) {
       const btn = el('button', null, label);
       btn.type = 'button';
       btn.setAttribute('aria-pressed', state.statMode === mode ? 'true' : 'false');
-      btn.addEventListener('click', () => { state.statMode = mode; render(); });
+      btn.addEventListener('click', () => { state.statMode = mode; lsSet('sls-statmode', mode); render(); });
       modeSwitch.appendChild(btn);
     });
   modeRow.appendChild(modeSwitch);
@@ -2040,6 +2193,7 @@ function renderTeam(root) {
     nameCell.appendChild(document.createTextNode(playerName(p)));
     if (isMultiStint(p)) nameCell.appendChild(el('span', 'stint-star', '*'));
     row.appendChild(nameCell);
+    if (state.statMode === 'per_36' && isSmallSample(p)) nameCell.appendChild(sampleWarn());
     row.appendChild(el('span', 'pos-cell', posLabel(p.position)));
     row.appendChild(el('span', 'stat-soft sm cell-right', p.age !== null ? String(p.age) : '—'));
     row.appendChild(el('span', 'stat-soft sm cell-right', fmt(p.height_m, 2)));
@@ -2116,7 +2270,7 @@ function renderPlayerList(root) {
       const b = el('button', null, lbl);
       b.type = 'button';
       b.setAttribute('aria-pressed', state.statMode === m ? 'true' : 'false');
-      b.addEventListener('click', () => { state.statMode = m; render(); });
+      b.addEventListener('click', () => { state.statMode = m; lsSet('sls-statmode', m); render(); });
       modeSwitch.appendChild(b);
     });
   filters.appendChild(modeSwitch);
@@ -2147,6 +2301,7 @@ function renderPlayerList(root) {
     nameCell.appendChild(document.createTextNode(playerName(p)));
     if (isMultiStint(p)) nameCell.appendChild(el('span', 'stint-star', '*'));
     row.appendChild(nameCell);
+    if (state.statMode === 'per_36' && isSmallSample(p)) nameCell.appendChild(sampleWarn());
     row.appendChild(el('span', 'stat-soft sm ellip', teamLabel(getTeam(p.team_id))));
     row.appendChild(el('span', 'pos-cell', posLabel(p.position)));
     row.appendChild(el('span', 'stat-soft sm cell-right', p.age !== null ? String(p.age) : '—'));
@@ -2458,18 +2613,38 @@ function renderAnalytics(root) {
   root.appendChild(sub);
 
   const nav = el('div', 'lang-switch an-section-nav');
-  [['scatter', S.an_sec_scatter], ['h2h', S.an_sec_h2h], ['trends', S.an_sec_trends]].forEach(([id, label]) => {
+  [['scatter', S.an_sec_scatter], ['h2h', S.an_sec_h2h], ['trends', S.an_sec_trends], ['advanced', S.an_sec_advanced]].forEach(([id, label]) => {
     const btn = el('button', null, label);
     btn.type = 'button';
     btn.setAttribute('aria-pressed', state.anSection === id ? 'true' : 'false');
-    btn.addEventListener('click', () => { state.anSection = id; render(); });
+    btn.addEventListener('click', () => { state.anSection = id; lsSet('sls-ansection', id); render(); });
     nav.appendChild(btn);
   });
   root.appendChild(nav);
 
-  if (state.anSection === 'h2h') renderH2HSection(root);
-  else if (state.anSection === 'trends') renderTrendsSection(root);
-  else renderScatterSection(root);
+  if (state.anSection === 'h2h') { renderH2HSection(root); return; }
+  if (state.anSection === 'trends') { renderTrendsSection(root); return; }
+  if (state.anSection === 'advanced') {
+    const adv = [
+      ['load', S.adv_load_tab, renderLoadTS],
+      ['fourfactors', S.adv_ff_tab, renderFourFactors],
+      ['ppr', S.adv_ppr_tab, renderPPR],
+      ['shotdiet', S.adv_diet_tab, renderShotDiet],
+      ['glass', S.adv_glass_tab, renderGlass],
+    ];
+    const sub2 = el('div', 'lang-switch an-adv-nav');
+    adv.forEach(([id, label]) => {
+      const b = el('button', null, label);
+      b.type = 'button';
+      b.setAttribute('aria-pressed', state.anAdv === id ? 'true' : 'false');
+      b.addEventListener('click', () => { state.anAdv = id; lsSet('sls-anadv', id); render(); });
+      sub2.appendChild(b);
+    });
+    root.appendChild(sub2);
+    (adv.find(([id]) => id === state.anAdv) || adv[0])[2](root);
+    return;
+  }
+  renderScatterSection(root);
 }
 
 function wrapField(labelText, ctrl) {
@@ -2490,7 +2665,8 @@ function renderScatterSection(root) {
   const S = STR[state.lang];
   const all = activePlayersRaw();
   const maxGp = Math.max(1, ...all.map((p) => p.gp));
-  const minGp = Math.min(state.scMinGp, maxGp);
+  const floor = qualGpFloor();
+  const minGp = Math.max(floor, Math.min(state.scMinGp, maxGp));
 
   const panel = el('div', 'panel');
   const ph = el('div', 'panel-head');
@@ -2525,7 +2701,7 @@ function renderScatterSection(root) {
   fr.appendChild(wrapField(S.col_pos, posSel));
 
   const gpInput = document.createElement('input');
-  gpInput.type = 'range'; gpInput.min = '1'; gpInput.max = String(maxGp); gpInput.value = String(minGp);
+  gpInput.type = 'range'; gpInput.min = String(floor); gpInput.max = String(maxGp); gpInput.value = String(minGp);
   const gpVal = el('span', 'sc-gp-val', S.sc_min_gp(minGp));
   gpInput.addEventListener('input', (e) => { gpVal.textContent = S.sc_min_gp(e.target.value); });
   gpInput.addEventListener('change', (e) => { state.scMinGp = Number(e.target.value); render(); });
@@ -2602,13 +2778,7 @@ function buildScatter(players) {
   ql(S.sc_q_limited, m.l + 4, m.t + phv - 6, 'start');
 
   const tip = el('div', 'sc-tooltip');
-  const place = (ev) => {
-    const r = wrap.getBoundingClientRect();
-    let x = ev.clientX - r.left + 12;
-    if (x + tip.offsetWidth + 8 > r.width) x = ev.clientX - r.left - 12 - tip.offsetWidth;
-    tip.style.left = Math.max(0, x) + 'px';
-    tip.style.top = (ev.clientY - r.top + 12) + 'px';
-  };
+  const place = (ev) => placeTip(tip, wrap, ev);
   players.forEach((p) => {
     const c = mk('circle', { class: 'sc-dot', cx: sx(p.avg_points), cy: sy(p.ts_pct), r: 4.7 });
     c.addEventListener('mouseenter', () => {
@@ -2648,7 +2818,7 @@ function renderH2HSection(root) {
     const b = el('button', null, label);
     b.type = 'button';
     b.setAttribute('aria-pressed', state.analyticsView === mode ? 'true' : 'false');
-    b.addEventListener('click', () => { state.analyticsView = mode; render(); });
+    b.addEventListener('click', () => { state.analyticsView = mode; lsSet('sls-anview', mode); render(); });
     modeSw.appendChild(b);
   });
   modeRow.appendChild(modeSw);
@@ -2840,13 +3010,7 @@ function buildTrends(series) {
       metrics.forEach((mt) => tip.appendChild(el('div', null, mt.label + ': ' + fmt(d[mt.key], mt.dec))));
       tip.style.display = 'block';
     });
-    rect.addEventListener('mousemove', (ev) => {
-      const r = wrap.getBoundingClientRect();
-      let x = ev.clientX - r.left + 12;
-      if (x + tip.offsetWidth + 8 > r.width) x = ev.clientX - r.left - 12 - tip.offsetWidth;
-      tip.style.left = Math.max(0, x) + 'px';
-      tip.style.top = (ev.clientY - r.top + 12) + 'px';
-    });
+    rect.addEventListener('mousemove', (ev) => placeTip(tip, wrap, ev));
     rect.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
     svg.appendChild(rect);
   });
@@ -2856,6 +3020,342 @@ function buildTrends(series) {
   return wrap;
 }
 
+
+/* ================= Advanced analytics (segmented sub-nav) ================= */
+function advPanel(kicker, title, sub) {
+  const panel = el('div', 'panel');
+  const h = el('div', 'panel-head');
+  h.appendChild(el('div', 'panel-kicker', kicker));
+  h.appendChild(el('div', 'panel-title sm', title));
+  if (sub) { const s = el('div', null, sub); s.style.cssText = 'font:400 12px/1.5 var(--font-body);color:var(--ink-3);margin-top:8px'; h.appendChild(s); }
+  panel.appendChild(h);
+  return panel;
+}
+function sampleWarn() {
+  const s = el('span', 'sample-warn', '⚠');
+  s.title = STR[state.lang].small_sample_note;
+  return s;
+}
+function mkLegendDot(color, text) {
+  const s = el('span'); const i = el('i');
+  i.style.cssText = 'width:10px;height:10px;border-radius:50%;background:' + color;
+  s.appendChild(i); s.appendChild(document.createTextNode(text)); return s;
+}
+function teamTotalsFor(tid) {
+  const tm = activeTeams().find((x) => String(x.id) === String(tid));
+  if (!tm) return null;
+  return { gp: num0(tm.gp), fga: num0(tm.fga), fta: num0(tm.fta), fgm: num0(tm.fgm),
+           fg3m: num0(tm.fg3m), fg3a: num0(tm.fg3a), ftm: num0(tm.ftm), tov: num0(tm.tov),
+           oreb: num0(tm.oreb), dreb: num0(tm.dreb) };
+}
+/* Player's share of team possessions used (FGA + 0.44*FTA + TOV), a USG% proxy
+ * that needs no on/off-court minutes -- guarded against a zero team load. */
+function offLoadPct(p) {
+  const tm = teamTotalsFor(p.team_id);
+  if (!tm || !tm.gp || !num0(p.gp)) return 0;
+  const pLoadG = safeDiv(num0(p.fga) + 0.44 * num0(p.fta) + num0(p.tov), p.gp);
+  const tLoadG = safeDiv(tm.fga + 0.44 * tm.fta + tm.tov, tm.gp);
+  return safeDiv(pLoadG, tLoadG) * 100;
+}
+
+/* ---- A. Offensive load vs true shooting (bubble) ---- */
+function renderLoadTS(root) {
+  const S = STR[state.lang];
+  const panel = advPanel(S.adv_load_tab, S.adv_load_title, S.adv_load_sub);
+  const pool = analysisPool(activePlayersRaw())
+    .filter((p) => num0(p.fga) > 0 && num0(totalMin(p)) > 0 && num0(p.ts_pct) > 0);
+  const body = el('div', 'sc-body');
+  if (pool.length < 4) body.appendChild(el('div', 'empty-state', S.sc_empty));
+  else body.appendChild(buildBubble(pool));
+  panel.appendChild(body);
+  root.appendChild(panel);
+}
+function buildBubble(players) {
+  const S = STR[state.lang];
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 780, H = 480, m = { l: 56, r: 20, t: 34, b: 50 };
+  const pw = W - m.l - m.r, phv = H - m.t - m.b;
+  const rows = players.map((p) => ({ p, x: offLoadPct(p), y: num0(p.ts_pct), ppg: num0(p.avg_points), atr: num0(p.ast_to_tov) }))
+                      .filter((d) => d.x > 0 && d.y > 0);
+  const xs = rows.map((d) => d.x), ys = rows.map((d) => d.y);
+  let xMin = Math.max(0, Math.min(...xs) - 2), xMax = Math.max(...xs) + 2;
+  let yMin = Math.min(...ys) - 2, yMax = Math.max(...ys) + 2;
+  if (xMax <= xMin) xMax = xMin + 1;
+  if (yMax <= yMin) yMax = yMin + 1;
+  const medX = median(xs), medY = median(ys);
+  const maxPpg = Math.max(...rows.map((d) => d.ppg), 1);
+  const sx = (v) => m.l + (v - xMin) / (xMax - xMin) * pw;
+  const sy = (v) => m.t + phv - (v - yMin) / (yMax - yMin) * phv;
+  const rad = (ppg) => 4 + 15 * Math.sqrt(safeDiv(ppg, maxPpg));
+  const col = (atr) => {
+    const k = Math.max(0, Math.min(1, (atr - 0.5) / 2));
+    const lp = (a, b) => Math.round(a + (b - a) * k);
+    return 'rgb(' + lp(255, 0) + ',' + lp(87, 229) + ',' + lp(34, 255) + ')';
+  };
+  const mk = (tag, a) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); return e; };
+  const wrap = el('div', 'sc-wrap');
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.setAttribute('class', 'sc-svg'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', S.adv_load_title);
+  svg.appendChild(mk('line', { class: 'sc-axis', x1: m.l, y1: m.t + phv, x2: m.l + pw, y2: m.t + phv }));
+  svg.appendChild(mk('line', { class: 'sc-axis', x1: m.l, y1: m.t, x2: m.l, y2: m.t + phv }));
+  for (let i = 0; i <= 5; i++) {
+    const xv = xMin + (xMax - xMin) * i / 5, yv = yMin + (yMax - yMin) * i / 5;
+    const tx = mk('text', { class: 'sc-tick', x: sx(xv), y: m.t + phv + 16, 'text-anchor': 'middle' }); tx.textContent = xv.toFixed(0); svg.appendChild(tx);
+    const ty = mk('text', { class: 'sc-tick', x: m.l - 8, y: sy(yv) + 3, 'text-anchor': 'end' }); ty.textContent = yv.toFixed(0); svg.appendChild(ty);
+  }
+  const xt = mk('text', { class: 'sc-axis-title', x: m.l + pw / 2, y: H - 8, 'text-anchor': 'middle' }); xt.textContent = S.adv_load_x; svg.appendChild(xt);
+  const yc = m.t + phv / 2;
+  const yt = mk('text', { class: 'sc-axis-title', x: 14, y: yc, 'text-anchor': 'middle', transform: 'rotate(-90 14 ' + yc + ')' }); yt.textContent = S.sc_y; svg.appendChild(yt);
+  svg.appendChild(mk('line', { class: 'sc-quad', x1: sx(medX), y1: m.t, x2: sx(medX), y2: m.t + phv }));
+  svg.appendChild(mk('line', { class: 'sc-quad', x1: m.l, y1: sy(medY), x2: m.l + pw, y2: sy(medY) }));
+  const ql = (txt, x, y, an) => { const e = mk('text', { class: 'sc-quad-label', x, y, 'text-anchor': an }); e.textContent = txt; svg.appendChild(e); };
+  ql(S.adv_load_q_engine, m.l + pw - 4, m.t + 12, 'end');
+  ql(S.adv_load_q_finisher, m.l + 4, m.t + 12, 'start');
+  ql(S.adv_load_q_ineff, m.l + pw - 4, m.t + phv - 6, 'end');
+  ql(S.adv_load_q_limited, m.l + 4, m.t + phv - 6, 'start');
+  const tip = el('div', 'sc-tooltip');
+  rows.sort((a, b) => b.ppg - a.ppg).forEach((d) => {
+    const c = mk('circle', { class: 'sc-bubble', cx: sx(d.x), cy: sy(d.y), r: rad(d.ppg), fill: col(d.atr) });
+    c.addEventListener('mouseenter', () => {
+      tip.textContent = '';
+      const nm = el('div'); nm.style.cssText = 'font-weight:700;color:var(--accent)'; nm.textContent = playerName(d.p); tip.appendChild(nm);
+      tip.appendChild(el('div', null, teamLabel(getTeam(d.p.team_id))));
+      tip.appendChild(el('div', null, S.adv_load_x + ': ' + fmt(d.x) + '%  ·  TS%: ' + fmt(d.y)));
+      tip.appendChild(el('div', null, 'PPG: ' + fmt(d.ppg) + '  ·  AST/TOV: ' + fmt(d.atr, 2)));
+      tip.style.display = 'block';
+    });
+    c.addEventListener('mousemove', (ev) => placeTip(tip, wrap, ev));
+    c.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+    svg.appendChild(c);
+  });
+  wrap.appendChild(svg); wrap.appendChild(tip);
+  const leg = el('div', 'tr-legend');
+  leg.appendChild(mkLegendDot('rgb(0,229,255)', S.adv_load_leg_hi));
+  leg.appendChild(mkLegendDot('rgb(255,87,34)', S.adv_load_leg_lo));
+  leg.appendChild(el('span', null, S.adv_load_leg_size));
+  const outer = el('div'); outer.appendChild(wrap); outer.appendChild(leg);
+  return outer;
+}
+
+/* ---- B. Dean Oliver's Four Factors (teams) ---- */
+function renderFourFactors(root) {
+  const S = STR[state.lang];
+  const panel = advPanel(S.adv_ff_tab, S.adv_ff_title, S.adv_ff_sub);
+  const teams = [...activeTeams()];
+  const oppD = teams.length ? teams.reduce((s, x) => s + num0(x.dreb), 0) / teams.length : 0;
+  const rows = teams.map((tm) => ({
+    tm,
+    efg: efgPctOf(tm.fgm, tm.fg3m, tm.fga),
+    tovp: safeDiv(num0(tm.tov), num0(tm.fga) + 0.44 * num0(tm.fta) + num0(tm.tov)) * 100,
+    orbp: safeDiv(num0(tm.oreb), num0(tm.oreb) + oppD) * 100,
+    ftr: safeDiv(num0(tm.fta), num0(tm.fga)) * 100,
+  }));
+  const factors = [{ key: 'efg', label: 'eFG%', good: 1 }, { key: 'tovp', label: 'TOV%', good: -1 },
+                   { key: 'orbp', label: 'ORB%', good: 1 }, { key: 'ftr', label: 'FTr', good: 1 }];
+  const med = {};
+  factors.forEach((f) => { med[f.key] = median(rows.map((r) => r[f.key])); });
+  const body = el('div', 'ff-wrap');
+  const head = el('div', 'ff-row ff-head');
+  head.appendChild(el('div', 'ff-team', ''));
+  factors.forEach((f) => head.appendChild(el('div', 'ff-cell', f.label + '  µ' + fmt(med[f.key]))));
+  body.appendChild(head);
+  rows.sort((a, b) => a.tm.rank - b.tm.rank).forEach((r) => {
+    const row = el('div', 'ff-row');
+    const nm = el('button', 'ff-team'); nm.type = 'button'; nm.textContent = teamLabel(r.tm);
+    nm.addEventListener('click', () => goTeam(r.tm.id));
+    row.appendChild(nm);
+    factors.forEach((f) => {
+      const v = r[f.key], mv = med[f.key];
+      const span = Math.max(...rows.map((x) => Math.abs(x[f.key] - mv)), 1e-6);
+      const rel = (v - mv) / span;
+      const better = f.good * (v - mv) > 0;
+      const cell = el('div', 'ff-cell');
+      const track = el('div', 'ff-track');
+      track.appendChild(el('div', 'ff-mid'));
+      const fill = el('div', 'ff-fill');
+      fill.style.width = Math.min(50, Math.abs(rel) * 50) + '%';
+      fill.style.background = better ? '#199e70' : '#c98500';
+      fill.style[rel >= 0 ? 'left' : 'right'] = '50%';
+      track.appendChild(fill);
+      const val = el('div', 'ff-val'); val.textContent = fmt(v);
+      cell.appendChild(track); cell.appendChild(val);
+      cell.title = f.label + ': ' + fmt(v) + '  (median ' + fmt(mv) + ')';
+      row.appendChild(cell);
+    });
+    body.appendChild(row);
+  });
+  panel.appendChild(body);
+  root.appendChild(panel);
+}
+
+/* ---- C. Pure Playmaking Ratio (diverging bars) ---- */
+function renderPPR(root) {
+  const S = STR[state.lang];
+  const panel = advPanel(S.adv_ppr_tab, S.adv_ppr_title, S.adv_ppr_sub);
+  const pool = analysisPool(activePlayersRaw())
+    .filter((p) => num0(totalMin(p)) > 0 && num0(p.avg_assists) >= 1.5)
+    .map((p) => ({ p, ppr: safeDiv(100 * ((2 / 3) * num0(p.ast) - num0(p.tov)), totalMin(p)) }))
+    .sort((a, b) => b.ppr - a.ppr);
+  const body = el('div', 'sc-body');
+  if (pool.length < 3) { body.appendChild(el('div', 'empty-state', S.sc_empty)); panel.appendChild(body); root.appendChild(panel); return; }
+  const top = pool.slice(0, 26);
+  const mx = Math.max(...top.map((d) => Math.abs(d.ppr)), 1e-6);
+  const list = el('div', 'ppr-list');
+  top.forEach((d) => {
+    const row = el('div', 'ppr-row');
+    const nm = el('button', 'ppr-name'); nm.type = 'button'; nm.textContent = playerName(d.p);
+    nm.addEventListener('click', () => goPlayer(d.p.id));
+    if (isSmallSample(d.p)) nm.appendChild(sampleWarn());
+    const track = el('div', 'ppr-track');
+    track.appendChild(el('div', 'ppr-mid'));
+    const fill = el('div', 'ppr-fill');
+    fill.style.width = (Math.abs(d.ppr) / mx * 50) + '%';
+    if (d.ppr >= 0) { fill.style.left = '50%'; fill.style.background = '#00E5FF'; }
+    else { fill.style.right = '50%'; fill.style.background = '#FF5722'; }
+    track.appendChild(fill);
+    const val = el('div', 'ppr-val' + (d.ppr < 0 ? ' neg' : '')); val.textContent = fmt(d.ppr, 2);
+    row.appendChild(nm); row.appendChild(track); row.appendChild(val);
+    list.appendChild(row);
+  });
+  body.appendChild(list);
+  panel.appendChild(body);
+  root.appendChild(panel);
+}
+
+/* ---- D. Shot diet & spacing profile (100% stacked) ---- */
+function renderShotDiet(root) {
+  const S = STR[state.lang];
+  const panel = advPanel(S.adv_diet_tab, S.adv_diet_title, S.adv_diet_sub);
+  const isTeams = state.analyticsView === 'teams';
+  const modeRow = el('div', 'an-toggle'); modeRow.style.cssText = 'padding:16px 28px 0;margin:0';
+  modeRow.appendChild(el('label', null, S.an_view_label));
+  const sw = el('div', 'lang-switch');
+  [['players', S.an_view_players], ['teams', S.an_view_teams]].forEach(([mode, label]) => {
+    const b = el('button', null, label); b.type = 'button';
+    b.setAttribute('aria-pressed', state.analyticsView === mode ? 'true' : 'false');
+    b.addEventListener('click', () => { state.analyticsView = mode; lsSet('sls-anview', mode); render(); });
+    sw.appendChild(b);
+  });
+  modeRow.appendChild(sw); panel.appendChild(modeRow);
+
+  const src = isTeams ? [...activeTeams()] : analysisPool(activePlayersRaw());
+  const rows = src.map((e) => {
+    const fga = num0(e.fga), fg3a = num0(e.fg3a), fta = num0(e.fta);
+    const twoA = Math.max(0, fga - fg3a);
+    const tot = twoA + fg3a + fta;
+    if (tot <= 0) return null;
+    const two = twoA / tot * 100, three = fg3a / tot * 100, ft = fta / tot * 100;
+    let cls = S.adv_diet_balanced;
+    if (three >= 40) cls = S.adv_diet_spacer;
+    else if (three < 22 && (two + ft) >= 78) cls = S.adv_diet_rim;
+    return { e, two, three, ft, cls, name: isTeams ? teamLabel(e) : playerName(e) };
+  }).filter(Boolean);
+  if (isTeams) rows.sort((a, b) => a.e.rank - b.e.rank);
+  else rows.sort((a, b) => b.three - a.three);
+  const show = isTeams ? rows : rows.slice(0, 26);
+
+  const body = el('div', 'sc-body');
+  const leg = el('div', 'tr-legend');
+  [['#c98500', S.adv_diet_2p], ['#3987e5', S.adv_diet_3p], ['#8a94a6', S.adv_diet_ftl]].forEach(([c, l]) => {
+    const s = el('span'); const i = el('i'); i.style.cssText = 'width:12px;height:10px;border-radius:2px;background:' + c;
+    s.appendChild(i); s.appendChild(document.createTextNode(l)); leg.appendChild(s);
+  });
+  body.appendChild(leg);
+  const list = el('div', 'diet-list');
+  show.forEach((r) => {
+    const row = el('div', 'diet-row');
+    const nm = el('button', 'diet-name'); nm.type = 'button'; nm.textContent = r.name;
+    nm.addEventListener('click', () => (isTeams ? goTeam(r.e.id) : goPlayer(r.e.id)));
+    if (!isTeams && isSmallSample(r.e)) nm.appendChild(sampleWarn());
+    const bar = el('div', 'diet-bar');
+    [['two', '#c98500'], ['three', '#3987e5'], ['ft', '#8a94a6']].forEach(([k, c]) => {
+      const seg = el('div', 'diet-seg'); seg.style.width = r[k] + '%'; seg.style.background = c;
+      seg.title = k + ': ' + fmt(r[k]) + '%';
+      bar.appendChild(seg);
+    });
+    const chip = el('div', 'diet-chip'); chip.textContent = r.cls;
+    row.appendChild(nm); row.appendChild(bar); row.appendChild(chip);
+    list.appendChild(row);
+  });
+  body.appendChild(list);
+  panel.appendChild(body);
+  root.appendChild(panel);
+}
+
+/* ---- E. Glass Dominance Index (rebound rates) ---- */
+function renderGlass(root) {
+  const S = STR[state.lang];
+  const panel = advPanel(S.adv_glass_tab, S.adv_glass_title, S.adv_glass_sub);
+  const teams = [...activeTeams()];
+  const meanO = teams.length ? teams.reduce((s, x) => s + num0(x.oreb), 0) / teams.length : 0;
+  const meanD = teams.length ? teams.reduce((s, x) => s + num0(x.dreb), 0) / teams.length : 0;
+  const pool = analysisPool(activePlayersRaw()).filter((p) => num0(totalMin(p)) > 0).map((p) => {
+    const tm = teams.find((x) => String(x.id) === String(p.team_id));
+    const factor = (tm ? num0(tm.gp) : 0) * 40;
+    const tO = tm ? num0(tm.oreb) : 0, tD = tm ? num0(tm.dreb) : 0;
+    const mn = totalMin(p);
+    const orb = safeDiv(num0(p.oreb) * factor, mn * (tO + meanD)) * 100;
+    const drb = safeDiv(num0(p.dreb) * factor, mn * (tD + meanO)) * 100;
+    return { p, orb, drb, comp: orb + drb };
+  });
+  const body = el('div', 'sc-body');
+  if (pool.length < 3) { body.appendChild(el('div', 'empty-state', S.sc_empty)); panel.appendChild(body); root.appendChild(panel); return; }
+  const byComp = [...pool].sort((a, b) => b.comp - a.comp);
+  if (!state.glassPid || !pool.some((d) => d.p.id === state.glassPid)) state.glassPid = byComp[0].p.id;
+  const sel = document.createElement('select');
+  [...pool].sort((a, b) => playerName(a.p).localeCompare(playerName(b.p), state.lang === 'he' ? 'he' : 'en')).forEach((d) => {
+    const o = document.createElement('option'); o.value = String(d.p.id);
+    o.textContent = playerName(d.p) + ' — ' + teamLabel(getTeam(d.p.team_id));
+    if (d.p.id === state.glassPid) o.selected = true;
+    sel.appendChild(o);
+  });
+  sel.addEventListener('change', (e) => { state.glassPid = Number(e.target.value); render(); });
+  const fr = el('div', 'sc-filters'); fr.appendChild(wrapField(S.col_player, sel)); panel.appendChild(fr);
+
+  const cur = pool.find((d) => d.p.id === state.glassPid);
+  const posPool = pool.filter((d) => d.p.position === cur.p.position);
+  const avgO = posPool.reduce((s, d) => s + d.orb, 0) / (posPool.length || 1);
+  const avgD = posPool.reduce((s, d) => s + d.drb, 0) / (posPool.length || 1);
+
+  body.appendChild(glassMeter(S.adv_glass_orb, cur.orb, avgO, Math.max(14, cur.orb * 1.25, avgO * 1.4), '#c98500'));
+  body.appendChild(glassMeter(S.adv_glass_drb, cur.drb, avgD, Math.max(30, cur.drb * 1.25, avgD * 1.4), '#3987e5'));
+  if (isSmallSample(cur.p)) {
+    const w = el('div', 'diet-chip'); w.style.cssText = 'margin-top:12px;color:var(--accent);align-self:flex-start';
+    w.textContent = S.small_sample_note; body.appendChild(w);
+  }
+  const top = el('div', 'ppr-list'); top.style.marginTop = '20px';
+  top.appendChild(el('div', 'h2h-cat', S.adv_glass_top));
+  byComp.slice(0, 5).forEach((d) => {
+    const r = el('div', 'diet-row');
+    const nm = el('button', 'diet-name'); nm.type = 'button'; nm.textContent = playerName(d.p);
+    nm.addEventListener('click', () => { state.glassPid = d.p.id; render(); });
+    r.appendChild(nm);
+    r.appendChild(el('div', 'ppr-val', 'ORB ' + fmt(d.orb) + '  ·  DRB ' + fmt(d.drb)));
+    top.appendChild(r);
+  });
+  body.appendChild(top);
+  panel.appendChild(body);
+  root.appendChild(panel);
+}
+function glassMeter(label, val, avg, max, color) {
+  const box = el('div', 'glass-meter');
+  const head = el('div', 'glass-head');
+  head.appendChild(el('span', 'glass-label', label));
+  head.appendChild(el('span', 'glass-num', fmt(val) + '%'));
+  box.appendChild(head);
+  const track = el('div', 'glass-track');
+  const fill = el('div', 'glass-fill');
+  fill.style.width = Math.max(0, Math.min(100, val / max * 100)) + '%';
+  fill.style.background = color;
+  track.appendChild(fill);
+  const tick = el('div', 'glass-tick');
+  tick.style.left = Math.max(0, Math.min(100, avg / max * 100)) + '%';
+  track.appendChild(tick);
+  box.appendChild(track);
+  box.appendChild(el('div', 'glass-cap', STR[state.lang].adv_glass_posavg + ' ' + fmt(avg) + '%'));
+  return box;
+}
 
 const RADAR_METRICS = [
   ['avg_points', 'lbl_points', false],
