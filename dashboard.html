@@ -10,9 +10,16 @@
 <meta property="og:title" content="PlusMinus IL | אנליטיקס כדורסל ישראלי">
 <meta property="og:description" content="PlusMinus.IL — סטטיסטיקות מתקדמות לליגת העל בכדורסל: שחקנים, קבוצות ומדדי יעילות לאורך העונות.">
 <meta property="og:url" content="https://d1bmim02dszrj9.cloudfront.net/">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://d1bmim02dszrj9.cloudfront.net/og-image.png">
+<meta property="og:image:secure_url" content="https://d1bmim02dszrj9.cloudfront.net/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="PlusMinus IL — Israeli basketball analytics platform">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="PlusMinus IL | אנליטיקס כדורסל ישראלי">
 <meta name="twitter:description" content="PlusMinus.IL — אנליטיקס כדורסל ישראלי לליגת העל.">
+<meta name="twitter:image" content="https://d1bmim02dszrj9.cloudfront.net/og-image.png">
 <script>
   (function () {
     try {
@@ -609,7 +616,66 @@
     .topbar-right { order: 2; flex: 0 0 auto; }
     nav.tabs { order: 3; flex: 1 1 100%; margin: 0; justify-content: center; }
     .ctl-sep { display: none; }
+    .sl-trig-label, .sl-kbd { display: none; }
+    .spotlight-trigger { padding: 0 8px; }
   }
+
+  /* ---------- Global Spotlight / quick search ---------- */
+  .spotlight-trigger {
+    display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; flex: none;
+    border: 1px solid var(--hair); border-radius: 6px; background: rgba(255,255,255,.04);
+    color: var(--ink-3); cursor: pointer; font: 500 12px/1 var(--font-body);
+    transition: border-color .12s ease, color .12s ease, background .12s ease;
+  }
+  .spotlight-trigger:hover { color: var(--ink-2); border-color: var(--ink-4); background: rgba(255,255,255,.07); }
+  .spotlight-trigger:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .spotlight-trigger svg { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+  .sl-trig-label { white-space: nowrap; }
+  .sl-kbd { font: 600 10px/1 var(--font-body); border: 1px solid var(--hair-strong); border-radius: 3px; padding: 2px 4px; color: var(--ink-4); }
+  @media (max-width: 640px) { .sl-trig-label, .sl-kbd { display: none; } .spotlight-trigger { padding: 0 8px; } }
+  html[data-mobile] .sl-trig-label, html[data-mobile] .sl-kbd { display: none; }
+  html[data-mobile] .spotlight-trigger { padding: 0 8px; }
+
+  .sl-overlay {
+    position: fixed; inset: 0; z-index: 200; display: flex; align-items: flex-start; justify-content: center;
+    padding: 12vh 16px 24px; background: rgba(5,8,12,.55);
+    backdrop-filter: blur(6px) saturate(1.1); -webkit-backdrop-filter: blur(6px) saturate(1.1);
+    animation: sl-fade .12s ease;
+  }
+  .sl-overlay[hidden] { display: none; }
+  @keyframes sl-fade { from { opacity: 0; } to { opacity: 1; } }
+  .sl-modal {
+    width: min(620px, 100%); max-height: 76vh; display: flex; flex-direction: column;
+    background: rgba(21,27,35,.82); border: 1px solid var(--hair-strong); border-radius: 14px;
+    box-shadow: 0 28px 90px rgba(0,0,0,.62);
+    backdrop-filter: blur(22px) saturate(1.3); -webkit-backdrop-filter: blur(22px) saturate(1.3);
+    overflow: hidden;
+  }
+  .sl-input-row { display: flex; align-items: center; gap: 12px; padding: 15px 18px; border-bottom: 1px solid var(--hair); flex: none; }
+  .sl-input-row svg { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--ink-3); stroke-width: 2; stroke-linecap: round; }
+  #sl-input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--ink); font: 500 16px/1.3 var(--font-body); }
+  #sl-input::placeholder { color: var(--ink-3); }
+  .sl-input-row kbd { font: 600 10px/1 var(--font-body); color: var(--ink-3); border: 1px solid var(--hair-strong); border-radius: 4px; padding: 3px 6px; flex: none; }
+  .sl-results { overflow-y: auto; padding: 6px; overscroll-behavior: contain; }
+  .sl-group-h { font: 600 9.5px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-4); padding: 12px 12px 6px; }
+  .sl-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%;
+    text-align: start; background: none; border: 0; border-radius: 9px; padding: 10px 12px;
+    cursor: pointer; color: inherit; font-family: inherit;
+  }
+  .sl-item[aria-selected="true"] { background: rgba(255,255,255,.09); }
+  .sl-item-main { min-width: 0; }
+  .sl-item-name { font: 600 13.5px/1.2 var(--font-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sl-item-sub { display: flex; align-items: center; margin-top: 3px; font: 500 11px/1 var(--font-body); color: var(--ink-3); }
+  .sl-badge {
+    display: inline-block; font: 700 9px/1 var(--font-body); letter-spacing: .04em;
+    padding: 3px 5px; border-radius: 3px; background: var(--accent-wash); color: var(--accent-hover);
+    margin-inline-end: 7px; flex: none;
+  }
+  .sl-item-stats { font: 500 11.5px/1 var(--font-body); color: var(--ink-3); white-space: nowrap; flex: none; unicode-bidi: isolate; direction: ltr; }
+  .sl-item-stats b { color: var(--ink-2); font-weight: 700; }
+  .sl-empty { padding: 30px 16px; text-align: center; color: var(--ink-3); font: 500 13px/1.5 var(--font-body); }
+  html[data-mobile] .sl-overlay { padding: 7vh 10px 16px; }
 
   /* ---------- Mobile (<=640px) ---------- */
   @media (max-width: 640px) {
@@ -759,6 +825,12 @@
     </div>
     <nav class="tabs" id="tabs" role="tablist" aria-label="Sections"></nav>
     <div class="topbar-right">
+      <button type="button" class="spotlight-trigger" id="spotlight-trigger" aria-haspopup="dialog" aria-label="Search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+        <span class="sl-trig-label" id="sl-trig-label">Search</span>
+        <kbd class="sl-kbd" id="sl-kbd">⌘K</kbd>
+      </button>
+      <span class="ctl-sep" aria-hidden="true"></span>
       <span class="season-picker">
         <span class="season-picker-ico" aria-hidden="true">📅</span>
         <select id="season-select"></select>
@@ -777,6 +849,17 @@
   </div>
 
   <div id="view" class="view"></div>
+</div>
+
+<div class="sl-overlay" id="sl-overlay" hidden>
+  <div class="sl-modal" role="dialog" aria-modal="true" aria-label="Quick search">
+    <div class="sl-input-row">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+      <input id="sl-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Search players and teams" aria-controls="sl-results" aria-expanded="true">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="sl-results" id="sl-results" role="listbox"></div>
+  </div>
 </div>
 
 <script>
@@ -937,6 +1020,12 @@ const STR = {
     col_ht: 'גובה',
     search_teams: 'חיפוש קבוצה…',
     search_players: 'חיפוש שחקן…',
+    sl_trigger: 'חיפוש',
+    sl_placeholder: 'חיפוש שחקנים וקבוצות…',
+    sl_grp_players: 'שחקנים',
+    sl_grp_teams: 'קבוצות',
+    sl_empty: 'לא נמצאו תוצאות',
+    sl_hint: 'הקלידו שם שחקן או קבוצה — עברית או אנגלית',
     stat_mode_label: 'תצוגה',
     stat_mode_totals: 'סה״כ',
     stat_mode_per_game: 'ממוצע למשחק',
@@ -1149,6 +1238,12 @@ const STR = {
     col_ht: 'Ht',
     search_teams: 'Search teams…',
     search_players: 'Search players…',
+    sl_trigger: 'Search',
+    sl_placeholder: 'Search players and teams…',
+    sl_grp_players: 'Players',
+    sl_grp_teams: 'Teams',
+    sl_empty: 'No results found',
+    sl_hint: 'Type a player or team name — Hebrew or English',
     stat_mode_label: 'View',
     stat_mode_totals: 'Totals',
     stat_mode_per_game: 'Per Game',
@@ -1723,6 +1818,7 @@ function renderChrome() {
   seasonSelect.title = t('season_label');
   if (seasonSelect.value !== state.season) seasonSelect.value = state.season;
   tabsNav.setAttribute('aria-label', t('nav_aria'));
+  if (typeof slSyncChrome === 'function') slSyncChrome();
 
   tabsNav.innerHTML = '';
   TAB_KEYS.forEach((tb) => {
@@ -3820,5 +3916,162 @@ async function boot() {
   renderChrome();
   render();
 }
+/* ---------------- Global Spotlight / quick search (⌘K / Ctrl+K / "/") ---------------- */
+const SL = {
+  overlay: document.getElementById('sl-overlay'),
+  input: document.getElementById('sl-input'),
+  results: document.getElementById('sl-results'),
+  trigger: document.getElementById('spotlight-trigger'),
+  items: [],
+  idx: -1,
+  open: false,
+};
+const SL_IS_MAC = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent || '');
+
+function slSyncChrome() {
+  const label = document.getElementById('sl-trig-label');
+  const kbd = document.getElementById('sl-kbd');
+  if (label) label.textContent = t('sl_trigger');
+  if (kbd) kbd.textContent = SL_IS_MAC ? '⌘K' : 'Ctrl K';
+  if (SL.trigger) SL.trigger.setAttribute('aria-label', t('sl_trigger'));
+  if (SL.input) SL.input.placeholder = t('sl_placeholder');
+}
+function slNorm(s) { return (s || '').toString().toLowerCase().trim(); }
+
+function slSearch(q) {
+  const nq = slNorm(q);
+  const players = activePlayersRaw();
+  const teams = activeTeams();
+  if (!nq) {
+    return {
+      players: [...players].sort((a, b) => b.avg_pir - a.avg_pir).slice(0, 6),
+      teams: [...teams].sort((a, b) => a.rank - b.rank).slice(0, 6),
+    };
+  }
+  const score = (hay, primary) => {
+    const h = slNorm(hay);
+    if (!h.includes(nq)) return -1;
+    if (slNorm(primary).startsWith(nq)) return 0;
+    if (h.startsWith(nq)) return 1;
+    if ((' ' + h).includes(' ' + nq)) return 2;
+    return 3;
+  };
+  const pRes = players
+    .map((p) => ({ p, s: score(playerHay(p), (state.lang === 'he' && p.name_he) ? p.name_he : p.name) }))
+    .filter((x) => x.s >= 0)
+    .sort((a, b) => a.s - b.s || b.p.avg_pir - a.p.avg_pir)
+    .slice(0, 8).map((x) => x.p);
+  const tRes = teams
+    .map((tm) => ({ tm, s: score(teamHay(tm), teamLabel(tm)) }))
+    .filter((x) => x.s >= 0)
+    .sort((a, b) => a.s - b.s || a.tm.rank - b.tm.rank)
+    .slice(0, 6).map((x) => x.tm);
+  return { players: pRes, teams: tRes };
+}
+function slTeamBadge(tm) {
+  const base = (tm && (tm.name || tm.label) || '').toString();
+  const s = base.replace(/[^A-Za-z֐-׿]/g, '').slice(0, 3).toUpperCase();
+  return s || 'TM';
+}
+function slRender() {
+  const q = SL.input.value;
+  const { players, teams } = slSearch(q);
+  SL.results.innerHTML = '';
+  SL.items = [];
+  if (!players.length && !teams.length) {
+    SL.results.appendChild(el('div', 'sl-empty', slNorm(q) ? t('sl_empty') : t('sl_hint')));
+    return;
+  }
+  const addGroup = (title, rows, type) => {
+    if (!rows.length) return;
+    SL.results.appendChild(el('div', 'sl-group-h', title));
+    rows.forEach((r) => {
+      const btn = el('button', 'sl-item');
+      btn.type = 'button';
+      btn.setAttribute('role', 'option');
+      const main = el('div', 'sl-item-main');
+      const sub = el('div', 'sl-item-sub');
+      const stats = el('div', 'sl-item-stats');
+      if (type === 'player') {
+        main.appendChild(el('div', 'sl-item-name', playerName(r)));
+        sub.appendChild(el('span', 'sl-badge', slTeamBadge(getTeam(r.team_id))));
+        sub.appendChild(document.createTextNode(posLabel(r.position)));
+        stats.appendChild(el('b', null, fmt(r.avg_points, 1)));
+        stats.appendChild(document.createTextNode(' PPG · '));
+        stats.appendChild(el('b', null, fmt(r.avg_pir, 1)));
+        stats.appendChild(document.createTextNode(' PIR'));
+      } else {
+        main.appendChild(el('div', 'sl-item-name', teamLabel(r)));
+        sub.appendChild(el('span', 'sl-badge', '#' + r.rank));
+        sub.appendChild(document.createTextNode(teamCity(r)));
+        stats.appendChild(el('b', null, fmt(r.avg_points, 1)));
+        stats.appendChild(document.createTextNode(' PPG'));
+      }
+      main.appendChild(sub);
+      btn.appendChild(main);
+      btn.appendChild(stats);
+      const myIdx = SL.items.length;
+      SL.items.push({ type: type, id: r.id });
+      btn.addEventListener('click', () => slActivate(myIdx));
+      btn.addEventListener('mousemove', () => slSetIdx(myIdx, false));
+      SL.results.appendChild(btn);
+    });
+  };
+  addGroup(t('sl_grp_players'), players, 'player');
+  addGroup(t('sl_grp_teams'), teams, 'team');
+  slSetIdx(0, true);
+}
+function slSetIdx(i, scroll) {
+  const nodes = [...SL.results.querySelectorAll('.sl-item')];
+  if (!nodes.length) { SL.idx = -1; return; }
+  SL.idx = Math.max(0, Math.min(i, nodes.length - 1));
+  nodes.forEach((n, j) => n.setAttribute('aria-selected', j === SL.idx ? 'true' : 'false'));
+  if (scroll && nodes[SL.idx]) nodes[SL.idx].scrollIntoView({ block: 'nearest' });
+}
+function slActivate(i) {
+  const it = SL.items[typeof i === 'number' ? i : SL.idx];
+  if (!it) return;
+  slClose();
+  if (it.type === 'player') goPlayer(it.id);
+  else goTeam(it.id);
+}
+function slOpen() {
+  if (SL.open || typeof DATA === 'undefined' || !DATA) return;
+  SL.open = true;
+  SL.overlay.hidden = false;
+  document.documentElement.style.overflow = 'hidden';
+  SL.input.value = '';
+  slRender();
+  requestAnimationFrame(() => SL.input.focus());
+}
+function slClose() {
+  if (!SL.open) return;
+  SL.open = false;
+  SL.overlay.hidden = true;
+  document.documentElement.style.overflow = '';
+}
+function slToggle() { if (SL.open) slClose(); else slOpen(); }
+
+SL.trigger.addEventListener('click', slOpen);
+SL.input.addEventListener('input', slRender);
+SL.overlay.addEventListener('mousedown', (e) => { if (e.target === SL.overlay) slClose(); });
+
+document.addEventListener('keydown', (e) => {
+  const tag = ((e.target && e.target.tagName) || '').toLowerCase();
+  const typingElsewhere = (tag === 'input' || tag === 'textarea' || tag === 'select') && e.target !== SL.input;
+  if ((e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === 'k') {
+    e.preventDefault(); slToggle(); return;
+  }
+  if (e.key === '/' && !SL.open && !typingElsewhere && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    e.preventDefault(); slOpen(); return;
+  }
+  if (!SL.open) return;
+  if (e.key === 'Escape') { e.preventDefault(); slClose(); }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); slSetIdx(SL.idx + 1, true); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); slSetIdx(SL.idx - 1, true); }
+  else if (e.key === 'Enter') { e.preventDefault(); slActivate(); }
+});
+slSyncChrome();
+
 boot();
 </script>
