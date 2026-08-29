@@ -208,6 +208,19 @@ def build_players(df: pd.DataFrame, *, hebrew: dict, he_by_name: dict, as_of: da
             "reb": int(_num(row["reb"])),
             "ast": int(_num(row["ast"])),
             "per_36_pir": _r(metrics.per_36(row["pir"], row["min"]), 2),
+            # raw season totals -- the advanced-analytics views (offensive load,
+            # four factors, PPR, shot diet, glass %) need denominators the
+            # per-game/rate fields above have already divided away.
+            "min": int(_num(row["min"])),
+            "fgm": int(_num(row["fgm"])),
+            "fga": int(_num(row["fga"])),
+            "fg3m": int(_num(row["fg3m"])),
+            "fg3a": int(_num(row["fg3a"])),
+            "ftm": int(_num(row["ftm"])),
+            "fta": int(_num(row["fta"])),
+            "tov": int(_num(row["tov"])),
+            "oreb": int(_num(row["oreb"])),
+            "dreb": int(_num(row["dreb"])),
         })
 
     out.sort(key=lambda p: order_index.get((p["team_id"], p["id"]), 10_000 + p["id"]))
@@ -243,6 +256,18 @@ def build_teams(df: pd.DataFrame, *, hebrew: dict, rank_map: dict, roster_counts
             "avg_fg3a": _r(row["avg_fg3a"], 2),
             "avg_fg3m": _r(row["avg_fg3m"], 2),
             "fg3_pct": _pct(row["fg3_pct"]),
+            # raw season totals for the four-factors / shot-diet / glass views
+            "min": int(_num(row["min"])),
+            "fgm": int(_num(row["fgm"])),
+            "fga": int(_num(row["fga"])),
+            "fg3m": int(_num(row["fg3m"])),
+            "fg3a": int(_num(row["fg3a"])),
+            "ftm": int(_num(row["ftm"])),
+            "fta": int(_num(row["fta"])),
+            "tov": int(_num(row["tov"])),
+            "oreb": int(_num(row["oreb"])),
+            "dreb": int(_num(row["dreb"])),
+            "reb": int(_num(row["reb"])),
             "player_count": roster_counts.get(tid, 0),
             "name_he": he.get("name_he", ""),
             "city_he": he.get("city_he", ""),
