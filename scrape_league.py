@@ -36,8 +36,11 @@ seasons — matching the "unstable id" situation schema.sql already documents.
 
 KNOWN GAPS (documented, deliberate, safe to fill in later)
 ---------------------------------------------------------
-* competition: only 'regular_season' is scraped. Playoffs live behind a
-  different StatsBoard/board param on the site and are out of scope here.
+* competition: 'regular_season' by default. Pass --with-playoffs to also
+  pull the playoff board (stats-accumulate.asp&StatsBoard=2) into
+  Player_Stats_Playoffs / Team_Stats_Playoffs sheets, which ingest.py tags
+  competition='playoffs'. Seasons before the site kept a playoff board
+  simply yield no rows (logged, not fatal).
 * team season TOTALS: the site's team page is per-game and gives percentages
   only (no makes), so `Team_Stats` is AGGREGATED from the scraped player rows
   (sum per team, percentages recomputed). Team-level rebounds / bench noise
@@ -377,7 +380,47 @@ def _split_name(full: str) -> tuple[str, str]:
 # --------------------------------------------------------------------------- #
 # per-season orchestration -> ingest-shaped DataFrames                        #
 # --------------------------------------------------------------------------- #
-def scrape_season(fetch: Fetcher, cyear: int, *, skip_bios: bool, limit: int | None) -> dict[str, pd.DataFrame]:
+# stats-accumulate.asp exposes the playoff leaderboard behind &StatsBoard=2
+# (regular season is the site default, no param). Verified live for cYear=2023
+# ("פלייאוף" in the page header). The column order and page markup are
+# identical, so the same parser handles both boards.
+PLAYOFF_STATSBOARD = 2
+
+
+def _scrape_player_totals(fetch: Fetcher, cyear: int, *, label: str,
+                          extra: dict | None = None, limit: int | None = None) -> list[dict]:
+    """Paginated stats-accumulate.asp -> normalised player-total rows.
+    `extra` is merged into every request (e.g. {"StatsBoard": 2} for playoffs)."""
+    base = {"cYear": cyear, **(extra or {})}
+    first = fetch.get("stats-accumulate.asp", {**base, "c": 1}, label=f"{label} p1")
+    pages = parse_accumulate_page_count(first)
+    rows = parse_player_totals_page(first)
+    for c in range(2, pages + 1):
+        rows.extend(parse_player_totals_page(
+            fetch.get("stats-accumulate.asp", {**base, "c": c}, label=f"{label} p{c}")))
+        if limit and len(rows) >= limit:
+            break
+    return rows[:limit] if limit else rows
+
+
+def _aggregate_team_stats(player_stats_df: pd.DataFrame, pid_to_team: dict,
+                          stat_cols: list[str]) -> pd.DataFrame:
+    """Team_Stats from summed player rows (see KNOWN GAPS in the docstring).
+    Shared by the regular-season and playoff boards."""
+    ps = player_stats_df.copy()
+    ps["TeamID"] = ps["PlayerId"].map(pid_to_team)
+    ps = ps.dropna(subset=["TeamID"])
+    agg_cols = [c for c in stat_cols if c not in ("FG%", "3P%", "FT%")]
+    grouped = ps.groupby("TeamID")[agg_cols].sum(min_count=1).reset_index()
+    grouped["GP"] = ps.groupby("TeamID")["GP"].max().values  # team GP, not sum
+    grouped["FG%"] = (100 * grouped["FGM"] / grouped["FGA"]).round(1)
+    grouped["3P%"] = (100 * grouped["3PM"] / grouped["3PA"]).round(1)
+    grouped["FT%"] = (100 * grouped["FTM"] / grouped["FTA"]).round(1)
+    return grouped.rename(columns={"TeamID": "TeamId"})[["TeamId", *stat_cols]]
+
+
+def scrape_season(fetch: Fetcher, cyear: int, *, skip_bios: bool, limit: int | None,
+                  with_playoffs: bool = False) -> dict[str, pd.DataFrame]:
     season = cyear_to_season(cyear)
     print(f"[{season}] cYear={cyear}")
 
@@ -388,19 +431,10 @@ def scrape_season(fetch: Fetcher, cyear: int, *, skip_bios: bool, limit: int | N
     print(f"  teams: {len(standings)}")
 
     # ---- player season totals (paginated by &c=) ----
-    first = fetch.get("stats-accumulate.asp", {"cYear": cyear, "c": 1}, label=f"{season} totals p1")
-    pages = parse_accumulate_page_count(first)
-    player_rows = parse_player_totals_page(first)
-    for c in range(2, pages + 1):
-        html = fetch.get("stats-accumulate.asp", {"cYear": cyear, "c": c}, label=f"{season} totals p{c}")
-        player_rows.extend(parse_player_totals_page(html))
-        if limit and len(player_rows) >= limit:
-            break
-    if limit:
-        player_rows = player_rows[:limit]
+    player_rows = _scrape_player_totals(fetch, cyear, label=f"{season} totals", limit=limit)
     if not player_rows:
         raise RuntimeError(f"{season}: no player rows parsed from stats-accumulate.asp")
-    print(f"  player season-total rows: {len(player_rows)} across {pages} page(s)")
+    print(f"  player season-total rows: {len(player_rows)}")
 
     # ---- rosters + bios, per team ----
     roster_rows: list[dict] = []
@@ -464,29 +498,38 @@ def scrape_season(fetch: Fetcher, cyear: int, *, skip_bios: bool, limit: int | N
                "dreb": "DREB", "reb": "REB", "ast": "AST", "tov": "TOV",
                "stl": "STL", "blk": "BLK", "pir": "PIR"}
 
-    player_stats_df = pd.DataFrame([
-        {"PlayerId": pr["source_player_id"], **{key_map[k]: pr[k] for k in key_map}}
-        for pr in player_rows
-    ])
+    def _player_stats_frame(rows: list[dict]) -> pd.DataFrame:
+        return pd.DataFrame([
+            {"PlayerId": pr["source_player_id"], **{key_map[k]: pr[k] for k in key_map}}
+            for pr in rows
+        ])
 
-    # Team_Stats: aggregated from player rows (see KNOWN GAPS in the docstring).
-    ps = player_stats_df.copy()
-    ps["TeamID"] = ps["PlayerId"].map(
-        {r["PlayerId"]: r["TeamID"] for r in roster_rows}
-    )
-    agg_cols = [c for c in stat_cols if c not in ("FG%", "3P%", "FT%")]
-    grouped = ps.dropna(subset=["TeamID"]).groupby("TeamID")[agg_cols].sum(min_count=1).reset_index()
-    grouped["GP"] = ps.dropna(subset=["TeamID"]).groupby("TeamID")["GP"].max().values  # team GP, not sum
-    grouped["FG%"] = (100 * grouped["FGM"] / grouped["FGA"]).round(1)
-    grouped["3P%"] = (100 * grouped["3PM"] / grouped["3PA"]).round(1)
-    grouped["FT%"] = (100 * grouped["FTM"] / grouped["FTA"]).round(1)
-    team_stats_df = grouped.rename(columns={"TeamID": "TeamId"})[["TeamId", *stat_cols]]
+    pid_to_team = {r["PlayerId"]: r["TeamID"] for r in roster_rows}
+    player_stats_df = _player_stats_frame(player_rows)
+    team_stats_df = _aggregate_team_stats(player_stats_df, pid_to_team, stat_cols)
+
+    # ---- optional playoff board (&StatsBoard=2) as extra ingest sheets ----
+    playoff_frames: dict[str, pd.DataFrame] = {}
+    if with_playoffs:
+        po_rows = _scrape_player_totals(
+            fetch, cyear, label=f"{season} PLAYOFFS totals",
+            extra={"StatsBoard": PLAYOFF_STATSBOARD}, limit=limit)
+        if po_rows:
+            po_players = _player_stats_frame(po_rows)
+            po_teams = _aggregate_team_stats(po_players, pid_to_team, stat_cols)
+            playoff_frames["Player_Stats_Playoffs"] = po_players
+            playoff_frames["Team_Stats_Playoffs"] = po_teams
+            print(f"  playoffs: {len(po_players)} player rows, {len(po_teams)} teams")
+        else:
+            print(f"  playoffs: no rows for {season} (season may pre-date the board)")
 
     # keep integer columns as nullable ints so the workbook (and then the
     # INTEGER schema columns) don't get "3.0" floats from NaN-widening.
     int_stats = [c for c in stat_cols if c not in ("FG%", "3P%", "FT%")]
-    for df, cols in ((roster_df, ["JerseyNumber", "YearsOnTeam"]),
-                     (player_stats_df, int_stats), (team_stats_df, int_stats)):
+    int_cast = [(roster_df, ["JerseyNumber", "YearsOnTeam"]),
+                (player_stats_df, int_stats), (team_stats_df, int_stats)]
+    int_cast += [(df, int_stats) for df in playoff_frames.values()]
+    for df, cols in int_cast:
         for c in cols:
             if c in df.columns:
                 df[c] = pd.to_numeric(df[c], errors="coerce").round().astype("Int64")
@@ -497,6 +540,7 @@ def scrape_season(fetch: Fetcher, cyear: int, *, skip_bios: bool, limit: int | N
         "Roster": roster_df,
         "Team_Stats": team_stats_df,
         "Player_Stats": player_stats_df,
+        **playoff_frames,  # Player_Stats_Playoffs / Team_Stats_Playoffs when --with-playoffs
         "_season": season,  # popped by the writer
     }
 
@@ -532,6 +576,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--debug-dump", type=Path, default=None, help="also save every fetched page here")
     p.add_argument("--skip-bios", action="store_true",
                    help="don't fetch per-player pages (nationality left NULL)")
+    p.add_argument("--with-playoffs", action="store_true",
+                   help="also scrape the playoff board (stats-accumulate.asp&StatsBoard=2) "
+                        "into Player_Stats_Playoffs / Team_Stats_Playoffs sheets")
     p.add_argument("--limit", type=int, default=None, help="cap player rows per season (smoke test)")
     p.add_argument("--dry-run", action="store_true", help="scrape + report counts, write nothing")
     p.add_argument("--ingest", action="store_true",
@@ -551,7 +598,8 @@ def main(argv: Iterable[str] | None = None) -> int:
     for cyear in cyears:
         season = cyear_to_season(cyear)
         try:
-            frames = scrape_season(fetch, cyear, skip_bios=args.skip_bios, limit=args.limit)
+            frames = scrape_season(fetch, cyear, skip_bios=args.skip_bios, limit=args.limit,
+                                   with_playoffs=args.with_playoffs)
         except Exception as exc:  # keep going; report at the end
             failures.append((season, str(exc)))
             print(f"  !! {season} failed: {exc}", file=sys.stderr)
