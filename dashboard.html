@@ -564,6 +564,23 @@
   .glass-fill { height: 100%; border-radius: 3px; }
   .glass-tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); }
   .glass-cap { margin-top: 5px; font: 500 10.5px/1 var(--font-body); color: var(--ink-3); }
+  /* Half-court shot profile + heatmap */
+  .hc-grid { display: grid; grid-template-columns: minmax(280px, 1.4fr) minmax(220px, 1fr); gap: 20px 28px; align-items: start; }
+  @media (max-width: 720px) { .hc-grid { grid-template-columns: 1fr; } }
+  .hc-wrap { position: relative; max-width: 480px; margin: 0 auto; width: 100%; }
+  .hc-svg { width: 100%; height: auto; display: block; direction: ltr; background: #10151c; border: 1px solid var(--hair); border-radius: 6px; }
+  .hc-line { fill: none; stroke: rgba(255,255,255,.28); stroke-width: 1.5; }
+  .hc-zone { stroke: rgba(255,255,255,.22); stroke-width: 1; cursor: pointer; fill-opacity: .58; transition: fill-opacity .1s ease; }
+  .hc-zone:hover { fill-opacity: .88; }
+  .hc-zlabel { font: 700 12px var(--font-body); fill: #fff; paint-order: stroke; stroke: rgba(0,0,0,.55); stroke-width: 3; }
+  .hc-zsub { font: 600 8.5px var(--font-body); fill: rgba(255,255,255,.9); paint-order: stroke; stroke: rgba(0,0,0,.5); stroke-width: 2.5; }
+  .hc-legend { padding: 0 0 14px; }
+  .hc-table { display: flex; flex-direction: column; gap: 2px; }
+  .hc-trow { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--hair-soft); }
+  .hc-trow:last-child { border-bottom: 0; }
+  .hc-thead > div { font: 600 8.5px/1.2 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+  .hc-tzone { font: 600 11px/1.25 var(--font-body); color: var(--ink-2); }
+  .hc-tnum { font: 600 12px/1 var(--font-body); font-variant-numeric: tabular-nums; color: var(--ink-2); unicode-bidi: isolate; direction: ltr; }
 
   /* ---------- All-players table (Player tab default view) ---------- */
   .players-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 18px; }
@@ -851,6 +868,23 @@ const STR = {
     adv_glass_drb: 'DRB% — ריבאונד הגנתי',
     adv_glass_posavg: 'ממוצע עמדה',
     adv_glass_top: 'מובילי הלוח (ORB%+DRB%)',
+    adv_court_tab: 'פרופיל זריקות',
+    adv_court_title: 'פרופיל זריקות ומפת חום — חצי מגרש',
+    adv_court_sub: 'נפח, פגיעות/ניסיונות ואחוז קליעה לכל אזור. הצבע משווה את אחוז הקליעה לחציון.',
+    court_base_label: 'השוואה מול',
+    court_base_pos: 'עמדה',
+    court_base_league: 'ליגה',
+    court_zone_paint: 'צבע · זריקות שתיים',
+    court_zone_arc: 'פרימטר · זריקות שלוש',
+    court_zone_ft: 'קו העונשין',
+    court_vol: 'נפח',
+    court_vs: 'מול החציון',
+    court_no_sample: 'אין ניסיונות',
+    court_hot: 'יעילות עלית',
+    court_avg: 'סביב הממוצע',
+    court_cold: 'מתחת לממוצע',
+    pl_shot_kicker: 'פריסת זריקות',
+    pl_shot_title: 'פרופיל זריקות — חצי מגרש',
     an_cmp_kicker: 'השוואת שחקנים',
     an_cmp_title: 'בחרו עד 4 שחקנים להשוואה',
     an_cmp_none: '— ריק —',
@@ -1046,6 +1080,23 @@ const STR = {
     adv_glass_drb: 'DRB% — defensive rebound rate',
     adv_glass_posavg: 'Position avg',
     adv_glass_top: 'Glass leaders (ORB%+DRB%)',
+    adv_court_tab: 'Shot Profile',
+    adv_court_title: 'Half-court shot profile & efficiency heatmap',
+    adv_court_sub: 'Volume, makes/attempts and FG% per zone. Colour compares the zone FG% to the median.',
+    court_base_label: 'Compare vs',
+    court_base_pos: 'Position',
+    court_base_league: 'League',
+    court_zone_paint: 'Paint · 2PT',
+    court_zone_arc: 'Perimeter · 3PT',
+    court_zone_ft: 'Free-throw line',
+    court_vol: 'Vol',
+    court_vs: 'vs median',
+    court_no_sample: 'No attempts',
+    court_hot: 'Elite efficiency',
+    court_avg: 'Around average',
+    court_cold: 'Below average',
+    pl_shot_kicker: 'Shot distribution',
+    pl_shot_title: 'Shot profile — half court',
     an_cmp_kicker: 'Player comparison',
     an_cmp_title: 'Pick up to 4 players to compare',
     an_cmp_none: '— none —',
@@ -1363,6 +1414,7 @@ const state = {
   anSection: lsGet('sls-ansection', 'scatter'),
   anAdv: lsGet('sls-anadv', 'load'),
   scTeam: '', scPos: '', scMinGp: 5,
+  courtPid: null, courtBase: lsGet('sls-courtbase', 'position'), glassPid: null,
   playerView: 'list',
   playersQuery: '', playersPos: '', playersTeam: '',
   playersSortKey: 'pts', playersSortDir: 'desc',
@@ -2561,6 +2613,9 @@ function renderPlayerCard(root) {
   // advanced-metrics grid is gone).
   root.appendChild(insightsCard(playerInsights(p)));
 
+  const _scp = playerShotCourtPanel(p);
+  if (_scp) root.appendChild(_scp);
+
   /* vs position average, honest substitute for a fabricated game log --
      may not exist (e.g. no other playoff player shares this exact position
      code), in which case the comparison panel is simply skipped. */
@@ -2631,6 +2686,7 @@ function renderAnalytics(root) {
       ['ppr', S.adv_ppr_tab, renderPPR],
       ['shotdiet', S.adv_diet_tab, renderShotDiet],
       ['glass', S.adv_glass_tab, renderGlass],
+      ['court', S.adv_court_tab, renderShotCourt],
     ];
     const sub2 = el('div', 'lang-switch an-adv-nav');
     adv.forEach(([id, label]) => {
@@ -3355,6 +3411,235 @@ function glassMeter(label, val, avg, max, color) {
   box.appendChild(track);
   box.appendChild(el('div', 'glass-cap', STR[state.lang].adv_glass_posavg + ' ' + fmt(avg) + '%'));
   return box;
+}
+
+/* ---- F. Half-court shot profile & efficiency heatmap ----
+ * Three core zones derived from the box-score splits we actually have:
+ *   paint / 2PT  = (FGM-FG3M) / (FGA-FG3A)
+ *   perimeter/3PT = FG3M / FG3A
+ *   free-throw line = FTM / FTA
+ * Zone fill is a diverging heatmap of the entity's zone FG% vs the median of a
+ * comparison pool (same position, or league). */
+function shotZones(e) {
+  const twoM = num0(e.fgm) - num0(e.fg3m), twoA = num0(e.fga) - num0(e.fg3a);
+  const denom = Math.max(0, twoA) + num0(e.fg3a) + num0(e.fta);
+  const mk = (key, made, att) => ({
+    key, made: Math.max(0, made), att: Math.max(0, att),
+    pct: safeDiv(Math.max(0, made), Math.max(0, att)) * 100,
+    vol: safeDiv(Math.max(0, att), denom) * 100,
+  });
+  return [mk('paint', twoM, twoA), mk('arc', num0(e.fg3m), num0(e.fg3a)), mk('ft', num0(e.ftm), num0(e.fta))];
+}
+function zoneMedians(pool) {
+  const grab = (idx) => median(pool.map((p) => shotZones(p)[idx]).filter((z) => z.att >= 5).map((z) => z.pct));
+  return { paint: grab(0), arc: grab(1), ft: grab(2) };
+}
+function heatColor(pct, med, hasSample) {
+  if (!hasSample || !Number.isFinite(med) || med === 0) return '#2b323c';
+  const d = pct - med;
+  if (d >= 6) return '#e5533d';   // hot red-orange -- elite
+  if (d >= 2) return '#e08a3c';   // orange
+  if (d > -2) return '#3fb6c9';   // cyan -- average
+  if (d > -6) return '#5f83ab';   // slate blue
+  return '#3a5a83';               // cold blue -- below average
+}
+function _arcPts(cx, cy, r, a0, a1, steps) {
+  const out = [];
+  for (let i = 0; i <= steps; i++) {
+    const a = a0 + (a1 - a0) * i / steps;
+    out.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+  }
+  return out;
+}
+function buildHalfCourt(entity, pool, opts) {
+  opts = opts || {};
+  const S = STR[state.lang];
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 480, H = 448;
+  const HX = 240, HY = 392, R3 = 196, ROUT = 224;
+  const mk = (tag, a) => { const n = document.createElementNS(NS, tag); for (const k in a) n.setAttribute(k, a[k]); return n; };
+  const poly = (pts) => pts.map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+
+  const zones = shotZones(entity);
+  const med = zoneMedians(pool);
+  const medOf = { paint: med.paint, arc: med.arc, ft: med.ft };
+  const zi = { paint: zones[0], arc: zones[1], ft: zones[2] };
+
+  const wrap = el('div', 'hc-wrap');
+  const svg = mk('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'hc-svg', role: 'img', 'aria-label': S.adv_court_title });
+
+  // corner break angles for the 3PT arc (arc runs left corner -> apex -> right corner)
+  const angL = Math.atan2(306 - HY, 64 - HX);
+  const angR = Math.atan2(306 - HY, 416 - HX);
+
+  // --- zone fills ---
+  const arc3 = _arcPts(HX, HY, R3, angL, angR, 40);
+  const arcOut = _arcPts(HX, HY, ROUT, angL, angR, 40);
+  // 2PT zone (inside the arc)
+  const paintPoly = [[64, 420], [64, 306]].concat(arc3).concat([[416, 306], [416, 420]]);
+  svg.appendChild(mk('polygon', { class: 'hc-zone', 'data-z': 'paint', points: poly(paintPoly), fill: heatColor(zi.paint.pct, medOf.paint, zi.paint.att >= 3) }));
+  // 3PT band (ribbon between R3 and ROUT) + corner strips
+  const bandPoly = arcOut.concat(arc3.slice().reverse());
+  svg.appendChild(mk('polygon', { class: 'hc-zone', 'data-z': 'arc', points: poly(bandPoly), fill: heatColor(zi.arc.pct, medOf.arc, zi.arc.att >= 3) }));
+  svg.appendChild(mk('rect', { class: 'hc-zone', 'data-z': 'arc', x: 36, y: 306, width: 28, height: 114, fill: heatColor(zi.arc.pct, medOf.arc, zi.arc.att >= 3) }));
+  svg.appendChild(mk('rect', { class: 'hc-zone', 'data-z': 'arc', x: 416, y: 306, width: 28, height: 114, fill: heatColor(zi.arc.pct, medOf.arc, zi.arc.att >= 3) }));
+  // FT zone (semicircle above the FT line)
+  const ftPts = _arcPts(HX, 300, 52, Math.PI, 2 * Math.PI, 24);
+  svg.appendChild(mk('polygon', { class: 'hc-zone', 'data-z': 'ft', points: poly(ftPts), fill: heatColor(zi.ft.pct, medOf.ft, zi.ft.att >= 3) }));
+
+  // --- court reference lines (drawn over the fills) ---
+  svg.appendChild(mk('rect', { class: 'hc-line', x: 30, y: 18, width: 420, height: 402 }));
+  svg.appendChild(mk('rect', { class: 'hc-line', x: 180, y: 300, width: 120, height: 120 }));
+  svg.appendChild(mk('circle', { class: 'hc-line', cx: HX, cy: 300, r: 52 }));
+  svg.appendChild(mk('polyline', { class: 'hc-line', points: poly([[64, 420], [64, 306]].concat(arc3).concat([[416, 306], [416, 420]])) }));
+  svg.appendChild(mk('polyline', { class: 'hc-line', points: poly(_arcPts(HX, 18, 52, 0, Math.PI, 20)) }));
+  svg.appendChild(mk('line', { class: 'hc-line', x1: 218, y1: 402, x2: 262, y2: 402 }));
+  svg.appendChild(mk('circle', { class: 'hc-line', cx: HX, cy: 392, r: 7 }));
+
+  // --- zone labels ---
+  const labelAt = (z, x, y) => {
+    const g = mk('g', {});
+    const t1 = mk('text', { class: 'hc-zlabel', x, y, 'text-anchor': 'middle' });
+    t1.textContent = z.att > 0 ? fmt(z.pct, 0) + '%' : '—';
+    const t2 = mk('text', { class: 'hc-zsub', x, y: y + 13, 'text-anchor': 'middle' });
+    t2.textContent = z.made + '/' + z.att + '  ·  ' + fmt(z.vol, 0) + '% ' + S.court_vol;
+    g.appendChild(t1); g.appendChild(t2); svg.appendChild(g);
+  };
+  labelAt(zi.paint, HX, 388);
+  labelAt(zi.arc, HX, 250);
+  labelAt(zi.ft, HX, 285);
+
+  // --- tooltip ---
+  const tip = el('div', 'sc-tooltip');
+  const meta = {
+    paint: [S.court_zone_paint, medOf.paint],
+    arc: [S.court_zone_arc, medOf.arc],
+    ft: [S.court_zone_ft, medOf.ft],
+  };
+  svg.querySelectorAll('.hc-zone').forEach((node) => {
+    const z = zi[node.getAttribute('data-z')];
+    const [zlabel, zmed] = meta[node.getAttribute('data-z')];
+    node.addEventListener('mouseenter', () => {
+      tip.textContent = '';
+      const h = el('div'); h.style.cssText = 'font-weight:700;color:var(--accent)'; h.textContent = zlabel; tip.appendChild(h);
+      tip.appendChild(el('div', null, 'FG%: ' + (z.att > 0 ? fmt(z.pct) : '—') + '   (' + z.made + '/' + z.att + ')'));
+      tip.appendChild(el('div', null, S.court_vol + ': ' + fmt(z.vol) + '%'));
+      tip.appendChild(el('div', null, S.court_vs + ': ' + (Number.isFinite(zmed) && zmed ? (z.pct - zmed >= 0 ? '+' : '') + fmt(z.pct - zmed) : '—')));
+      tip.style.display = 'block';
+    });
+    node.addEventListener('mousemove', (ev) => placeTip(tip, wrap, ev));
+    node.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+  });
+
+  wrap.appendChild(svg);
+  wrap.appendChild(tip);
+  return wrap;
+}
+function courtLegend() {
+  const S = STR[state.lang];
+  const leg = el('div', 'tr-legend hc-legend');
+  [['#e5533d', S.court_hot], ['#3fb6c9', S.court_avg], ['#3a5a83', S.court_cold]].forEach(([c, l]) => {
+    const s = el('span'); const i = el('i'); i.style.cssText = 'width:12px;height:10px;border-radius:2px;background:' + c;
+    s.appendChild(i); s.appendChild(document.createTextNode(l)); leg.appendChild(s);
+  });
+  return leg;
+}
+function courtZoneTable(entity, pool) {
+  const S = STR[state.lang];
+  const zones = shotZones(entity);
+  const med = zoneMedians(pool);
+  const medArr = [med.paint, med.arc, med.ft];
+  const names = [S.court_zone_paint, S.court_zone_arc, S.court_zone_ft];
+  const tbl = el('div', 'hc-table');
+  const head = el('div', 'hc-trow hc-thead');
+  ['', 'M/A', 'FG%', S.court_vol, S.court_vs].forEach((h) => head.appendChild(el('div', null, h)));
+  tbl.appendChild(head);
+  zones.forEach((z, i) => {
+    const row = el('div', 'hc-trow');
+    row.appendChild(el('div', 'hc-tzone', names[i]));
+    row.appendChild(el('div', 'hc-tnum', z.made + '/' + z.att));
+    row.appendChild(el('div', 'hc-tnum', z.att > 0 ? fmt(z.pct) : '—'));
+    row.appendChild(el('div', 'hc-tnum', fmt(z.vol) + '%'));
+    const d = Number.isFinite(medArr[i]) && medArr[i] ? z.pct - medArr[i] : null;
+    const dc = el('div', 'hc-tnum'); dc.textContent = d === null ? '—' : (d >= 0 ? '+' : '') + fmt(d);
+    if (d !== null) dc.style.color = d >= 4 ? '#e5533d' : d <= -4 ? '#5f83ab' : 'var(--ink-2)';
+    row.appendChild(dc);
+    tbl.appendChild(row);
+  });
+  return tbl;
+}
+/* comparison pool: same-position qualified players, or the whole league */
+function courtPool(base, pos) {
+  const q = analysisPool(activePlayersRaw());
+  if (base === 'position' && pos) {
+    const same = q.filter((p) => p.position === pos);
+    if (same.length >= 4) return same;
+  }
+  return q;
+}
+function renderShotCourt(root) {
+  const S = STR[state.lang];
+  const panel = advPanel(S.adv_court_tab, S.adv_court_title, S.adv_court_sub);
+  const players = analysisPool(activePlayersRaw()).filter((p) => num0(p.fga) > 0);
+  if (players.length < 3) {
+    const b = el('div', 'sc-body'); b.appendChild(el('div', 'empty-state', S.sc_empty));
+    panel.appendChild(b); root.appendChild(panel); return;
+  }
+  if (!state.courtPid || !players.some((p) => p.id === state.courtPid)) {
+    state.courtPid = [...players].sort((a, b) => num0(b.avg_points) - num0(a.avg_points))[0].id;
+  }
+  const fr = el('div', 'sc-filters');
+  const sel = document.createElement('select');
+  [...players].sort((a, b) => playerName(a).localeCompare(playerName(b), state.lang === 'he' ? 'he' : 'en')).forEach((p) => {
+    const o = document.createElement('option'); o.value = String(p.id);
+    o.textContent = playerName(p) + ' — ' + teamLabel(getTeam(p.team_id));
+    if (p.id === state.courtPid) o.selected = true;
+    sel.appendChild(o);
+  });
+  sel.addEventListener('change', (e) => { state.courtPid = Number(e.target.value); render(); });
+  fr.appendChild(wrapField(S.col_player, sel));
+
+  const baseSw = el('div', 'lang-switch');
+  [['position', S.court_base_pos], ['league', S.court_base_league]].forEach(([id, label]) => {
+    const b = el('button', null, label); b.type = 'button';
+    b.setAttribute('aria-pressed', state.courtBase === id ? 'true' : 'false');
+    b.addEventListener('click', () => { state.courtBase = id; lsSet('sls-courtbase', id); render(); });
+    baseSw.appendChild(b);
+  });
+  const bf = el('div', 'sc-field'); bf.appendChild(el('label', null, S.court_base_label)); bf.appendChild(baseSw);
+  fr.appendChild(bf);
+  panel.appendChild(fr);
+
+  const p = players.find((x) => x.id === state.courtPid);
+  const pool = courtPool(state.courtBase, p.position);
+  const body = el('div', 'sc-body');
+  body.appendChild(courtLegend());
+  const grid = el('div', 'hc-grid');
+  grid.appendChild(buildHalfCourt(p, pool));
+  grid.appendChild(courtZoneTable(p, pool));
+  body.appendChild(grid);
+  panel.appendChild(body);
+  root.appendChild(panel);
+}
+/* Player-card variant: fixed to the player, position baseline. */
+function playerShotCourtPanel(p) {
+  const S = STR[state.lang];
+  if (num0(p.fga) <= 0) return null;
+  const panel = el('div', 'panel');
+  panel.style.marginTop = '24px';
+  const h = el('div', 'panel-head');
+  h.appendChild(el('div', 'panel-kicker', S.pl_shot_kicker));
+  h.appendChild(el('div', 'panel-title sm', S.pl_shot_title));
+  panel.appendChild(h);
+  const pool = courtPool('position', p.position);
+  const body = el('div', 'sc-body');
+  body.appendChild(courtLegend());
+  const grid = el('div', 'hc-grid');
+  grid.appendChild(buildHalfCourt(p, pool));
+  grid.appendChild(courtZoneTable(p, pool));
+  body.appendChild(grid);
+  panel.appendChild(body);
+  return panel;
 }
 
 const RADAR_METRICS = [
