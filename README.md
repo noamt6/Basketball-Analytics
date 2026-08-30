@@ -370,6 +370,8 @@ first two replaced by the leader grids, moves now shown in context (see
 | `dashboard.html` + `data.json` | Static bilingual dashboard; loads `data.json` at runtime — see [Dashboard](#dashboard) |
 | `dashboard_supplement.json` | Dashboard fields not in the DB: team `rank`, row order, `age_as_of` |
 | `scripts/reset_db.py` | Drop all tables so `schema.sql` re-applies (no migration tool) |
+| `scripts/qa_audit_agent.js` | One-command quality gate — math invariants + metadata + team-metrics integrity + Playwright visual/RTL sweep (8 viewports); Markdown report, exit 0 iff all green. `--skip-visual`, `--json` |
+| `scripts/scrape_player_details.py` | Backfill missing jersey numbers into `data.json` from `team.asp` roster widgets (cache-shared with `scrape_league.py`); also normalises `name_he` nickname quoting (`"…"` → `״…״`) and the `jersey: 0` sentinel. Does not fabricate — the league source lacks a number for ~25 % of stat-only appearances |
 | `Dockerfile` · `docker-compose.yml` · `docker-entrypoint.sh` | Batch image (`migrate`/`ingest`/`export`/`test`) + local stack |
 | `infra/` · `DEPLOY.md` · `.github/workflows/` | Terraform for AWS, deploy runbook, CI |
 | `data/hebrew_names.json` | Team/player Hebrew names sourced from basket.co.il, merged in by `export_dashboard_data.py` |
