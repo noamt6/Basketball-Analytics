@@ -539,6 +539,25 @@
   .tr-legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 16px 28px 0; }
   .tr-legend span { display: flex; align-items: center; gap: 7px; font: 500 11px/1.3 var(--font-body); color: var(--ink-3); unicode-bidi: isolate; }
   .tr-legend i { width: 12px; height: 3px; border-radius: 2px; display: block; flex: none; }
+  /* ---------- Decade Trends ---------- */
+  .dc-head-wrap { margin: 34px 0 16px; }
+  .dc-sub { font: 400 12.5px/1.6 var(--font-body); color: var(--ink-3); max-width: 640px; margin: 8px 0 14px; }
+  .dc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .dc-chip {
+    font: 600 10.5px/1 var(--font-body); letter-spacing: .04em; padding: 6px 9px; border-radius: 999px;
+    background: var(--panel-2); color: var(--ink-3); border: 1px solid var(--hair-strong); cursor: pointer;
+    font-variant-numeric: tabular-nums; unicode-bidi: isolate;
+  }
+  .dc-chip:hover { color: var(--ink); border-color: var(--accent-ring); }
+  .dc-chip[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .dc-panel { margin-top: 16px; }
+  .dc-take { font: 400 12px/1.65 var(--font-body); color: var(--ink-3); max-width: 660px; margin: 14px auto 0; padding: 0 4px; }
+  .sc-quad.dc-hot { stroke: var(--accent); stroke-width: 1.5; stroke-opacity: .8; }
+  @media (max-width: 640px) {
+    .dc-head-wrap { margin-top: 24px; }
+    .dc-chip { font-size: 10px; padding: 5px 8px; }
+    .dc-take { font-size: 11.5px; }
+  }
   /* head-to-head */
   .h2h-row { display: grid; grid-template-columns: 62px 1fr 62px; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--hair-soft); }
   .h2h-row:last-child { border-bottom: 0; }
@@ -967,6 +986,28 @@ const STR = {
     tr_3par: '3PA למשחק',
     tr_pace: 'נק׳ ממוצע לקבוצה',
     tr_ft: 'אחוז עונשין',
+    dc_head: 'מגמות עשור',
+    dc_sub: 'עשר עונות של ליגת העל, 2016/17 עד 2025/26 — כיצד השתנו הקצב, הזריקה מחוץ לקשת, תמהיל השחקנים הישראלים והפער בין ראש הטבלה לתחתיתה.',
+    dc_chip_all: 'כל העונות',
+    dc_axis_l: 'ציר שמאל',
+    dc_axis_r: 'ציר ימין',
+    dc_m_pace: 'קצב (מהלכים ל-40)',
+    dc_m_3par: 'נתח ניסיונות שלשה',
+    dc_m_ts: 'TS% ליגתי',
+    dc_m_efg: 'eFG% ליגתי',
+    dc_m_ft: 'אחוז עונשין',
+    dc_m_isr_min: 'דקות ישראלים %',
+    dc_m_for_min: 'דקות זרים %',
+    dc_m_isr_pts: 'נקודות ישראלים %',
+    dc_m_gap: 'פער PIR/משחק (3 עליונות − 3 תחתונות)',
+    dc_a_title: 'מהפכת השלשות והקצב',
+    dc_a_take: 'הקצב (מספר המהלכים ל-40 דקות) והנתח של ניסיונות השלשה מכלל הזריקה עלו יחד — הליגה עברה מכדורסל חצי-מגרש איטי למשחק מהיר שנשען על השלשה, בעקבות המגמה באירופה וב-NBA.',
+    dc_b_title: 'השפעת שחקנים ישראלים מול זרים',
+    dc_b_take: 'חלקם של השחקנים הישראלים בדקות המשחק ובנקודות נשחק לאורך העשור עם הרחבת מכסת הזרים ותקנת השחקן המקומי — הפער בין נתח הדקות לנתח הנקודות מלמד על תלות הליגה בקלעים זרים.',
+    dc_c_title: 'התפתחות יעילות הזריקה',
+    dc_c_take: 'אחוז הקליעה האמיתי (TS%) ואחוז הקליעה האפקטיבי (eFG%) עלו ככל שבחירת הזריקות השתפרה — יותר שלשות ולֵייאָפים, פחות זריקות ביניים. אחוז העונשין נשאר יציב יחסית.',
+    dc_d_title: 'מדד השוויוניות',
+    dc_d_take: 'הפער ב-PIR הממוצע למשחק בין שלוש הקבוצות המובילות לשלוש התחתונות מודד את השוויוניות בליגה. פער מתרחב מעיד על ריכוז כוח בצמרת; פער מצטמצם — על ליגה תחרותית יותר. (בהיעדר נתוני יריב בנתוני הסיכום העונתי, PIR משמש כאן כמדד דו-כיווני חלופי לדירוג נטו.)',
     an_sec_advanced: 'מדדים מתקדמים',
     small_sample_note: 'מדגם קטן — פחות מ-50 דקות בעונה; מדדי ל-36 דקות אינם יציבים.',
     adv_load_tab: 'עומס התקפי מול TS',
@@ -1225,6 +1266,28 @@ const STR = {
     tr_3par: '3PA per game',
     tr_pace: 'Avg points per team',
     tr_ft: 'Free-throw %',
+    dc_head: 'Decade Evolution',
+    dc_sub: 'Ten seasons of the Super League, 2016/17 to 2025/26 — how pace, the three-point shot, the Israeli-vs-foreign player mix, and the gap between the top and bottom of the table have shifted.',
+    dc_chip_all: 'All seasons',
+    dc_axis_l: 'left axis',
+    dc_axis_r: 'right axis',
+    dc_m_pace: 'Pace (poss/40)',
+    dc_m_3par: '3PT attempt rate',
+    dc_m_ts: 'League TS%',
+    dc_m_efg: 'League eFG%',
+    dc_m_ft: 'Free-throw %',
+    dc_m_isr_min: 'Israeli minutes %',
+    dc_m_for_min: 'Foreign minutes %',
+    dc_m_isr_pts: 'Israeli scoring %',
+    dc_m_gap: 'PIR/g gap (top 3 − bottom 3)',
+    dc_a_title: 'The 3PT & Pace Revolution',
+    dc_a_take: 'Pace (possessions per 40) and three-point attempt rate (3PAr) climbed together — the league moved from slow half-court basketball to a faster, three-happy game, tracking the same shift across Europe and the NBA.',
+    dc_b_title: 'Domestic vs Foreign Impact',
+    dc_b_take: 'The Israeli share of minutes and of scoring has drifted as the import quota widened and the local-player rule evolved — the gap between minutes share and scoring share is a read on how much the league leans on foreign scorers.',
+    dc_c_title: 'Shooting Efficiency Evolution',
+    dc_c_take: 'League-wide TS% and eFG% rose as shot selection improved — more threes and layups, fewer long twos. Free-throw percentage stayed comparatively flat.',
+    dc_d_title: 'Parity & Spread Index',
+    dc_d_take: 'The gap in average PIR per game between the top-3 and bottom-3 clubs measures league parity. A widening gap means power concentrating at the top; a narrowing one, a more competitive league. (With no opponent data in the season-totals feed, PIR stands in here as a two-way proxy for net rating.)',
     an_sec_advanced: 'Advanced metrics',
     small_sample_note: 'Small sample — under 50 minutes this season; Per-36 rates are unstable.',
     adv_load_tab: 'Load vs TS',
@@ -1459,8 +1522,22 @@ function teamCity(team) { return (state.lang === 'he' && team.city_he) ? team.ci
 function playerName(p) { return (state.lang === 'he' && p.name_he) ? p.name_he : p.name; }
 /* Search haystack for a player: BOTH the English and Hebrew names, so a query
    typed in one script still matches while the UI is showing the other (and a
-   partial/misspelt half of a name still hits). */
-function playerHay(p) { return (p.name || '') + ' ' + (p.name_he || ''); }
+   partial/misspelt half of a name still hits). Tables and headings keep the
+   official form (e.g. `Gabriel "Iffe" Lundberg`); here we ALSO fold in the
+   nickname-stripped form so `gabriel lundberg` / `גבריאל לונדברג` still match
+   even though the quoted nickname sits between the given and family name. */
+function stripNickname(s) {
+  return (s || '')
+    .replace(/["“”״″]([^"“”״″]{1,40})["“”״″]/g, ' ')
+    .replace(/\s+/g, ' ').trim();
+}
+function playerHay(p) {
+  const n = p.name || '', nh = p.name_he || '';
+  const parts = [n, nh];
+  const bare = stripNickname(n); if (bare && bare !== n) parts.push(bare);
+  const bareHe = stripNickname(nh); if (bareHe && bareHe !== nh) parts.push(bareHe);
+  return parts.join(' ');
+}
 /* A jersey number is optional in the source data. Historical (scraped) seasons
    often carry it as null, and the bundled workbook uses 0 as an "unknown"
    sentinel -- treat null / undefined / NaN / 0 identically so the UI shows a
@@ -1653,6 +1730,7 @@ const state = {
   analyticsView: lsGet('sls-anview', 'players'),
   anSection: lsGet('sls-ansection', 'scatter'),
   anAdv: lsGet('sls-anadv', 'load'),
+  dcSeason: null,
   scTeam: '', scPos: '', scMinGp: 5,
   courtPid: null, courtBase: lsGet('sls-courtbase', 'position'), glassPid: null,
   playerView: 'list',
@@ -3257,6 +3335,262 @@ function renderTrendsSection(root) {
   }
   panel.appendChild(body);
   root.appendChild(panel);
+
+  renderDecadeTrends(root);
+}
+
+/* ================= Decade Trends (2016-2026) =================
+ * Four multi-season views built entirely from the season-total box score in
+ * data.json -- no play-by-play, no opponent points. Pace uses the standard
+ * possession estimate (FGA + 0.44*FTA - OREB + TOV); "net rating" parity uses
+ * PIR/g as a two-way proxy since the feed has no opponent scoring. */
+function decadeSeries() {
+  const seasons = seasonList().slice().sort();
+  return seasons.map((sk) => {
+    const blob = RAW.seasons[sk] || {};
+    const tms = blob.teams || [], pls = blob.players || [];
+    const sum = (arr, f) => arr.reduce((a, x) => a + num0(f(x)), 0);
+    // league totals from team rows
+    const FGA = sum(tms, (x) => x.fga), FGM = sum(tms, (x) => x.fgm);
+    const FG3A = sum(tms, (x) => x.fg3a), FG3M = sum(tms, (x) => x.fg3m);
+    const FTA = sum(tms, (x) => x.fta), FTM = sum(tms, (x) => x.ftm);
+    const PTS = sum(tms, (x) => x.pts), TOV = sum(tms, (x) => x.tov);
+    const OREB = sum(tms, (x) => x.oreb);
+    // pace: mean of each team's possessions per game
+    const paceVals = tms.map((x) => {
+      const poss = num0(x.fga) + 0.44 * num0(x.fta) - num0(x.oreb) + num0(x.tov);
+      return safeDiv(poss, num0(x.gp));
+    }).filter((v) => v > 0);
+    const pace = paceVals.length ? paceVals.reduce((a, b) => a + b, 0) / paceVals.length : 0;
+    // domestic vs foreign (nationality 'Israel' == domestic; everything else foreign)
+    const isIsr = (p) => (p.nationality || '').trim() === 'Israel';
+    const minAll = sum(pls, (p) => totalMin(p)), minIsr = sum(pls.filter(isIsr), (p) => totalMin(p));
+    const ptsAll = sum(pls, (p) => p.pts), ptsIsr = sum(pls.filter(isIsr), (p) => p.pts);
+    // parity: PIR/g gap, top-3 vs bottom-3
+    const pir = tms.map((x) => num0(x.avg_pir)).filter((v) => v !== 0).sort((a, b) => b - a);
+    const mean3 = (a) => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
+    const gap = pir.length >= 6 ? mean3(pir.slice(0, 3)) - mean3(pir.slice(-3)) : 0;
+    return {
+      season: sk,
+      pace,
+      par3: safeDiv(FG3A, FGA) * 100,
+      ts: tsPctOf(PTS, FGA, FTA),
+      efg: efgPctOf(FGM, FG3M, FGA),
+      ft: safeDiv(FTM, FTA) * 100,
+      isrMin: safeDiv(minIsr, minAll) * 100,
+      forMin: safeDiv(minAll - minIsr, minAll) * 100,
+      isrPts: safeDiv(ptsIsr, ptsAll) * 100,
+      forPts: safeDiv(ptsAll - ptsIsr, ptsAll) * 100,
+      gap,
+    };
+  });
+}
+
+function shortSeason(sk) { return sk.split('-').map((y) => y.slice(2)).join('–'); }
+
+function decadeChips(series, wrapEls) {
+  const S = STR[state.lang];
+  const row = el('div', 'dc-chips');
+  const mkChip = (label, key) => {
+    const b = el('button', 'dc-chip', label);
+    b.type = 'button';
+    b.setAttribute('aria-pressed', state.dcSeason === key ? 'true' : 'false');
+    b.addEventListener('click', () => { state.dcSeason = state.dcSeason === key ? null : key; render(); });
+    return b;
+  };
+  row.appendChild(mkChip(S.dc_chip_all, null));
+  series.forEach((d) => row.appendChild(mkChip(shortSeason(d.season), d.season)));
+  return row;
+}
+
+/* generic normalized multi-line chart; each metric scaled to its own [lo,hi]
+ * so lines with different units share the frame (dual/multi-axis behaviour). */
+function decadeLineChart(series, metrics, ariaLabel) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+  const wrap = el('div', 'sc-wrap');
+
+  const legend = el('div', 'tr-legend');
+  metrics.forEach((mt) => {
+    const s = el('span');
+    const i = el('i'); i.style.background = mt.color; s.appendChild(i);
+    const v0 = series[0][mt.key], v1 = series[series.length - 1][mt.key];
+    let txt = mt.label + ':  ' + fmt(v0, mt.dec) + (mt.unit || '') + ' → ' + fmt(v1, mt.dec) + (mt.unit || '');
+    if (mt.axis) txt += '  (' + mt.axis + ')';
+    s.appendChild(document.createTextNode(txt));
+    legend.appendChild(s);
+  });
+  wrap.appendChild(legend);
+
+  const W = 780, H = 380, m = { l: 30, r: 30, t: 22, b: 46 };
+  const pw = W - m.l - m.r, phv = H - m.t - m.b, n = series.length;
+  const xAt = (i) => m.l + (n === 1 ? pw / 2 : pw * i / (n - 1));
+
+  const svg = mk('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'sc-svg', role: 'img' });
+  svg.setAttribute('aria-label', ariaLabel);
+
+  series.forEach((d, i) => {
+    const x = xAt(i);
+    const hot = state.dcSeason === d.season;
+    svg.appendChild(mk('line', { class: hot ? 'sc-quad dc-hot' : 'sc-quad', x1: x, y1: m.t, x2: x, y2: m.t + phv, 'stroke-dasharray': hot ? '0' : '2 5' }));
+    const tl = mk('text', { class: 'sc-tick', x, y: m.t + phv + 16, 'text-anchor': 'middle' });
+    tl.textContent = shortSeason(d.season);
+    svg.appendChild(tl);
+  });
+  svg.appendChild(mk('line', { class: 'sc-axis', x1: m.l, y1: m.t + phv, x2: m.l + pw, y2: m.t + phv }));
+
+  metrics.forEach((mt) => {
+    const vals = series.map((d) => d[mt.key]);
+    const lo = Math.min(...vals), hi = Math.max(...vals), pad = (hi - lo) * 0.12 || 1;
+    const yAt = (v) => m.t + phv - (hi === lo ? 0.5 : (v - lo + pad) / (hi - lo + 2 * pad)) * phv;
+    const pts = series.map((d, i) => xAt(i) + ',' + yAt(d[mt.key])).join(' ');
+    svg.appendChild(mk('polyline', { points: pts, fill: 'none', stroke: mt.color, 'stroke-width': 2.5, 'stroke-linejoin': 'round', 'stroke-dasharray': mt.dash || '0' }));
+    series.forEach((d, i) => svg.appendChild(mk('circle', { cx: xAt(i), cy: yAt(d[mt.key]), r: state.dcSeason === d.season ? 5 : 3.5, fill: mt.color })));
+  });
+
+  const tip = el('div', 'sc-tooltip');
+  series.forEach((d, i) => {
+    const bl = i === 0 ? m.l : (xAt(i - 1) + xAt(i)) / 2;
+    const br = i === n - 1 ? m.l + pw : (xAt(i) + xAt(i + 1)) / 2;
+    const rect = mk('rect', { x: bl, y: m.t, width: Math.max(1, br - bl), height: phv, fill: 'transparent' });
+    rect.style.cursor = 'crosshair';
+    const show = () => {
+      tip.textContent = '';
+      const h = el('div'); h.style.cssText = 'font-weight:700;color:var(--accent)';
+      h.textContent = d.season; tip.appendChild(h);
+      metrics.forEach((mt) => tip.appendChild(el('div', null, mt.label + ': ' + fmt(d[mt.key], mt.dec) + (mt.unit || ''))));
+      tip.style.display = 'block';
+    };
+    rect.addEventListener('mouseenter', show);
+    rect.addEventListener('mousemove', (ev) => placeTip(tip, wrap, ev));
+    rect.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+    svg.appendChild(rect);
+  });
+
+  wrap.appendChild(svg);
+  wrap.appendChild(tip);
+  return wrap;
+}
+
+/* stacked bars: Israeli vs foreign share of minutes, with the Israeli
+ * scoring-share drawn as an overlaid line. */
+function decadeStackChart(series, ariaLabel) {
+  const S = STR[state.lang];
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+  const wrap = el('div', 'sc-wrap');
+  const cIsr = CMP_COLORS[2], cFor = CMP_COLORS[1], cLine = CMP_COLORS[0];
+
+  const legend = el('div', 'tr-legend');
+  [[cIsr, S.dc_m_isr_min], [cFor, S.dc_m_for_min], [cLine, S.dc_m_isr_pts]].forEach(([c, lb], idx) => {
+    const s = el('span'); const i = el('i');
+    i.style.background = c; if (idx === 2) i.style.height = '3px'; s.appendChild(i);
+    s.appendChild(document.createTextNode(lb));
+    legend.appendChild(s);
+  });
+  wrap.appendChild(legend);
+
+  const W = 780, H = 380, m = { l: 34, r: 20, t: 22, b: 46 };
+  const pw = W - m.l - m.r, phv = H - m.t - m.b, n = series.length;
+  const bw = Math.min(46, pw / n * 0.62);
+  const xAt = (i) => m.l + pw * (i + 0.5) / n;
+  const yAt = (v) => m.t + phv - (v / 100) * phv;
+
+  const svg = mk('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'sc-svg', role: 'img' });
+  svg.setAttribute('aria-label', ariaLabel);
+
+  [0, 25, 50, 75, 100].forEach((g) => {
+    svg.appendChild(mk('line', { class: 'sc-axis', x1: m.l, y1: yAt(g), x2: m.l + pw, y2: yAt(g), 'stroke-opacity': g === 0 ? 1 : 0.28 }));
+    const tx = mk('text', { class: 'sc-tick', x: m.l - 6, y: yAt(g) + 3, 'text-anchor': 'end' }); tx.textContent = g;
+    svg.appendChild(tx);
+  });
+
+  series.forEach((d, i) => {
+    const x = xAt(i) - bw / 2;
+    const hIsr = (d.isrMin / 100) * phv;
+    const hot = state.dcSeason === d.season;
+    const g = mk('g', hot ? { opacity: 1 } : (state.dcSeason ? { opacity: 0.42 } : {}));
+    g.appendChild(mk('rect', { x, y: m.t + phv - hIsr, width: bw, height: hIsr, fill: cIsr }));
+    g.appendChild(mk('rect', { x, y: m.t, width: bw, height: phv - hIsr, fill: cFor, 'fill-opacity': 0.82 }));
+    svg.appendChild(g);
+    const tl = mk('text', { class: 'sc-tick', x: xAt(i), y: m.t + phv + 16, 'text-anchor': 'middle' });
+    tl.textContent = shortSeason(d.season);
+    svg.appendChild(tl);
+  });
+
+  const linePts = series.map((d, i) => xAt(i) + ',' + yAt(d.isrPts)).join(' ');
+  svg.appendChild(mk('polyline', { points: linePts, fill: 'none', stroke: cLine, 'stroke-width': 2.5, 'stroke-linejoin': 'round' }));
+  series.forEach((d, i) => svg.appendChild(mk('circle', { cx: xAt(i), cy: yAt(d.isrPts), r: state.dcSeason === d.season ? 5 : 3.5, fill: cLine })));
+
+  const tip = el('div', 'sc-tooltip');
+  series.forEach((d, i) => {
+    const rect = mk('rect', { x: m.l + pw * i / n, y: m.t, width: pw / n, height: phv, fill: 'transparent' });
+    rect.style.cursor = 'crosshair';
+    rect.addEventListener('mouseenter', () => {
+      tip.textContent = '';
+      const h = el('div'); h.style.cssText = 'font-weight:700;color:var(--accent)';
+      h.textContent = d.season; tip.appendChild(h);
+      tip.appendChild(el('div', null, S.dc_m_isr_min + ': ' + fmt(d.isrMin, 1) + '%'));
+      tip.appendChild(el('div', null, S.dc_m_for_min + ': ' + fmt(d.forMin, 1) + '%'));
+      tip.appendChild(el('div', null, S.dc_m_isr_pts + ': ' + fmt(d.isrPts, 1) + '%'));
+      tip.style.display = 'block';
+    });
+    rect.addEventListener('mousemove', (ev) => placeTip(tip, wrap, ev));
+    rect.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+    svg.appendChild(rect);
+  });
+
+  wrap.appendChild(svg);
+  wrap.appendChild(tip);
+  return wrap;
+}
+
+function decadePanel(title, chartNode, takeaway) {
+  const panel = el('div', 'panel dc-panel');
+  const ph = el('div', 'panel-head');
+  ph.appendChild(el('div', 'panel-kicker', STR[state.lang].dc_head));
+  ph.appendChild(el('div', 'panel-title sm', title));
+  panel.appendChild(ph);
+  const body = el('div', 'sc-body');
+  body.appendChild(chartNode);
+  const tk = el('p', 'dc-take', takeaway);
+  body.appendChild(tk);
+  panel.appendChild(body);
+  return panel;
+}
+
+function renderDecadeTrends(root) {
+  const S = STR[state.lang];
+  const series = decadeSeries();
+  if (series.length < 2) return;
+
+  const head = el('div', 'dc-head-wrap');
+  head.appendChild(el('div', 'eyebrow', S.dc_head));
+  const sub = el('p', 'dc-sub', S.dc_sub);
+  head.appendChild(sub);
+  head.appendChild(decadeChips(series));
+  root.appendChild(head);
+
+  // A. 3PT & Pace revolution -- dual-axis
+  root.appendChild(decadePanel(S.dc_a_title, decadeLineChart(series, [
+    { key: 'pace', label: S.dc_m_pace, color: CMP_COLORS[1], dec: 1, axis: S.dc_axis_l },
+    { key: 'par3', label: S.dc_m_3par, color: CMP_COLORS[0], dec: 1, unit: '%', axis: S.dc_axis_r },
+  ], S.dc_a_title), S.dc_a_take));
+
+  // B. Domestic vs foreign -- stacked bars + scoring-share line
+  root.appendChild(decadePanel(S.dc_b_title, decadeStackChart(series, S.dc_b_title), S.dc_b_take));
+
+  // C. Shooting efficiency evolution
+  root.appendChild(decadePanel(S.dc_c_title, decadeLineChart(series, [
+    { key: 'ts', label: S.dc_m_ts, color: CMP_COLORS[0], dec: 1, unit: '%' },
+    { key: 'efg', label: S.dc_m_efg, color: CMP_COLORS[1], dec: 1, unit: '%' },
+    { key: 'ft', label: S.dc_m_ft, color: CMP_COLORS[2], dec: 1, unit: '%', dash: '5 4' },
+  ], S.dc_c_title), S.dc_c_take));
+
+  // D. Parity & spread index
+  root.appendChild(decadePanel(S.dc_d_title, decadeLineChart(series, [
+    { key: 'gap', label: S.dc_m_gap, color: CMP_COLORS[3], dec: 1 },
+  ], S.dc_d_title), S.dc_d_take));
 }
 
 function buildTrends(series) {
