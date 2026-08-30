@@ -1,7 +1,12 @@
 # Publish the dashboard + push the batch image. Does NOT run migrate/ingest —
 # data refreshes are a separate deliberate step (locally or `aws ecs run-task`).
 #
-# Requires (from `terraform output`, set as repo Variables unless noted):
+# MANUAL ONLY (workflow_dispatch). The GitHub OIDC deploy path is not
+# provisioned for this repo — there is no OIDC provider / deploy role in AWS
+# and none of the secrets/vars below are set, so an automatic run on every
+# push just fails at "configure-aws-credentials". Day-to-day deploys are done
+# with the local `aws` CLI. To re-enable auto-deploy: `terraform apply` with
+# `github_repo` set, then add these repo settings and restore the `push` trigger:
 #   secret  AWS_DEPLOY_ROLE_ARN        -> github_deploy_role_arn
 #   var     AWS_REGION                 -> eu-central-1
 #   var     ECR_REPOSITORY_URL         -> ecr_repository_url
@@ -11,8 +16,6 @@ name: Deploy
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
 
 permissions:
   id-token: write
