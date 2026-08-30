@@ -226,14 +226,18 @@ def main() -> int:
         print("dry-run: data.json not written")
         return 0
 
-    args.data.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n",
-                         encoding="utf-8")
+    # newline="\n": match the exporter's LF output (git normalises *.json to LF;
+    # Path.write_text on Windows would otherwise emit CRLF and churn the blob).
+    def _write_lf(path: Path, text: str) -> None:
+        with open(path, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(text)
+
+    _write_lf(args.data, json.dumps(doc, ensure_ascii=False, indent=2) + "\n")
     wrote = str(args.data)
     if resolved:  # only leave an audit sidecar when there was something to record
         args.sidecar.parent.mkdir(parents=True, exist_ok=True)
-        args.sidecar.write_text(json.dumps(dict(sorted(resolved.items())),
-                                           ensure_ascii=False, indent=2) + "\n",
-                                encoding="utf-8")
+        _write_lf(args.sidecar, json.dumps(dict(sorted(resolved.items())),
+                                           ensure_ascii=False, indent=2) + "\n")
         wrote += f"  and  {args.sidecar}"
     print(f"wrote {wrote}")
     return 0
