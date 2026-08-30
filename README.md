@@ -231,10 +231,67 @@ The **Player** tab has two views (`state.playerView`), dispatched by
   toggle (shared `state.statMode`) drives the counting columns; the shooting
   rates don't move.
 - **`detail`** (`renderPlayerCard`): the full single-player card (hero, quad,
-  shooting/usage/bio, Stats-by-season, Advanced metrics, vs-position). Reached
-  by clicking any player row anywhere in the app (`goPlayer` sets
+  shooting/usage/bio, the **Player Analytics & Visualization suite** below,
+  Stats-by-season, rule-based insights, half-court shot map, vs-position).
+  Reached by clicking any player row anywhere in the app (`goPlayer` sets
   `playerView='detail'`); a "← All players" link up top returns to the list,
   and navigating to the tab from the nav always resets to `list`.
+
+#### Player Analytics & Visualization suite
+
+Sits between the hero card and the Stats-by-season table on the player
+`detail` view. Every number is derived from season-total box-score fields
+already in `data.json` — no shot (x, y) coordinates, no play-by-play, no game
+logs, no per-player steals/blocks/fouls/usage — so the design leans on
+percentile-vs-peer framing rather than pretending to spatial data. All charts
+are hand-rolled inline SVG/HTML, colours from the `dataviz` skill palette.
+
+- **8-axis player skill radar** (`playerSkillRadarPanel` → `buildSkillRadar`,
+  `playerSkillAxes`) — Scoring, Shooting eff., Playmaking, Ball security,
+  Rebounding, Perimeter, Inside finish, Impact. Each axis is a **0–100
+  percentile rank** (`percentileOf`) inside the player's comparison pool:
+  same-position qualified players, falling back to the whole league when that
+  sample is thin (`courtPool('position', …)`). Every input is minutes-neutral
+  (per-36 or a rate) and Ball security is the turnover rate **inverted**, so a
+  bigger spike on any axis always means "better vs peers". Axes with too few
+  attempts to be meaningful (Perimeter needs ≥ 15 3PA, Inside ≥ 15 2PA) score 0.
+- **Head-to-head 2-player comparison** — a "Compare vs" `<select>` in the radar
+  panel (`state.playerCmpId`, reset in `normalizeSelection` on any dataset
+  switch). Picking a second player overlays their polygon in the second series
+  colour and adds a side-by-side table (`playerRadarCompareTable`): PTS / REB /
+  AST per-36, TS%, eFG%, AST:TOV, PIR/36. The comparison player's legend name
+  is a link to their own card.
+- **Player-level Four Factors** (`playerFourFactorsPanel`) — eFG%, turnover
+  rate, offensive rebounds per-36, and free-throw rate, each a diverging bar
+  measured against the **position-pool median** (green = better side, amber =
+  worse), reusing the `.ff-*` styling from the team Four Factors view. Shown
+  only when the player has ≥ 20 FGA.
+- **Player signature / archetype** (`playerSignatureCard`, `playerArchetype`) —
+  a plain-language archetype label chosen from the two highest skill axes
+  (Floor spacer · shot maker / Floor general / Interior anchor / Glass-crashing
+  guard / Go-to scorer / Two-way connector), the **top-3 strengths** and
+  **bottom-2 weaknesses** by percentile, and a **career-trend arrow** comparing
+  this season's PIR/36 to last season's, read across every season on record via
+  `playerCareerRows(pid)` scanning `RAW.seasons`.
+
+#### Half-court shot map & shot-volume rail
+
+`buildHalfCourt` / `courtLegend` / `courtZoneTable` / `shotVolumeBar`, shared by
+the player card (`playerShotCourtPanel`) and the Advanced-Analytics **Shot
+Profile** sub-tab (`renderShotCourt`). Three real zones are all the box-score
+splits support — Paint · 2PT `(FGM−3PM)/(FGA−3PA)`, Perimeter · 3PT, and the
+Free-throw line — filled by a diverging heat colour of the zone's FG% vs the
+comparison-pool median (`shotZones`, `zoneMedians`, `heatColor`).
+
+The rework prioritises legibility: makes/attempts, volume and vs-median move
+**off the court** into a right-rail table, leaving only a short zone tag and a
+large FG% on the floor itself; always-visible white zone dividers keep the
+three regions distinct even when their colours are close; the old 3-swatch key
+becomes a labelled **diverging efficiency scale** (−8 … 0 … +8 pp, plus a
+separate "no attempts" chip). A new **100 % stacked shot-volume distribution**
+bar in the rail shows each zone's share of attempts with the raw attempt count
+— explicitly labelled as a zone split, since there is no shot-level location
+data to plot a true shot chart.
 
 The player card also has a **Stats by season** panel (below the headline
 card), modeled on NBA.com/Stats' player pages: the hero card up top is the
