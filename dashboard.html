@@ -313,6 +313,30 @@
   }
   html[data-mobile] .insights-list { padding: 18px 16px 20px; }
 
+  /* ---------- Player signature card ---------- */
+  .sig-body { padding: 18px 28px 22px; display: flex; flex-direction: column; gap: 14px; }
+  .sig-arch { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .sig-arch b { font: 800 20px/1.15 var(--font-display, var(--font-body)); color: var(--ink); }
+  .sig-arch .sig-trend { font: 600 11px/1 var(--font-body); letter-spacing: .04em; color: var(--ink-3); }
+  .sig-trend.up { color: #199e70; } .sig-trend.down { color: #c98500; }
+  .sig-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+  @media (max-width: 560px) { .sig-cols { grid-template-columns: 1fr; } }
+  .sig-col h5 { margin: 0 0 6px; font: 600 9.5px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+  .sig-col ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .sig-col li { font: 400 12.5px/1.4 var(--font-body); color: var(--ink-2); }
+  .sig-col li b { font-weight: 700; color: var(--ink); unicode-bidi: isolate; direction: ltr; }
+  .sig-pill { display: inline-block; padding: 2px 8px; border-radius: 3px; font: 700 10px/1.4 var(--font-body); background: var(--accent-wash); color: var(--accent-hover); border: 1px solid var(--accent-ring); }
+  /* player skill radar: compare-vs control + side-by-side table */
+  .pr-ctrl { display: flex; align-items: center; gap: 10px; padding: 4px 28px 0; flex-wrap: wrap; }
+  .pr-ctrl label { font: 600 10px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+  .pr-ctrl select { background: var(--panel); color: var(--ink); border: 1px solid var(--hair-strong); border-radius: 4px; padding: 7px 11px; font: 600 12px/1 var(--font-body); cursor: pointer; max-width: 260px; }
+  .pr-tbl { padding: 4px 28px 22px; display: flex; flex-direction: column; gap: 2px; }
+  .pr-trow { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--hair-soft); }
+  .pr-trow:last-child { border-bottom: 0; }
+  .pr-thead > div { font: 600 8.5px/1.2 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+  .pr-tk { font: 600 11px/1.25 var(--font-body); color: var(--ink-2); }
+  .pr-tv { font: 700 12.5px/1 var(--font-body); font-variant-numeric: tabular-nums; unicode-bidi: isolate; direction: ltr; text-align: end; }
+
   /* ---------- Team hero ---------- */
   .team-hero {
     position: relative; padding: 36px 40px 32px; overflow: hidden; margin-bottom: 24px;
@@ -576,12 +600,26 @@
   @media (max-width: 720px) { .hc-grid { grid-template-columns: 1fr; } }
   .hc-wrap { position: relative; max-width: 480px; margin: 0 auto; width: 100%; }
   .hc-svg { width: 100%; height: auto; display: block; direction: ltr; background: #10151c; border: 1px solid var(--hair); border-radius: 6px; }
-  .hc-line { fill: none; stroke: rgba(255,255,255,.28); stroke-width: 1.5; }
-  .hc-zone { stroke: rgba(255,255,255,.22); stroke-width: 1; cursor: pointer; fill-opacity: .58; transition: fill-opacity .1s ease; }
-  .hc-zone:hover { fill-opacity: .88; }
-  .hc-zlabel { font: 700 12px var(--font-body); fill: #fff; paint-order: stroke; stroke: rgba(0,0,0,.55); stroke-width: 3; }
-  .hc-zsub { font: 600 8.5px var(--font-body); fill: rgba(255,255,255,.9); paint-order: stroke; stroke: rgba(0,0,0,.5); stroke-width: 2.5; }
+  .hc-line { fill: none; stroke: rgba(255,255,255,.42); stroke-width: 1.75; }
+  .hc-zone { stroke: rgba(255,255,255,.4); stroke-width: 2; paint-order: stroke; cursor: pointer; fill-opacity: .8; transition: fill-opacity .1s ease; }
+  .hc-zone:hover { fill-opacity: 1; }
+  .hc-zname { font: 600 9px var(--font-body); letter-spacing: .12em; text-transform: uppercase; fill: rgba(255,255,255,.82); paint-order: stroke; stroke: rgba(0,0,0,.65); stroke-width: 3; }
+  .hc-zlabel { font: 800 19px var(--font-body); fill: #fff; paint-order: stroke; stroke: rgba(0,0,0,.7); stroke-width: 4.5; }
   .hc-legend { padding: 0 0 14px; }
+  /* diverging efficiency scale */
+  .hc-scale { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .hc-scale-bar { height: 12px; border-radius: 3px; background: linear-gradient(90deg, #3a5a83 0%, #5f83ab 25%, #3fb6c9 50%, #e08a3c 75%, #e5533d 100%); }
+  .hc-scale-ends { display: flex; justify-content: space-between; direction: ltr; font: 600 9px/1.2 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  .hc-scale-na { display: flex; align-items: center; gap: 7px; font: 500 10.5px/1 var(--font-body); color: var(--ink-3); }
+  .hc-scale-na i { width: 14px; height: 10px; border-radius: 2px; background: #2b323c; display: inline-block; }
+  /* shot-volume distribution */
+  .hc-vol { margin: 4px 0 18px; }
+  .hc-vol-title { font: 600 9.5px/1.3 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 7px; }
+  .hc-vol-bar { display: flex; height: 18px; border-radius: 3px; overflow: hidden; background: var(--track); }
+  .hc-vol-seg { height: 100%; display: flex; align-items: center; justify-content: center; font: 700 10px/1 var(--font-body); color: #10151c; unicode-bidi: isolate; direction: ltr; }
+  .hc-vol-key { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 7px; }
+  .hc-vol-key span { display: flex; align-items: center; gap: 6px; font: 500 10.5px/1 var(--font-body); color: var(--ink-3); }
+  .hc-vol-key i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
   .hc-table { display: flex; flex-direction: column; gap: 2px; }
   .hc-trow { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--hair-soft); }
   .hc-trow:last-child { border-bottom: 0; }
@@ -977,6 +1015,43 @@ const STR = {
     court_cold: 'מתחת לממוצע',
     pl_shot_kicker: 'פריסת זריקות',
     pl_shot_title: 'פרופיל זריקות — חצי מגרש',
+    court_scale_title: 'אחוז קליעה מול חציון קבוצת ההשוואה',
+    court_scale_low: 'קר',
+    court_scale_high: 'חם',
+    court_dist_title: 'פיזור נפח הזריקות (חלק מהנסיונות)',
+    court_dist_note: 'אין נתוני מיקום ברמת זריקה בודדת — החלוקה לפי אזור בלבד.',
+    pl_radar_kicker: 'פרופיל כישורים',
+    pl_radar_title: 'ראדאר כישורים — אחוזונים',
+    pl_radar_sub: 'כל ציר = דירוג באחוזונים מול שחקנים באותה עמדה (או הליגה כשהמדגם קטן). 100 = הטוב בליגה.',
+    pl_radar_cmp: 'השוואה מול',
+    pl_radar_cmp_none: '— ללא —',
+    pl_radar_self: 'השחקן',
+    pl_ff_kicker: 'ארבעת הגורמים',
+    pl_ff_title: 'ארבעת הגורמים — מול חציון העמדה',
+    pl_ff_sub: 'eFG%, אחוז איבודים, ריבאונד התקפי ל-36 ד׳ ויחס זריקות עונשין. הפס מציג את הפער מהחציון.',
+    sig_kicker: 'חתימת שחקן',
+    sig_title: 'הפרופיל בקצרה',
+    sig_strengths: 'חוזקות',
+    sig_weaknesses: 'לשיפור',
+    sig_pctile: (v, q) => `${v} · אחוזון ${q}`,
+    sig_trend_up: '↗ במגמת עלייה מול העונה הקודמת',
+    sig_trend_down: '↘ במגמת ירידה מול העונה הקודמת',
+    sig_trend_flat: '→ יציב מול העונה הקודמת',
+    sig_trend_new: 'עונה ראשונה בנתונים',
+    axis_scoring: 'נקודות',
+    axis_shooting: 'יעילות קליעה',
+    axis_playmaking: 'יצירה',
+    axis_security: 'שמירה על הכדור',
+    axis_rebounding: 'ריבאונד',
+    axis_perimeter: 'קליעה מהיקף',
+    axis_inside: 'סיום בצבע',
+    axis_impact: 'השפעה',
+    arch_spacer: 'קלע יצירה · פותח מגרש',
+    arch_general: 'רכז מוביל',
+    arch_anchor: 'עוגן צבע',
+    arch_scorer: 'קלע ראשי',
+    arch_glassguard: 'גארד לוח',
+    arch_connector: 'מחבר דו-כיווני',
     an_cmp_kicker: 'השוואת שחקנים',
     an_cmp_title: 'בחרו עד 4 שחקנים להשוואה',
     an_cmp_none: '— ריק —',
@@ -1197,6 +1272,43 @@ const STR = {
     court_cold: 'Below average',
     pl_shot_kicker: 'Shot distribution',
     pl_shot_title: 'Shot profile — half court',
+    court_scale_title: 'Zone FG% vs the comparison-pool median',
+    court_scale_low: 'Cold',
+    court_scale_high: 'Hot',
+    court_dist_title: 'Shot-volume distribution (share of attempts)',
+    court_dist_note: 'No shot-level location data — split by zone only.',
+    pl_radar_kicker: 'Skill profile',
+    pl_radar_title: 'Skill radar — percentiles',
+    pl_radar_sub: 'Each axis = percentile rank vs players at the same position (or the league when the sample is thin). 100 = league best.',
+    pl_radar_cmp: 'Compare vs',
+    pl_radar_cmp_none: '— none —',
+    pl_radar_self: 'Player',
+    pl_ff_kicker: 'Four factors',
+    pl_ff_title: 'Four factors — vs position median',
+    pl_ff_sub: 'eFG%, turnover rate, offensive rebounds per 36, and free-throw rate. The bar shows the gap from the median.',
+    sig_kicker: 'Player signature',
+    sig_title: 'The profile at a glance',
+    sig_strengths: 'Strengths',
+    sig_weaknesses: 'To improve',
+    sig_pctile: (v, q) => `${v} · ${q}th pctile`,
+    sig_trend_up: '↗ trending up vs last season',
+    sig_trend_down: '↘ trending down vs last season',
+    sig_trend_flat: '→ steady vs last season',
+    sig_trend_new: 'first season on record',
+    axis_scoring: 'Scoring',
+    axis_shooting: 'Shooting eff.',
+    axis_playmaking: 'Playmaking',
+    axis_security: 'Ball security',
+    axis_rebounding: 'Rebounding',
+    axis_perimeter: 'Perimeter',
+    axis_inside: 'Inside finish',
+    axis_impact: 'Impact',
+    arch_spacer: 'Floor spacer · shot maker',
+    arch_general: 'Floor general',
+    arch_anchor: 'Interior anchor',
+    arch_scorer: 'Go-to scorer',
+    arch_glassguard: 'Glass-crashing guard',
+    arch_connector: 'Two-way connector',
     an_cmp_kicker: 'Player comparison',
     an_cmp_title: 'Pick up to 4 players to compare',
     an_cmp_none: '— none —',
@@ -1495,6 +1607,9 @@ function normalizeSelection() {
     state.playerId = (roster[0] || getAllPlayers()[0]).id;
   }
   const validIds = new Set(activePlayersRaw().map((p) => p.id));
+  if (state.playerCmpId !== null && (!validIds.has(state.playerCmpId) || state.playerCmpId === state.playerId)) {
+    state.playerCmpId = null;
+  }
   state.cmpPlayerIds = (state.cmpPlayerIds || [null, null, null, null])
     .map((id) => (id !== null && validIds.has(id)) ? id : null);
   if (state.cmpPlayerIds.every((id) => id === null)) {
@@ -1539,6 +1654,7 @@ const state = {
   scTeam: '', scPos: '', scMinGp: 5,
   courtPid: null, courtBase: lsGet('sls-courtbase', 'position'), glassPid: null,
   playerView: 'list',
+  playerCmpId: null,
   playersQuery: '', playersPos: '', playersTeam: '',
   playersSortKey: 'pts', playersSortDir: 'desc',
 };
@@ -2646,6 +2762,15 @@ function renderPlayerCard(root) {
   card.appendChild(lower);
   root.appendChild(card);
 
+  /* ---- viziball-style skill profile: signature + percentile radar + four factors ---- */
+  {
+    const sigAxes = playerSkillAxes(p, courtPool('position', p.position));
+    const sig = playerSignatureCard(p, sigAxes);
+    if (sig) root.appendChild(sig);
+    root.appendChild(playerSkillRadarPanel(p));
+    if (num0(p.fga) >= 20) root.appendChild(playerFourFactorsPanel(p));
+  }
+
   /* ---- stats by season (NBA-style splits) ----
      Headline numbers above are the season-total "general" line; this panel
      lets you pick a calculation mode (totals / per game / per 36) and a
@@ -3626,18 +3751,19 @@ function buildHalfCourt(entity, pool, opts) {
   svg.appendChild(mk('line', { class: 'hc-line', x1: 218, y1: 402, x2: 262, y2: 402 }));
   svg.appendChild(mk('circle', { class: 'hc-line', cx: HX, cy: 392, r: 7 }));
 
-  // --- zone labels ---
-  const labelAt = (z, x, y) => {
+  // --- zone labels: just a short tag + the FG%; makes / attempts / volume live
+  //     in the off-court table so nothing overlaps the court lines ---
+  const labelAt = (z, x, y, tag) => {
     const g = mk('g', {});
+    const tn = mk('text', { class: 'hc-zname', x, y: y - 18, 'text-anchor': 'middle' });
+    tn.textContent = tag;
     const t1 = mk('text', { class: 'hc-zlabel', x, y, 'text-anchor': 'middle' });
     t1.textContent = z.att > 0 ? fmt(z.pct, 0) + '%' : '—';
-    const t2 = mk('text', { class: 'hc-zsub', x, y: y + 13, 'text-anchor': 'middle' });
-    t2.textContent = z.made + '/' + z.att + '  ·  ' + fmt(z.vol, 0) + '% ' + S.court_vol;
-    g.appendChild(t1); g.appendChild(t2); svg.appendChild(g);
+    g.appendChild(tn); g.appendChild(t1); svg.appendChild(g);
   };
-  labelAt(zi.paint, HX, 388);
-  labelAt(zi.arc, HX, 250);
-  labelAt(zi.ft, HX, 285);
+  labelAt(zi.paint, HX, 392, '2PT');
+  labelAt(zi.arc, HX, 214, '3PT');
+  labelAt(zi.ft, HX, 288, 'FT');
 
   // --- tooltip ---
   const tip = el('div', 'sc-tooltip');
@@ -3667,12 +3793,51 @@ function buildHalfCourt(entity, pool, opts) {
 }
 function courtLegend() {
   const S = STR[state.lang];
-  const leg = el('div', 'tr-legend hc-legend');
-  [['#e5533d', S.court_hot], ['#3fb6c9', S.court_avg], ['#3a5a83', S.court_cold]].forEach(([c, l]) => {
-    const s = el('span'); const i = el('i'); i.style.cssText = 'width:12px;height:10px;border-radius:2px;background:' + c;
-    s.appendChild(i); s.appendChild(document.createTextNode(l)); leg.appendChild(s);
-  });
+  const leg = el('div', 'hc-scale');
+  leg.appendChild(el('div', 'hc-vol-title', S.court_scale_title));
+  leg.appendChild(el('div', 'hc-scale-bar'));
+  const ends = el('div', 'hc-scale-ends');
+  ends.appendChild(el('span', null, S.court_scale_low + ' (−8)'));
+  ends.appendChild(el('span', null, '0'));
+  ends.appendChild(el('span', null, S.court_scale_high + ' (+8)'));
+  leg.appendChild(ends);
+  const na = el('div', 'hc-scale-na');
+  na.appendChild(el('i')); na.appendChild(document.createTextNode(S.court_no_sample));
+  leg.appendChild(na);
   return leg;
+}
+/* 100%-stacked share of shot attempts by zone -- an honest "distribution"
+ * given we have no per-shot (x,y) locations, only box-score splits. */
+function shotVolumeBar(entity) {
+  const S = STR[state.lang];
+  const z = shotZones(entity);            // [paint, arc, ft]
+  const total = z.reduce((s, x) => s + x.att, 0);
+  const cols = ['#5b8def', '#e0a13c', '#7d8896'];
+  const tags = ['2PT', '3PT', 'FT'];
+  const names = [S.court_zone_paint, S.court_zone_arc, S.court_zone_ft];
+  const wrap = el('div', 'hc-vol');
+  wrap.appendChild(el('div', 'hc-vol-title', S.court_dist_title));
+  const bar = el('div', 'hc-vol-bar');
+  z.forEach((x, i) => {
+    const share = total > 0 ? (x.att / total) * 100 : 0;
+    if (share <= 0) return;
+    const seg = el('div', 'hc-vol-seg');
+    seg.style.width = share + '%';
+    seg.style.background = cols[i];
+    if (share >= 12) seg.textContent = Math.round(share) + '%';
+    seg.title = names[i] + ': ' + x.att + ' (' + fmt(share, 0) + '%)';
+    bar.appendChild(seg);
+  });
+  wrap.appendChild(bar);
+  const key = el('div', 'hc-vol-key');
+  tags.forEach((lbl, i) => {
+    const s = el('span'); const ic = el('i'); ic.style.background = cols[i];
+    s.appendChild(ic); s.appendChild(document.createTextNode(lbl + ' · ' + z[i].att));
+    key.appendChild(s);
+  });
+  wrap.appendChild(key);
+  wrap.appendChild(el('div', 'glass-cap', S.court_dist_note));
+  return wrap;
 }
 function courtZoneTable(entity, pool) {
   const S = STR[state.lang];
@@ -3746,7 +3911,10 @@ function renderShotCourt(root) {
   body.appendChild(courtLegend());
   const grid = el('div', 'hc-grid');
   grid.appendChild(buildHalfCourt(p, pool));
-  grid.appendChild(courtZoneTable(p, pool));
+  const rail = el('div');
+  rail.appendChild(shotVolumeBar(p));
+  rail.appendChild(courtZoneTable(p, pool));
+  grid.appendChild(rail);
   body.appendChild(grid);
   panel.appendChild(body);
   root.appendChild(panel);
@@ -3766,8 +3934,326 @@ function playerShotCourtPanel(p) {
   body.appendChild(courtLegend());
   const grid = el('div', 'hc-grid');
   grid.appendChild(buildHalfCourt(p, pool));
-  grid.appendChild(courtZoneTable(p, pool));
+  const rail = el('div');
+  rail.appendChild(shotVolumeBar(p));
+  rail.appendChild(courtZoneTable(p, pool));
+  grid.appendChild(rail);
   body.appendChild(grid);
+  panel.appendChild(body);
+  return panel;
+}
+
+/* ================= Player skill radar / signature / four factors =================
+ * Everything below is derived from season-total box-score fields already in
+ * data.json (no shot locations, no play-by-play, no game logs). Each skill axis
+ * is a percentile rank inside a comparison pool (same position, league fallback),
+ * so a bigger spike always means "better relative to peers". */
+function tovRateOf(p) {
+  const d = num0(p.fga) + 0.44 * num0(p.fta) + num0(p.tov);
+  return d > 0 ? (num0(p.tov) / d) * 100 : 0;
+}
+function twoPtPctOf(p) {
+  const m = num0(p.fgm) - num0(p.fg3m), a = num0(p.fga) - num0(p.fg3a);
+  return a > 0 ? (m / a) * 100 : 0;
+}
+const SKILL_AXES = [
+  { key: 'scoring',    lk: 'axis_scoring',    inv: false, v: (p) => num0(p.per_36_points) },
+  { key: 'shooting',   lk: 'axis_shooting',   inv: false, v: (p) => num0(p.ts_pct) || null },
+  { key: 'playmaking', lk: 'axis_playmaking', inv: false, v: (p) => num0(p.per_36_assists) },
+  { key: 'security',   lk: 'axis_security',   inv: true,  v: (p) => tovRateOf(p) },
+  { key: 'rebounding', lk: 'axis_rebounding', inv: false, v: (p) => num0(p.per_36_rebounds) },
+  { key: 'perimeter',  lk: 'axis_perimeter',  inv: false, v: (p) => (num0(p.fg3a) >= 15 ? num0(p.fg3_pct) : null) },
+  { key: 'inside',     lk: 'axis_inside',     inv: false, v: (p) => (num0(p.fga) - num0(p.fg3a) >= 15 ? twoPtPctOf(p) : null) },
+  { key: 'impact',     lk: 'axis_impact',     inv: false, v: (p) => num0(p.per_36_pir) },
+];
+function playerSkillAxes(p, pool) {
+  return SKILL_AXES.map((ax) => {
+    const raw = ax.v(p);
+    const poolVals = pool.map(ax.v).filter((x) => x !== null && Number.isFinite(x));
+    let q = 0;
+    if (raw !== null && Number.isFinite(raw) && poolVals.length >= 4) {
+      q = Math.round(percentileOf(raw, poolVals, ax.inv) * 100);
+    }
+    return { key: ax.key, label: STR[state.lang][ax.lk], q: Math.max(0, Math.min(100, q)), raw };
+  });
+}
+
+/** Hand-rolled percentile radar, one polygon per series. `series` items:
+ *  { name, color, q: [0..100 per axis], onClick? }. Axis labels are pre-resolved. */
+function buildSkillRadar(series, axisLabels) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const wrap = el('div', 'radar-wrap');
+
+  const legend = el('div', 'cmp-legend');
+  series.forEach((s) => {
+    const item = el('span');
+    const i = document.createElement('i'); i.style.background = s.color; item.appendChild(i);
+    if (s.onClick) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'radar-legend-name'; b.textContent = s.name;
+      b.addEventListener('click', s.onClick); item.appendChild(b);
+    } else { item.appendChild(document.createTextNode(s.name)); }
+    legend.appendChild(item);
+  });
+  wrap.appendChild(legend);
+
+  const n = axisLabels.length;
+  const W = 470, H = 470, cx = W / 2, cy = H / 2, R = 150;
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('class', 'radar-svg');
+  svg.setAttribute('role', 'img');
+  svg.setAttribute('aria-label', STR[state.lang].pl_radar_title);
+
+  const angleFor = (i) => -Math.PI / 2 + i * (2 * Math.PI / n);
+  const pointFor = (i, frac) => {
+    const a = angleFor(i);
+    return [cx + Math.cos(a) * R * frac, cy + Math.sin(a) * R * frac];
+  };
+
+  [0.25, 0.5, 0.75, 1].forEach((frac) => {
+    const poly = document.createElementNS(NS, 'polygon');
+    poly.setAttribute('points', axisLabels.map((_, i) => pointFor(i, frac).join(',')).join(' '));
+    poly.setAttribute('fill', 'none');
+    poly.setAttribute('stroke', 'var(--hair-strong)');
+    poly.setAttribute('stroke-width', '1');
+    svg.appendChild(poly);
+  });
+
+  axisLabels.forEach((lbl, i) => {
+    const [x1, y1] = pointFor(i, 1);
+    const axisLine = document.createElementNS(NS, 'line');
+    axisLine.setAttribute('x1', cx); axisLine.setAttribute('y1', cy);
+    axisLine.setAttribute('x2', x1); axisLine.setAttribute('y2', y1);
+    axisLine.setAttribute('stroke', 'var(--hair-strong)');
+    axisLine.setAttribute('stroke-width', '1');
+    svg.appendChild(axisLine);
+    const [lx, ly] = pointFor(i, 1.17);
+    const label = document.createElementNS(NS, 'text');
+    label.setAttribute('x', lx); label.setAttribute('y', ly);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('class', 'radar-axis-label');
+    const words = String(lbl).split(' ');
+    if (words.length > 1 && String(lbl).length > 9) {
+      const mid = Math.ceil(words.length / 2);
+      [words.slice(0, mid).join(' '), words.slice(mid).join(' ')].forEach((line, li) => {
+        const ts = document.createElementNS(NS, 'tspan');
+        ts.setAttribute('x', lx); ts.setAttribute('dy', li === 0 ? '-0.15em' : '1.1em');
+        ts.textContent = line; label.appendChild(ts);
+      });
+    } else { label.textContent = lbl; }
+    svg.appendChild(label);
+  });
+
+  series.forEach((s, si) => {
+    const coords = s.q.map((v, i) => pointFor(i, Math.max(0.04, v / 100)));
+    const poly = document.createElementNS(NS, 'polygon');
+    poly.setAttribute('points', coords.map((p) => p.join(',')).join(' '));
+    poly.setAttribute('fill', s.color);
+    poly.setAttribute('fill-opacity', series.length > 1 ? '0.13' : '0.18');
+    poly.setAttribute('stroke', s.color);
+    poly.setAttribute('stroke-width', '2');
+    svg.appendChild(poly);
+    coords.forEach(([x, y], i) => {
+      const dot = document.createElementNS(NS, 'circle');
+      dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('r', '3.5');
+      dot.setAttribute('fill', s.color);
+      svg.appendChild(dot);
+      const la = angleFor(i) + (si === 0 ? -0.16 : 0.16);
+      const ld = series.length > 1 ? (si === 0 ? 13 : 22) : 14;
+      const val = document.createElementNS(NS, 'text');
+      val.setAttribute('x', x + Math.cos(la) * ld);
+      val.setAttribute('y', y + Math.sin(la) * ld);
+      val.setAttribute('text-anchor', 'middle');
+      val.setAttribute('class', 'radar-value-label');
+      val.setAttribute('fill', s.color);
+      val.textContent = String(s.q[i]);
+      svg.appendChild(val);
+    });
+  });
+
+  wrap.appendChild(svg);
+  return wrap;
+}
+
+/* every season row on record for one canonical player id, oldest -> newest */
+function playerCareerRows(pid) {
+  if (!RAW || !RAW.seasons) return [];
+  return Object.keys(RAW.seasons).sort().map((sk) => {
+    const row = (RAW.seasons[sk].players || []).find((x) => x.id === pid);
+    return row ? { season: sk, row } : null;
+  }).filter(Boolean);
+}
+
+/* two highest skill axes -> a plain-language archetype label */
+function playerArchetype(axes) {
+  const S = STR[state.lang];
+  const by = {}; axes.forEach((a) => { by[a.key] = a.q; });
+  const top = [...axes].sort((a, b) => b.q - a.q).slice(0, 2).map((a) => a.key);
+  const has = (k) => top.includes(k);
+  if (has('scoring') && has('perimeter')) return S.arch_spacer;
+  if (has('playmaking') && has('security')) return S.arch_general;
+  if ((has('rebounding') && has('inside')) || (has('rebounding') && has('impact'))) return S.arch_anchor;
+  if (has('rebounding') && has('playmaking')) return S.arch_glassguard;
+  if (has('scoring') && (has('impact') || has('inside') || has('shooting'))) return S.arch_scorer;
+  return S.arch_connector;
+}
+
+function playerSignatureCard(p, axes) {
+  const S = STR[state.lang];
+  const ranked = [...axes].filter((a) => a.q > 0).sort((a, b) => b.q - a.q);
+  if (ranked.length < 3) return null;
+  const strengths = ranked.slice(0, 3);
+  const weaknesses = ranked.slice(-2).reverse();
+
+  const panel = el('div', 'panel'); panel.style.marginTop = '24px';
+  const head = el('div', 'panel-head');
+  head.appendChild(el('div', 'panel-kicker', S.sig_kicker));
+  head.appendChild(el('div', 'panel-title sm', S.sig_title));
+  panel.appendChild(head);
+  const body = el('div', 'sig-body');
+
+  const arch = el('div', 'sig-arch');
+  arch.appendChild(el('span', 'sig-pill', state.lang === 'he' ? 'ארכיטיפ' : 'ARCHETYPE'));
+  arch.appendChild(el('b', null, playerArchetype(axes)));
+  const career = playerCareerRows(p.id);
+  const trend = el('span', 'sig-trend');
+  if (career.length < 2) { trend.textContent = S.sig_trend_new; }
+  else {
+    const cur = career[career.length - 1].row, prev = career[career.length - 2].row;
+    const d = num0(cur.per_36_pir) - num0(prev.per_36_pir);
+    if (d >= 1) { trend.textContent = S.sig_trend_up; trend.classList.add('up'); }
+    else if (d <= -1) { trend.textContent = S.sig_trend_down; trend.classList.add('down'); }
+    else { trend.textContent = S.sig_trend_flat; }
+  }
+  arch.appendChild(trend);
+  body.appendChild(arch);
+
+  const cols = el('div', 'sig-cols');
+  const mkCol = (title, list) => {
+    const c = el('div', 'sig-col');
+    c.appendChild(el('h5', null, title));
+    const ul = document.createElement('ul');
+    list.forEach((a) => {
+      const li = document.createElement('li');
+      const b = document.createElement('b'); b.textContent = a.label;
+      li.appendChild(b);
+      li.appendChild(document.createTextNode(' — ' + S.sig_pctile('', a.q).replace(/^\s·\s/, '')));
+      ul.appendChild(li);
+    });
+    c.appendChild(ul);
+    return c;
+  };
+  cols.appendChild(mkCol(S.sig_strengths, strengths));
+  cols.appendChild(mkCol(S.sig_weaknesses, weaknesses));
+  body.appendChild(cols);
+  panel.appendChild(body);
+  return panel;
+}
+
+function playerSkillRadarPanel(p) {
+  const S = STR[state.lang];
+  const poolAll = analysisPool(activePlayersRaw());
+  const pool = courtPool('position', p.position);
+  const axes = playerSkillAxes(p, pool);
+  const axisLabels = axes.map((a) => a.label);
+
+  const panel = advPanel(S.pl_radar_kicker, S.pl_radar_title, S.pl_radar_sub);
+
+  // compare-vs picker
+  const others = poolAll.filter((x) => x.id !== p.id)
+    .sort((a, b) => playerName(a).localeCompare(playerName(b), state.lang === 'he' ? 'he' : 'en'));
+  const ctrl = el('div', 'pr-ctrl');
+  ctrl.appendChild(el('label', null, S.pl_radar_cmp));
+  const sel = document.createElement('select');
+  sel.appendChild(new Option(S.pl_radar_cmp_none, ''));
+  others.forEach((o) => {
+    const opt = new Option(playerName(o) + ' — ' + teamLabel(getTeam(o.team_id)), String(o.id));
+    if (o.id === state.playerCmpId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener('change', (e) => { state.playerCmpId = e.target.value ? Number(e.target.value) : null; render(); });
+  ctrl.appendChild(sel);
+  panel.appendChild(ctrl);
+
+  const cmp = state.playerCmpId ? poolAll.find((x) => x.id === state.playerCmpId) : null;
+  const series = [{ name: playerName(p), color: CMP_COLORS[0], q: axes.map((a) => a.q) }];
+  if (cmp) {
+    const cmpAxes = playerSkillAxes(cmp, courtPool('position', cmp.position));
+    series.push({ name: playerName(cmp), color: CMP_COLORS[1], q: cmpAxes.map((a) => a.q), onClick: () => goPlayer(cmp.id) });
+  }
+  panel.appendChild(buildSkillRadar(series, axisLabels));
+
+  if (cmp) panel.appendChild(playerRadarCompareTable(p, cmp));
+  return panel;
+}
+
+function playerRadarCompareTable(a, b) {
+  const S = STR[state.lang];
+  const rows = [
+    [S.axis_scoring + ' /36', (p) => fmt(num0(p.per_36_points))],
+    [S.axis_rebounding + ' /36', (p) => fmt(num0(p.per_36_rebounds))],
+    [S.axis_playmaking + ' /36', (p) => fmt(num0(p.per_36_assists))],
+    ['TS%', (p) => fmt(num0(p.ts_pct))],
+    ['eFG%', (p) => fmt(num0(p.efg_pct))],
+    ['AST:TOV', (p) => fmt(num0(p.ast_to_tov), 2)],
+    ['PIR /36', (p) => fmt(num0(p.per_36_pir))],
+  ];
+  const tbl = el('div', 'pr-tbl');
+  const head = el('div', 'pr-trow pr-thead');
+  head.appendChild(el('div', null, ''));
+  head.appendChild(el('div', 'pr-tv', playerName(a)));
+  head.appendChild(el('div', 'pr-tv', playerName(b)));
+  tbl.appendChild(head);
+  rows.forEach(([label, fn]) => {
+    const r = el('div', 'pr-trow');
+    r.appendChild(el('div', 'pr-tk', label));
+    r.appendChild(el('div', 'pr-tv', fn(a)));
+    r.appendChild(el('div', 'pr-tv', fn(b)));
+    tbl.appendChild(r);
+  });
+  return tbl;
+}
+
+function playerFourFactorsPanel(p) {
+  const S = STR[state.lang];
+  const pool = courtPool('position', p.position);
+  const val = {
+    efg: (x) => efgPctOf(x.fgm, x.fg3m, x.fga),
+    tovp: (x) => tovRateOf(x),
+    orb36: (x) => per36Of(x.oreb, totalMin(x)),
+    ftr: (x) => safeDiv(num0(x.fta), num0(x.fga)) * 100,
+  };
+  const factors = [
+    { key: 'efg', label: 'eFG%', good: 1 },
+    { key: 'tovp', label: 'TOV%', good: -1 },
+    { key: 'orb36', label: 'ORB/36', good: 1 },
+    { key: 'ftr', label: 'FTr', good: 1 },
+  ];
+  const panel = advPanel(S.pl_ff_kicker, S.pl_ff_title, S.pl_ff_sub);
+  const body = el('div', 'ff-wrap');
+  factors.forEach((f) => {
+    const mine = val[f.key](p);
+    const poolVals = pool.map(val[f.key]).filter((v) => Number.isFinite(v));
+    const mv = median(poolVals);
+    const span = Math.max(...poolVals.map((v) => Math.abs(v - mv)), 1e-6);
+    const rel = (mine - mv) / span;
+    const better = f.good * (mine - mv) > 0;
+    const row = el('div', 'ff-row'); row.style.gridTemplateColumns = '96px 1fr 54px';
+    row.appendChild(el('div', 'ff-team', f.label + '  µ' + fmt(mv)));
+    const cell = el('div', 'ff-cell');
+    const track = el('div', 'ff-track');
+    track.appendChild(el('div', 'ff-mid'));
+    const fill = el('div', 'ff-fill');
+    fill.style.width = Math.min(50, Math.abs(rel) * 50) + '%';
+    fill.style.background = better ? '#199e70' : '#c98500';
+    fill.style[rel >= 0 ? 'left' : 'right'] = '50%';
+    track.appendChild(fill);
+    cell.appendChild(track);
+    row.appendChild(cell);
+    row.appendChild(el('div', 'ff-val', fmt(mine)));
+    body.appendChild(row);
+  });
   panel.appendChild(body);
   return panel;
 }
