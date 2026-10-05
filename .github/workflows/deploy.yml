@@ -43,10 +43,10 @@ jobs:
             ${{ vars.ECR_REPOSITORY_URL }}:latest
             ${{ vars.ECR_REPOSITORY_URL }}:${{ github.sha }}
 
+      # dashboard.html + data.json + games/ (per-file Cache-Control) + CloudFront
+      # invalidation -- the same script as a local deploy (scripts/publish_site.sh)
       - name: Publish dashboard
-        run: |
-          aws s3 cp dashboard.html "s3://${{ vars.SITE_BUCKET }}/dashboard.html" --cache-control 'public,max-age=300'
-          aws s3 cp data.json      "s3://${{ vars.SITE_BUCKET }}/data.json"      --cache-control 'public,max-age=300'
-          aws cloudfront create-invalidation \
-            --distribution-id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" \
-            --paths '/dashboard.html' '/data.json'
+        env:
+          SITE_BUCKET: ${{ vars.SITE_BUCKET }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: bash scripts/publish_site.sh

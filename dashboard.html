@@ -4086,7 +4086,8 @@ function buildGameLog(p, rows) {
   // box-score-only numbers: steals / blocks / +/- / fouls drawn don't exist in the season totals
   const tiles = el('div', 'glg-tiles');
   tiles.setAttribute('aria-label', S.glg_new);
-  const pm = avg('pm');
+  // round first so a tiny negative mean (-0.04) reads "0.0", not "-0.0"
+  const pm = Math.round(avg('pm') * 10) / 10 || 0;
   [
     [String(n), S.glg_tile_starts(starts, n), false],
     [fmt(avg('stl')), S.lbl_stl, false],
