@@ -30,7 +30,6 @@ resource "aws_ecs_task_definition" "batch" {
     essential = true
     # `command` is supplied per `aws ecs run-task`.
     environment = [
-      { name = "DB_SECRET_ARN", value = aws_secretsmanager_secret.db.arn },
       { name = "AWS_REGION", value = var.region },
       { name = "DB_SSLMODE", value = "require" },
       { name = "SEASON", value = var.batch_season },

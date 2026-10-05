@@ -28,14 +28,23 @@ resource "aws_s3_bucket_versioning" "site" {
 }
 
 # ---------------------------------------------------------------------------
-# CloudFront (Origin Access Control -> S3 REST endpoint). Default *.cloudfront.net
-# certificate — no custom domain / ACM yet.
+# CloudFront (Origin Access Control -> S3 REST endpoint). Served on the custom
+# domain (var.site_aliases, ACM cert in us-east-1), Israel-only geo whitelist,
+# standard access logs + a viewer-request CloudFront Function for request
+# logging. The cert, log bucket and function live outside this config and are
+# referenced by name/ARN.
 # ---------------------------------------------------------------------------
 resource "aws_cloudfront_origin_access_control" "site" {
   name                              = "${local.name}-site-oac"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
+}
+
+data "aws_cloudfront_function" "edge_logger" {
+  count = var.edge_logger_function == "" ? 0 : 1
+  name  = var.edge_logger_function
+  stage = "LIVE"
 }
 
 data "aws_cloudfront_cache_policy" "optimized" {
@@ -48,6 +57,7 @@ resource "aws_cloudfront_distribution" "site" {
   comment             = "${local.name} dashboard"
   default_root_object = "dashboard.html"
   price_class         = "PriceClass_100"
+  aliases             = var.site_aliases
 
   origin {
     origin_id                = "s3-site"
@@ -62,16 +72,37 @@ resource "aws_cloudfront_distribution" "site" {
     cached_methods         = ["GET", "HEAD"]
     compress               = true
     cache_policy_id        = data.aws_cloudfront_cache_policy.optimized.id
+
+    dynamic "function_association" {
+      for_each = data.aws_cloudfront_function.edge_logger
+      content {
+        event_type   = "viewer-request"
+        function_arn = function_association.value.arn
+      }
+    }
+  }
+
+  dynamic "logging_config" {
+    for_each = var.cdn_log_bucket == "" ? [] : [var.cdn_log_bucket]
+    content {
+      bucket          = "${logging_config.value}.s3.amazonaws.com"
+      prefix          = "cdn/"
+      include_cookies = false
+    }
   }
 
   restrictions {
     geo_restriction {
-      restriction_type = "none"
+      restriction_type = length(var.geo_allow_countries) > 0 ? "whitelist" : "none"
+      locations        = var.geo_allow_countries
     }
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    cloudfront_default_certificate = length(var.site_aliases) == 0
+    acm_certificate_arn            = length(var.site_aliases) > 0 ? var.acm_certificate_arn : null
+    ssl_support_method             = length(var.site_aliases) > 0 ? "sni-only" : null
+    minimum_protocol_version       = length(var.site_aliases) > 0 ? "TLSv1.2_2021" : "TLSv1"
   }
 }
 

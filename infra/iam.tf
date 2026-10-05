@@ -22,19 +22,14 @@ resource "aws_iam_role_policy_attachment" "task_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# Task role: what the job itself may do — read the DB secret, publish data.json,
-# invalidate the CDN.
+# Task role: what the job itself may do — publish data.json, invalidate the CDN.
+# (No DB secret while the database is decommissioned — see rds.tf.)
 resource "aws_iam_role" "task" {
   name               = "${local.name}-ecs-task"
   assume_role_policy = data.aws_iam_policy_document.ecs_assume.json
 }
 
 data "aws_iam_policy_document" "task" {
-  statement {
-    sid       = "ReadDbSecret"
-    actions   = ["secretsmanager:GetSecretValue"]
-    resources = [aws_secretsmanager_secret.db.arn]
-  }
   statement {
     sid       = "PublishDashboardData"
     actions   = ["s3:PutObject", "s3:GetObject"]

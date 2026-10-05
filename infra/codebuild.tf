@@ -110,8 +110,8 @@ resource "aws_codebuild_project" "image" {
   }
 
   source {
-    type     = "S3"
-    location = "${aws_s3_bucket.build.bucket}/source.zip"
+    type      = "S3"
+    location  = "${aws_s3_bucket.build.bucket}/source.zip"
     buildspec = <<-YAML
       version: 0.2
       phases:

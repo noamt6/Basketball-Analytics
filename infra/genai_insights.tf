@@ -12,9 +12,9 @@
 # No VPC config -> no ENI in the VPC -> no NAT gateway and no paid interface
 # endpoints. S3 / Bedrock / CloudFront are reached over public AWS endpoints.
 #
-# The live resources were first created by scripts/deploy_genai_insights.py;
-# this file is the Terraform equivalent for parity and is not wired into main
-# apply yet (import before enabling to avoid a name clash).
+# The live resources were first created by scripts/deploy_genai_insights.py
+# and have since been imported into Terraform state (2026-10-05), so this file
+# is now the source of truth; the script is kept only as a reference.
 # ---------------------------------------------------------------------------
 
 locals {
@@ -31,7 +31,8 @@ data "archive_file" "genai_insights" {
 }
 
 resource "aws_iam_role" "genai_insights" {
-  name = "${local.genai_fn_name}-role"
+  name        = "${local.genai_fn_name}-role"
+  description = "${local.genai_fn_name} daily pipeline"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -116,7 +117,7 @@ resource "aws_lambda_function" "genai_insights" {
 
 resource "aws_cloudwatch_event_rule" "genai_insights_daily" {
   name                = "${local.genai_fn_name}-daily"
-  description         = "Daily GenAI insights refresh for the dashboard"
+  description         = "Daily GenAI insights refresh for plusminus.cloud"
   schedule_expression = local.genai_schedule
 }
 

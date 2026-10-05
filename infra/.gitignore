@@ -8,3 +8,4 @@ tfplan
 crash.log
 *.log
 # .terraform.lock.hcl is committed on purpose (pins provider versions)
+.build/

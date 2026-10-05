@@ -1,18 +1,3 @@
-output "rds_endpoint" {
-  description = "host:port for the DB"
-  value       = "${aws_db_instance.main.address}:${aws_db_instance.main.port}"
-}
-
-output "rds_address" {
-  description = "DB hostname (use as the 'host' in an SSM port-forward)"
-  value       = aws_db_instance.main.address
-}
-
-output "db_secret_arn" {
-  description = "Set as DB_SECRET_ARN for db_client.py / the batch task"
-  value       = aws_secretsmanager_secret.db.arn
-}
-
 output "ecr_repository_url" {
   value = aws_ecr_repository.batch.repository_url
 }
@@ -30,7 +15,7 @@ output "cloudfront_domain_name" {
 }
 
 output "cloudfront_url" {
-  value = "https://${aws_cloudfront_distribution.site.domain_name}"
+  value = length(var.site_aliases) > 0 ? "https://${var.site_aliases[0]}" : "https://${aws_cloudfront_distribution.site.domain_name}"
 }
 
 output "ecs_cluster" {
@@ -70,7 +55,7 @@ output "ssm_port_forward_example" {
     "aws ssm start-session --region ${var.region}",
     "--target ${aws_instance.bastion[0].id}",
     "--document-name AWS-StartPortForwardingSessionToRemoteHost",
-    "--parameters '{\"host\":[\"${aws_db_instance.main.address}\"],\"portNumber\":[\"5432\"],\"localPortNumber\":[\"5432\"]}'",
+    "--parameters '{\"host\":[\"<rds-endpoint>\"],\"portNumber\":[\"5432\"],\"localPortNumber\":[\"5432\"]}'",
   ]) : null
 }
 

@@ -8,7 +8,7 @@ project = "bball"
 # (~$3/mo for a t4g.nano — stop it in the console when idle).
 create_bastion = false
 
-# db_deletion_protection = true
+# (database decommissioned — see rds.tf)
 
 # --- CI deploy identity (optional) ---
 # github_repo                 = "your-org/basketball-analytics"

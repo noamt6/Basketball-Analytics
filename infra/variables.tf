@@ -17,53 +17,6 @@ variable "tags" {
 }
 
 # ---------------------------------------------------------------------------
-# Database
-# ---------------------------------------------------------------------------
-variable "db_instance_class" {
-  type    = string
-  default = "db.t4g.micro"
-}
-
-variable "db_allocated_storage" {
-  description = "Initial gp3 storage (GB). Autoscales up to db_max_allocated_storage."
-  type        = number
-  default     = 20
-}
-
-variable "db_max_allocated_storage" {
-  type    = number
-  default = 100
-}
-
-variable "db_engine_version" {
-  description = "Postgres major version (RDS applies the latest supported minor)."
-  type        = string
-  default     = "16"
-}
-
-variable "db_name" {
-  type    = string
-  default = "analytics_db"
-}
-
-variable "db_username" {
-  type    = string
-  default = "bball_admin"
-}
-
-variable "db_deletion_protection" {
-  description = "Blocks `terraform destroy` of the DB until set false and applied."
-  type        = bool
-  default     = true
-}
-
-variable "db_backup_retention_period" {
-  description = "Automated backup retention (days). AWS Free Plan caps this at 1; raise to 7+ once the account is upgraded."
-  type        = number
-  default     = 1
-}
-
-# ---------------------------------------------------------------------------
 # DB access from a laptop
 # ---------------------------------------------------------------------------
 # The DB is never publicly_accessible. The primary way to run DB-touching jobs
@@ -118,4 +71,37 @@ variable "create_deploy_user" {
   description = "Also create a plain IAM user with the deployer policy (make its access key in the console)."
   type        = bool
   default     = false
+}
+
+# ---------------------------------------------------------------------------
+# Site / CDN (CloudFront). Defaults mirror the live distribution.
+# ---------------------------------------------------------------------------
+variable "site_aliases" {
+  description = "Custom domain names on the distribution (empty = *.cloudfront.net only)."
+  type        = list(string)
+  default     = ["plusminus.cloud", "www.plusminus.cloud"]
+}
+
+variable "acm_certificate_arn" {
+  description = "ACM certificate (must be in us-east-1) covering site_aliases. Required when site_aliases is set."
+  type        = string
+  default     = "arn:aws:acm:us-east-1:402631154156:certificate/f1362ce6-9c79-41be-900d-a50e23136695"
+}
+
+variable "geo_allow_countries" {
+  description = "ISO country codes allowed to reach the site (whitelist). Empty = no geo restriction."
+  type        = list(string)
+  default     = ["IL"]
+}
+
+variable "cdn_log_bucket" {
+  description = "Bucket name for CloudFront standard access logs. Empty = logging off."
+  type        = string
+  default     = "plusminus-cloudfront-logs-402631154156"
+}
+
+variable "edge_logger_function" {
+  description = "Name of a CloudFront Function attached on viewer-request. Empty = none."
+  type        = string
+  default     = "bball-edge-logger"
 }
