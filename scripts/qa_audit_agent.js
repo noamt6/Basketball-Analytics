@@ -360,7 +360,9 @@ function domainEData(data) {
         const side = i === 0 ? g.home : g.away;
         // players + the site's "Team" row (rarely carries unattributed points)
         const pts = t.players.reduce((a, p) => a + p.pts, 0) + ((t.team_row && t.team_row.pts) || 0);
-        if (pts !== t.pts || t.pts !== side.pts) gameErr.push(`${g.id}/${t.team_id}: players+team ${pts}, box ${t.pts}, index ${side.pts}`);
+        // a point or two the source credits to nobody is allowed ONLY when the game says so
+        const excused = (g.flags || []).some((f) => f.startsWith(`${t.team_id}:`) && f.includes('not attributed'));
+        if ((pts !== t.pts && !excused) || t.pts !== side.pts) gameErr.push(`${g.id}/${t.team_id}: players+team ${pts}, box ${t.pts}, index ${side.pts}`);
         const q = (t.q || []).reduce((a, v) => a + v, 0);
         if (q !== t.pts) gameErr.push(`${g.id}/${t.team_id}: sum(q) ${q} != ${t.pts}`);
         if ((t.q || []).length !== 4 + (g.ot || 0)) gameErr.push(`${g.id}/${t.team_id}: ${(t.q || []).length} periods for ot=${g.ot}`);
@@ -369,6 +371,12 @@ function domainEData(data) {
         }));
       });
     }
+
+    // every club in the game files must resolve to a data.json team of that
+    // season, or the UI falls back to printing a raw team id
+    const djTeams = new Set([...((data.seasons[season] || {}).teams || []), ...(((data.seasons[season] || {}).playoffs || {}).teams || [])].map((t) => String(t.id)));
+    const strayTeams = [...new Set(idx.games.flatMap((g) => [g.home.team_id, g.away.team_id]).map(String))].filter((id) => !djTeams.has(id));
+    if (strayTeams.length) schemaErr.push(`${season}: team id(s) not in data.json: ${strayTeams.join(', ')}`);
 
     // reconciliation: regular-season log rows summed per player vs data.json
     const dj = data.seasons[season];

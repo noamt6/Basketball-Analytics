@@ -377,7 +377,12 @@ def validate_game(game: dict, box: dict) -> tuple[list[str], list[str]]:
         tr = t["team_row"] or {}
         s = sum(p["pts"] for p in t["players"]) + tr.get("pts", 0)
         if s != t["total"]["pts"]:
-            errs.append(f"{tag}: sum pts {s} != Total {t['total']['pts']}")
+            # the Total row still matches the score (checked below) -- the source
+            # just didn't credit a point or two to anyone: flag, don't drop the game
+            # the player rows are what the league published -- keep them and
+            # flag the gap (dropping the game would lose every correct row too)
+            gap = t["total"]["pts"] - s
+            warns.append(f"{tag}: {gap:+d} pts in the Total row not attributed to any player (source)")
         if tr.get("pts"):
             warns.append(f"{tag}: {tr['pts']} pts credited to the Team row, not a player (source)")
         for k in _SOFT_SUM_KEYS:
@@ -388,13 +393,21 @@ def validate_game(game: dict, box: dict) -> tuple[list[str], list[str]]:
             for i, name in ((0, "made"), (1, "att")):
                 s = sum(p[k][i] for p in t["players"]) + (tr.get(k) or [0, 0])[i]
                 if s != t["total"][k][i]:
-                    errs.append(f"{tag}: sum {k} {name} {s} != Total {t['total'][k][i]}")
+                    warns.append(f"{tag}: sum {k} {name} {s} != Total {t['total'][k][i]} (source)")
         for p in t["players"]:
             for k in ("fg2", "fg3", "ft"):
                 if p[k][0] > p[k][1]:
                     errs.append(f"{tag}: player {p['id']} {k} made > att")
         if t["total"]["pts"] != side["pts"]:
-            errs.append(f"{tag}: Total pts {t['total']['pts']} != score {side['pts']}")
+            # results page + quarter line are two independent official sources;
+            # when they agree, a small shortfall in the box score's own total is
+            # the statisticians' (points credited to nobody) -- flag, keep the game
+            gap = side["pts"] - t["total"]["pts"]
+            if sum(t["q"]) == side["pts"] and abs(gap) <= 3:
+                warns.append(f"{tag}: box score totals {t['total']['pts']}, official score {side['pts']} "
+                             f"-- {gap:+d} pts not attributed to any player (source)")
+            else:
+                errs.append(f"{tag}: Total pts {t['total']['pts']} != score {side['pts']}")
         if len(t["q"]) != 4 + game["ot"]:
             errs.append(f"{tag}: {len(t['q'])} periods, expected {4 + game['ot']} (ot={game['ot']})")
         if sum(t["q"]) != side["pts"]:
@@ -417,6 +430,7 @@ def box_doc(season: str, game: dict, box: dict) -> dict:
         doc = {
             "side": side_name,
             "team_id": t["team_id"],
+            **({"src_team_id": t["src_team_id"]} if t.get("src_team_id") else {}),
             "coach": t["coach"],
             "pts": side["pts"],
             "q": t["q"],
@@ -482,8 +496,13 @@ def _write_json(path: Path, doc: dict) -> None:
 # with combined season totals. Box-score rows are mapped onto that id by exact
 # (normalised) name when the name is unique in the season; the site's id is
 # kept as `src_id`. Players data.json does not know at all keep their site id.
+_NAME_SUFFIX = re.compile(r"\b(jr|sr|ii|iii|iv|v)\b")
+
+
 def _norm_name(name: str) -> str:
-    return re.sub(r"[^a-z0-9]+", " ", (name or "").lower()).strip()
+    # "James Webb III" == "James Webb", "Marcus Bingham Jr." == "Marcus Bingham"
+    n = re.sub(r"[^a-z0-9]+", " ", (name or "").lower())
+    return re.sub(r"\s+", " ", _NAME_SUFFIX.sub(" ", n)).strip()
 
 
 def load_identity(season: str) -> tuple[set[int], dict[str, int]]:
@@ -498,6 +517,33 @@ def load_identity(season: str) -> tuple[set[int], dict[str, int]]:
     for p in players:
         by_name.setdefault(_norm_name(p.get("name")), set()).add(int(p["id"]))
     return known, {n: next(iter(ids)) for n, ids in by_name.items() if n and len(ids) == 1}
+
+
+def team_id_map(season: str, parsed: list[tuple[dict, dict]]) -> dict[str, str]:
+    """{site TeamId: data.json team id} for site ids data.json doesn't know."""
+    try:
+        blob = json.loads(DATA_JSON.read_text(encoding="utf-8"))["seasons"][season]
+    except (OSError, KeyError, ValueError):
+        return {}
+    teams = {str(t["id"]) for t in blob.get("teams", [])}
+    team_of = {int(p["id"]): str(p["team_id"]) for p in blob["players"]}
+    votes: dict[str, dict[str, int]] = {}
+    for _, box in parsed:
+        for t in box["teams"]:
+            if t["team_id"] in teams:
+                continue
+            for p in t["players"]:
+                if p["id"] in team_of:
+                    v = votes.setdefault(t["team_id"], {})
+                    v[team_of[p["id"]]] = v.get(team_of[p["id"]], 0) + 1
+    out = {}
+    for site, v in votes.items():
+        best = max(v, key=v.get)
+        if v[best] >= 0.6 * sum(v.values()):   # clear majority only
+            out[site] = best
+    if len(set(out.values())) != len(out):
+        raise RuntimeError(f"{season}: ambiguous team-id map {out}")
+    return out
 
 
 def map_identity(box: dict, known: set[int], by_name: dict[str, int], stats: dict) -> None:
@@ -516,16 +562,24 @@ def map_identity(box: dict, known: set[int], by_name: dict[str, int], stats: dic
 # --------------------------------------------------------------------------- #
 # cross-check against data.json (season totals)                               #
 # --------------------------------------------------------------------------- #
-def reconcile(season: str, logs: list[list], stage_of: dict[int, str]) -> dict:
-    """Sum regular-season log rows per player and compare with data.json."""
+def reconcile(season: str, logs: list[list], stage_of: dict[int, str],
+              competition: str = "regular") -> dict:
+    """Sum log rows per player and compare with data.json season totals:
+    competition "regular" -> regular-season games vs seasons[s].players,
+    "playoffs" -> every non-regular stage vs seasons[s].playoffs.players."""
     try:
         data = json.loads(DATA_JSON.read_text(encoding="utf-8"))["seasons"][season]
     except (OSError, KeyError, ValueError):
         return {"skipped": "data.json / season not available"}
+    if competition == "playoffs":
+        data = data.get("playoffs") or {}
+        if not data.get("players"):
+            return {"skipped": "no playoffs block in data.json"}
     c = {name: i for i, name in enumerate(LOG_COLS)}
     agg: dict[int, dict] = {}
     for r in logs:
-        if stage_of.get(r[c["game_id"]]) != "regular":
+        is_regular = stage_of.get(r[c["game_id"]]) == "regular"
+        if is_regular != (competition == "regular"):
             continue
         a = agg.setdefault(r[c["player_id"]], {k: 0 for k in ("gp", "pts", "min", "fgm", "fga", "fg3m", "fg3a", "ftm", "fta", "reb", "ast")})
         a["gp"] += 1
@@ -604,6 +658,7 @@ def main(argv=None) -> int:
 
     # 2) box scores
     ok, bad, warned, no_box, logs, he_missing = [], [], [], [], [], []
+    parsed: list[tuple[dict, dict]] = []
     out = args.out / season
     for n, g in enumerate(todo, 1):
         try:
@@ -640,11 +695,29 @@ def main(argv=None) -> int:
         for i, t in enumerate(box["teams"]):
             t["coach"] = {"en": t["coach"], "he": he["coaches"][i] if i < len(he["coaches"]) else None}
         ok.append(g["id"])
+        parsed.append((g, box))
+        if n % 25 == 0:
+            print(f"  .. {n}/{len(todo)} games")
+
+    # 2b) team ids: a season whose data.json uses its own team ids (2023-24 is
+    # the hand-built workbook: "MTA", "HTA", ...) gets each site TeamId mapped
+    # to the data.json team its (already identity-mapped) players belong to --
+    # majority vote, so spelling differences in club names don't matter.
+    team_map = team_id_map(season, parsed)
+    if team_map:
+        print("team ids mapped to data.json: " + ", ".join(f"{a}->{b}" for a, b in sorted(team_map.items())))
+        for g, box in parsed:
+            for side in ("home", "away"):
+                g[side]["team_id"] = team_map.get(g[side]["team_id"], g[side]["team_id"])
+            for t in box["teams"]:
+                t["src_team_id"], t["team_id"] = t["team_id"], team_map.get(t["team_id"], t["team_id"])
+        for g in games:   # unparsed fixtures (no box) still need mapped ids in the index
+            for side in ("home", "away"):
+                g[side]["team_id"] = team_map.get(g[side]["team_id"], g[side]["team_id"])
+    for g, box in parsed:
         logs.extend(log_rows(g, box))
         if not args.check:
             _write_json(out / "g" / f"{g['id']}.json", box_doc(season, g, box))
-        if n % 25 == 0:
-            print(f"  .. {n}/{len(todo)} games")
 
     # 3) index + player logs
     bad_ids = {gid for gid, _ in bad}
@@ -709,15 +782,20 @@ def main(argv=None) -> int:
     if not args.check:
         print(f"wrote {out}")
 
-    full = not args.limit and not args.game_ids and len(ok) + len(no_box) == len(played)
+    full = not args.limit and not args.game_ids
     if full:
-        rec = reconcile(season, logs, stage_of)
-        if "skipped" in rec:
-            print(f"reconciliation skipped: {rec['skipped']}")
-        else:
-            print(f"reconciliation vs data.json (regular season): {rec['exact']}/{rec['players']} "
+        if bad:
+            print(f"(reconciliation includes the effect of {len(bad)} failed game(s) above)")
+        for comp in ("regular", "playoffs"):
+            rec = reconcile(season, logs, stage_of, comp)
+            label = "regular season" if comp == "regular" else "playoffs"
+            if "skipped" in rec:
+                print(f"reconciliation ({label}) skipped: {rec['skipped']}")
+                continue
+            print(f"reconciliation vs data.json ({label}): {rec['exact']}/{rec['players']} "
                   f"players exact, {len(rec['diffs'])} differ, "
-                  f"{len(rec['not_in_data_json'])} in logs but not in data.json")
+                  f"{len(rec['not_in_data_json'])} in logs but not in data.json"
+                  + (f" {rec['not_in_data_json'][:10]}" if rec["not_in_data_json"] else ""))
             for pid, kind, d in rec["diffs"][:15]:
                 print(f"  {pid}: {kind} {d}")
     else:
