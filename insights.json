@@ -1,0 +1,300 @@
+{
+  "generated_at": "2026-09-06T11:51:57+00:00",
+  "season": "2023-2024",
+  "model": "eu.amazon.nova-lite-v1:0",
+  "summary_he": "בעונה הנוכחית, אלייז'ה סטיוארט מ-HEL מוביל את הטבלאות הן ב-PIR והן ביעילות, ומציג נתונים מרשימים עם 20.59 נקודות ו-497.0 יעילות בממוצע למשחק. בצמרת הטבלה, מכבי תל אביב ממשיכה להוביל עם 92.07 נקודות ומדד השפעה של 113.34 בממוצע למשחק, ומראה עקביות ויכולת תקיפה חזקה.",
+  "highlights": {
+    "top_pir": [
+      {
+        "name": "אלייז'ה סטיוארט",
+        "team": "HEL",
+        "gp": 29,
+        "avg_points": 20.59,
+        "avg_pir": 20.48,
+        "pir": 594,
+        "efficiency": 497.0,
+        "ts_pct": 58.2
+      },
+      {
+        "name": "אמין סטיבנס",
+        "team": "EKA",
+        "gp": 29,
+        "avg_points": 17.21,
+        "avg_pir": 20.03,
+        "pir": 581,
+        "efficiency": 557.0,
+        "ts_pct": 57.0
+      },
+      {
+        "name": "ראלי אולקינס",
+        "team": "INZ",
+        "gp": 29,
+        "avg_points": 15.97,
+        "avg_pir": 18.48,
+        "pir": 536,
+        "efficiency": 497.0,
+        "ts_pct": 53.7
+      },
+      {
+        "name": "ג'רום מיינסי",
+        "team": "INZ",
+        "gp": 30,
+        "avg_points": 13.1,
+        "avg_pir": 17.83,
+        "pir": 535,
+        "efficiency": 497.0,
+        "ts_pct": 66.5
+      },
+      {
+        "name": "ג'קינן גאנט",
+        "team": "HBS",
+        "gp": 30,
+        "avg_points": 15.7,
+        "avg_pir": 15.2,
+        "pir": 456,
+        "efficiency": 481.0,
+        "ts_pct": 57.4
+      }
+    ],
+    "top_efficiency": [
+      {
+        "name": "אמין סטיבנס",
+        "team": "EKA",
+        "gp": 29,
+        "avg_points": 17.21,
+        "avg_pir": 20.03,
+        "pir": 581,
+        "efficiency": 557.0,
+        "ts_pct": 57.0
+      },
+      {
+        "name": "ראלי אולקינס",
+        "team": "INZ",
+        "gp": 29,
+        "avg_points": 15.97,
+        "avg_pir": 18.48,
+        "pir": 536,
+        "efficiency": 497.0,
+        "ts_pct": 53.7
+      },
+      {
+        "name": "ג'רום מיינסי",
+        "team": "INZ",
+        "gp": 30,
+        "avg_points": 13.1,
+        "avg_pir": 17.83,
+        "pir": 535,
+        "efficiency": 497.0,
+        "ts_pct": 66.5
+      },
+      {
+        "name": "אלייז'ה סטיוארט",
+        "team": "HEL",
+        "gp": 29,
+        "avg_points": 20.59,
+        "avg_pir": 20.48,
+        "pir": 594,
+        "efficiency": 497.0,
+        "ts_pct": 58.2
+      },
+      {
+        "name": "ג'קינן גאנט",
+        "team": "HBS",
+        "gp": 30,
+        "avg_points": 15.7,
+        "avg_pir": 15.2,
+        "pir": 456,
+        "efficiency": 481.0,
+        "ts_pct": 57.4
+      }
+    ],
+    "top_avg_pir": [
+      {
+        "name": "ג'יילן הורד",
+        "team": "HTA",
+        "gp": 16,
+        "avg_points": 16.69,
+        "avg_pir": 20.5,
+        "pir": 328,
+        "efficiency": 299.0,
+        "ts_pct": 70.5
+      },
+      {
+        "name": "אלייז'ה סטיוארט",
+        "team": "HEL",
+        "gp": 29,
+        "avg_points": 20.59,
+        "avg_pir": 20.48,
+        "pir": 594,
+        "efficiency": 497.0,
+        "ts_pct": 58.2
+      },
+      {
+        "name": "אמין סטיבנס",
+        "team": "EKA",
+        "gp": 29,
+        "avg_points": 17.21,
+        "avg_pir": 20.03,
+        "pir": 581,
+        "efficiency": 557.0,
+        "ts_pct": 57.0
+      },
+      {
+        "name": "מרכוס בינגהאם",
+        "team": "HHF",
+        "gp": 15,
+        "avg_points": 14.27,
+        "avg_pir": 19.27,
+        "pir": 289,
+        "efficiency": 287.0,
+        "ts_pct": 58.6
+      },
+      {
+        "name": "מייק מקגורל",
+        "team": "HHF",
+        "gp": 15,
+        "avg_points": 19.53,
+        "avg_pir": 19.27,
+        "pir": 289,
+        "efficiency": 270.0,
+        "ts_pct": 55.4
+      }
+    ],
+    "scoring_leaders": [
+      {
+        "name": "אלייז'ה סטיוארט",
+        "team": "HEL",
+        "gp": 29,
+        "avg_points": 20.59,
+        "avg_pir": 20.48,
+        "pir": 594,
+        "efficiency": 497.0,
+        "ts_pct": 58.2
+      },
+      {
+        "name": "מייק מקגורל",
+        "team": "HHF",
+        "gp": 15,
+        "avg_points": 19.53,
+        "avg_pir": 19.27,
+        "pir": 289,
+        "efficiency": 270.0,
+        "ts_pct": 55.4
+      },
+      {
+        "name": "ג'וואן ג'ונסון",
+        "team": "HEL",
+        "gp": 17,
+        "avg_points": 17.41,
+        "avg_pir": 17.41,
+        "pir": 296,
+        "efficiency": 292.0,
+        "ts_pct": 53.7
+      },
+      {
+        "name": "ג'יימס בייטמון",
+        "team": "EKA",
+        "gp": 24,
+        "avg_points": 17.33,
+        "avg_pir": 17.58,
+        "pir": 422,
+        "efficiency": 370.0,
+        "ts_pct": 62.2
+      },
+      {
+        "name": "אמין סטיבנס",
+        "team": "EKA",
+        "gp": 29,
+        "avg_points": 17.21,
+        "avg_pir": 20.03,
+        "pir": 581,
+        "efficiency": 557.0,
+        "ts_pct": 57.0
+      }
+    ],
+    "team_standings": [
+      {
+        "rank": 1,
+        "team": "מכבי תל אביב",
+        "avg_points": 92.07,
+        "avg_pir": 113.34
+      },
+      {
+        "rank": 2,
+        "team": "הפועל תל אביב",
+        "avg_points": 91.83,
+        "avg_pir": 111.69
+      },
+      {
+        "rank": 3,
+        "team": "מכבי עירוני רמת גן",
+        "avg_points": 83.69,
+        "avg_pir": 91.9
+      },
+      {
+        "rank": 4,
+        "team": "הפועל חיפה",
+        "avg_points": 82.7,
+        "avg_pir": 89.8
+      },
+      {
+        "rank": 5,
+        "team": "הפועל באר שבע/דימונה",
+        "avg_points": 82.7,
+        "avg_pir": 88.43
+      },
+      {
+        "rank": 6,
+        "team": "הפועל ירושלים",
+        "avg_points": 82.45,
+        "avg_pir": 90.07
+      },
+      {
+        "rank": 7,
+        "team": "אליצור קריית אתא",
+        "avg_points": 82.34,
+        "avg_pir": 89.93
+      },
+      {
+        "rank": 8,
+        "team": "הפועל גליל עליון",
+        "avg_points": 82.3,
+        "avg_pir": 88.13
+      },
+      {
+        "rank": 9,
+        "team": "עירוני נס ציונה",
+        "avg_points": 82.17,
+        "avg_pir": 92.73
+      },
+      {
+        "rank": 10,
+        "team": "בני הרצליה",
+        "avg_points": 81.63,
+        "avg_pir": 91.37
+      },
+      {
+        "rank": 11,
+        "team": "הפועל חולון",
+        "avg_points": 81.28,
+        "avg_pir": 91.38
+      },
+      {
+        "rank": 12,
+        "team": "הפועל עפולה",
+        "avg_points": 81.03,
+        "avg_pir": 88.1
+      },
+      {
+        "rank": 13,
+        "team": "הפועל אילת",
+        "avg_points": 77.77,
+        "avg_pir": 78.67
+      }
+    ]
+  },
+  "usage": {
+    "input_tokens": 1984,
+    "output_tokens": 184
+  }
+}
