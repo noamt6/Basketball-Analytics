@@ -1226,10 +1226,28 @@
   .bx-table td.pos { color: #5fbf8f; }
   .bx-table td.neg { color: #d9826f; }
   .bx-table tr.tot td { font-weight: 700; color: var(--ink); border-top: 1px solid var(--hair-strong); border-bottom: 0; }
-  .bx-more { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding: 18px 20px 0; }
-  .bx-more div { background: rgba(255,255,255,.035); border: 1px solid var(--hair); border-radius: 10px; padding: 10px 12px; }
-  .bx-more .k { font: 600 9.5px/1.3 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
-  .bx-more .v { margin-top: 6px; font: 600 13px/1.3 var(--font-body); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .bx-sub { padding: 22px 20px 6px; font: 600 10px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); text-align: center; }
+  .bx-more-tbl th.tm { max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); text-transform: none; letter-spacing: 0; font-size: 11.5px; }
+  /* numbers keep their sign on the left in RTL ("-1", never "1-") */
+  .bx-table td:not(.nm), .bx-q td:not(:first-child), .glg-cols span.cell-right { direction: ltr; unicode-bidi: isolate; }
+  /* playoff series */
+  .gm-group { padding: 16px 28px 6px; font: 600 10px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+  .gm-series { border-bottom: 1px solid var(--hair-soft); }
+  .gm-series:last-child { border-bottom: 0; }
+  .gm-series-head {
+    display: grid; grid-template-columns: 52px minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px;
+    width: 100%; padding: 14px 28px; border: 0; background: transparent; color: inherit; font-family: inherit;
+    text-align: inherit; cursor: pointer;
+  }
+  .gm-series-head:hover, .gm-series-head:focus-visible { background: rgba(255,255,255,.035); outline: none; }
+  .gm-series-head .gm-score { font-size: 17px; }
+  .gm-team.focus { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px; }
+  /* physical borders: a down/up chevron that doesn't mirror in RTL */
+  .gm-chev { width: 8px; height: 8px; justify-self: center; margin-top: -4px; border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3); transform: rotate(45deg); transition: transform .15s ease; }
+  .gm-series-head[aria-expanded="true"] .gm-chev { transform: rotate(-135deg); margin-top: 4px; }
+  .gm-series-games { background: rgba(255,255,255,.02); border-top: 1px solid var(--hair-soft); }
+  .gm-series-games[hidden] { display: none; }
+  .gm-stage-switch { flex: none; }
   .bx-foot { padding: 16px 20px 0; font: 500 11px/1.6 var(--font-body); color: var(--ink-4); text-align: center; }
 
   /* ---------- Player game log ---------- */
@@ -1263,7 +1281,6 @@
     .glg-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .glg-tiles > div:nth-child(3) { border-inline-end: 0; }
     .glg-tiles > div:nth-child(n+4) { border-top: 1px solid var(--hair); }
-    .bx-more { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 640px) {
     .upg-banner { padding: 9px 16px; font-size: 12px; }
@@ -1277,7 +1294,8 @@
     .bx-board .sc { font-size: 30px; gap: 6px; }
     .bx-team-head { padding: 18px 12px 8px; }
     .bx-table .nm { min-width: 118px; max-width: 132px; }
-    .bx-more { padding: 16px 12px 0; }
+    .gm-group { padding: 14px 14px 6px; }
+    .gm-series-head { padding: 12px 14px; gap: 8px; grid-template-columns: 44px minmax(0, 1fr) auto minmax(0, 1fr); }
     .glg-tiles > div { padding: 14px 12px; }
     .glg-tiles .num { font-size: 26px; }
     .glg-chart { padding: 12px 10px 2px; }
@@ -1675,6 +1693,8 @@ const STR = {
     bx_flag_note: 'הערה: בנתוני המקור של משחק זה יש אי-התאמה קטנה (למשל עבירה או ריבאונד שנרשמו רק בשורת הסיכום).',
     bx_more: { pts_off_tov: 'נק׳ מאיבודים', pts_paint: 'נק׳ בצבע', second_chance: 'הזדמנות שנייה', time_leading: 'זמן בהובלה' },
     bx_error: 'לא ניתן לטעון את ה-Box Score',
+    bx_more_title: 'נתונים נוספים',
+    ser_hint: 'לחצו כדי לראות את משחקי הסדרה',
     glg_kicker: 'יומן משחקים',
     glg_title: 'משחק אחר משחק',
     glg_new: 'מדדים חדשים מה-Box Score',
@@ -2008,6 +2028,8 @@ const STR = {
     bx_flag_note: 'Note: the league source has a minor inconsistency in this game (e.g. a foul or rebound recorded only in the totals row).',
     bx_more: { pts_off_tov: 'Pts off TO', pts_paint: 'Paint pts', second_chance: '2nd chance', time_leading: 'Time leading' },
     bx_error: 'Could not load this box score',
+    bx_more_title: 'More stats',
+    ser_hint: 'Click to see the games of this series',
     glg_kicker: 'Game log',
     glg_title: 'Game by game',
     glg_new: 'New from the box score',
@@ -3702,6 +3724,15 @@ function gRoundLabel(g) {
   const S = STR[state.lang];
   return g.stage === 'regular' ? S.res_round_opt(g.round) : stageName(g.stage) + ' · ' + S.res_game_n(g.round);
 }
+// Localised source field: {"en", "he"} (schema v2) or a plain string (v1).
+// Falls back to the other language rather than showing nothing.
+function gLoc(v) {
+  if (v == null) return Array.isArray(v) ? [] : '';
+  if (typeof v !== 'object' || Array.isArray(v)) return v;
+  const other = state.lang === 'he' ? 'en' : 'he';
+  const pick = v[state.lang];
+  return (Array.isArray(pick) ? pick.length : pick) ? pick : (v[other] || (Array.isArray(pick) ? [] : ''));
+}
 function gOtTag(ot) { return ot ? (ot > 1 ? ot + 'OT' : 'OT') : ''; }
 // Async slot: rendered synchronously as a placeholder, filled when the data
 // arrives -- but only if the user hasn't navigated away (slot still attached).
@@ -3715,24 +3746,86 @@ function gamesSlot(root, build) {
   return slot;
 }
 
-/* ---- League tab: results by round / playoff stage ---- */
+/* ---- Playoff series: one card per pairing, games expand on click ----
+ * Series = playoff games of one stage between the same two clubs. The club
+ * that hosted game 1 (the higher seed) is listed first. Wins count every
+ * final result, including an awarded game that has no box score. */
+const PLAYOFF_STAGES = ['final', 'semifinal', 'quarterfinal', 'playin'];   // newest first
+function playoffSeries(games) {
+  const by = new Map();
+  games.filter((g) => g.stage !== 'regular' && g.status === 'final').forEach((g) => {
+    const key = g.stage + ':' + [g.home.team_id, g.away.team_id].sort().join('-');
+    if (!by.has(key)) by.set(key, []);
+    by.get(key).push(g);
+  });
+  return [...by.values()].map((gs) => {
+    gs.sort((a, b) => (a.date || '').localeCompare(b.date || '') || (a.round || 0) - (b.round || 0) || a.id - b.id);
+    const a = gs[0].home.team_id, b = gs[0].away.team_id;
+    const winsOf = (tid) => gs.filter((g) => (g.home.team_id === tid ? g.home.pts > g.away.pts : g.away.pts > g.home.pts)).length;
+    return { stage: gs[0].stage, a, b, wa: winsOf(a), wb: winsOf(b), games: gs };
+  }).sort((x, y) => PLAYOFF_STAGES.indexOf(x.stage) - PLAYOFF_STAGES.indexOf(y.stage)
+    || (y.games[0].date || '').localeCompare(x.games[0].date || ''));
+}
+
+function seriesCard(sr, opts) {
+  const S = STR[state.lang];
+  const focus = opts && opts.teamId;
+  const wrap = el('div', 'gm-series');
+  const head = el('button', 'gm-series-head');
+  head.type = 'button';
+  head.setAttribute('aria-expanded', 'false');
+  const aWon = sr.wa > sr.wb, bWon = sr.wb > sr.wa;
+  head.appendChild(el('span', 'gm-chev', ''));
+  head.appendChild(el('span', 'gm-team home' + (aWon ? ' win' : '') + (focus === sr.a ? ' focus' : ''), gTeamLabel(sr.a)));
+  const sc = el('span', 'gm-score');
+  sc.appendChild(el('b', aWon ? 'win' : null, String(sr.wa)));
+  sc.appendChild(document.createTextNode('–'));
+  sc.appendChild(el('b', bWon ? 'win' : null, String(sr.wb)));
+  head.appendChild(sc);
+  head.appendChild(el('span', 'gm-team' + (bWon ? ' win' : '') + (focus === sr.b ? ' focus' : ''), gTeamLabel(sr.b)));
+  wrap.appendChild(head);
+  const body = el('div', 'gm-series-games');
+  body.hidden = true;
+  sr.games.forEach((g) => body.appendChild(resultRow(g)));
+  wrap.appendChild(body);
+  head.addEventListener('click', () => {
+    const open = head.getAttribute('aria-expanded') !== 'true';
+    head.setAttribute('aria-expanded', open ? 'true' : 'false');
+    body.hidden = !open;
+  });
+  head.title = S.ser_hint;
+  return wrap;
+}
+
+/* Regular season | Playoffs segmented switch shared by the games panels. */
+function stageSwitch(current, hasPlayoffs, onPick) {
+  const S = STR[state.lang];
+  const sw = el('div', 'lang-switch gm-stage-switch');
+  [['regular', S.comp_regular], ['playoffs', S.comp_playoffs]].forEach(([k, lbl]) => {
+    const b = el('button', null, lbl);
+    b.type = 'button';
+    b.dataset.stage = k;
+    b.setAttribute('aria-pressed', current === k ? 'true' : 'false');
+    if (k === 'playoffs' && !hasPlayoffs) { b.disabled = true; b.setAttribute('aria-disabled', 'true'); }
+    b.addEventListener('click', () => { if (!b.disabled) onPick(k); });
+    sw.appendChild(b);
+  });
+  return sw;
+}
+
+/* ---- League tab: regular season by round | playoffs as series ---- */
 function resultsPanel(idx) {
   const S = STR[state.lang];
   const games = idx.games.filter((g) => g.status === 'final' || g.status === 'scheduled');
-  const keyOf = (g) => (g.stage === 'regular' ? 'regular:' + g.round : g.stage);
-  const keys = [];
-  STAGE_ORDER.forEach((st) => {
-    const inStage = games.filter((g) => g.stage === st);
-    if (st === 'regular') [...new Set(inStage.map((g) => g.round))].sort((a, b) => a - b).forEach((r) => keys.push('regular:' + r));
-    else if (inStage.length) keys.push(st);
-  });
-  if (!keys.length) return null;
-  const playoffKeys = keys.filter((k) => !k.startsWith('regular:'));
-  if (!keys.includes(state.resKey)) {
-    state.resKey = (state.competition === 'playoffs' && playoffKeys.length)
-      ? playoffKeys[playoffKeys.length - 1]
-      : keys.filter((k) => k.startsWith('regular:')).pop() || keys[0];
+  const regular = games.filter((g) => g.stage === 'regular');
+  const series = playoffSeries(games);
+  const rounds = [...new Set(regular.map((g) => g.round))].sort((a, b) => a - b);
+  if (!rounds.length && !series.length) return null;
+  if (state.resStage !== 'regular' && state.resStage !== 'playoffs') {
+    state.resStage = state.competition === 'playoffs' && series.length ? 'playoffs' : 'regular';
   }
+  if (!series.length) state.resStage = 'regular';
+  if (!rounds.includes(state.resRound)) state.resRound = rounds[rounds.length - 1];
 
   const panel = el('div', 'panel games-results');
   panel.style.marginTop = '24px';
@@ -3743,28 +3836,35 @@ function resultsPanel(idx) {
 
   const ctl = el('div', 'stat-mode-row');
   ctl.style.paddingTop = '16px';
-  const sel = document.createElement('select');
-  sel.className = 'gm-select';
-  sel.id = 'res-round';
-  ctl.appendChild(Object.assign(el('label', null, S.res_round_label), { htmlFor: 'res-round' }));
-  keys.forEach((k) => {
-    const label = k.startsWith('regular:') ? S.res_round_opt(Number(k.split(':')[1])) : stageName(k);
-    sel.appendChild(new Option(label, k, false, k === state.resKey));
-  });
-  ctl.appendChild(sel);
-  panel.appendChild(ctl);
-
-  const list = el('div', 'gm-list');
+  const body = el('div', 'gm-list');
   const fill = () => {
-    list.innerHTML = '';
-    const rows = games.filter((g) => keyOf(g) === state.resKey)
-      .sort((a, b) => (a.date || '').localeCompare(b.date || '') || (a.time || '').localeCompare(b.time || '') || a.id - b.id);
-    if (!rows.length) { list.appendChild(el('div', 'empty-state', S.res_empty)); return; }
-    rows.forEach((g) => list.appendChild(resultRow(g)));
+    ctl.innerHTML = '';
+    body.innerHTML = '';
+    ctl.appendChild(stageSwitch(state.resStage, series.length > 0, (k) => { state.resStage = k; fill(); }));
+    if (state.resStage === 'playoffs') {
+      let last = null;
+      series.forEach((sr) => {
+        if (sr.stage !== last) { body.appendChild(el('div', 'gm-group', stageName(sr.stage))); last = sr.stage; }
+        body.appendChild(seriesCard(sr));
+      });
+      return;
+    }
+    ctl.appendChild(el('span', 'gap'));
+    const sel = document.createElement('select');
+    sel.className = 'gm-select';
+    sel.id = 'res-round';
+    sel.setAttribute('aria-label', S.res_round_label);
+    rounds.forEach((r) => sel.appendChild(new Option(S.res_round_opt(r), String(r), false, r === state.resRound)));
+    sel.addEventListener('change', (e) => { state.resRound = Number(e.target.value); fill(); });
+    ctl.appendChild(sel);
+    regular.filter((g) => g.round === state.resRound)
+      .sort((a, b) => (a.date || '').localeCompare(b.date || '') || (a.time || '').localeCompare(b.time || '') || a.id - b.id)
+      .forEach((g) => body.appendChild(resultRow(g)));
+    if (!body.children.length) body.appendChild(el('div', 'empty-state', S.res_empty));
   };
-  sel.addEventListener('change', (e) => { state.resKey = e.target.value; fill(); });
   fill();
-  panel.appendChild(list);
+  panel.appendChild(ctl);
+  panel.appendChild(body);
   panel.appendChild(el('div', 'team-note', S.res_hint));
   return panel;
 }
@@ -3820,14 +3920,16 @@ function showMoreToggle(rowEls, show, total) {
   return more;
 }
 
-/* ---- Team tab: the club's own games + form strip ---- */
+/* ---- Team tab: the club's games -- regular season list + playoff series ---- */
 function teamGamesPanel(idx, teamId) {
   const S = STR[state.lang];
   const mine = idx.games
     .filter((g) => g.status === 'final' && (g.home.team_id === teamId || g.away.team_id === teamId))
-    .filter((g) => (state.competition === 'playoffs' ? g.stage !== 'regular' : g.stage === 'regular'))
     .sort((a, b) => (a.date || '').localeCompare(b.date || '') || a.id - b.id);
-  if (!mine.length) return null;
+  const regular = mine.filter((g) => g.stage === 'regular');
+  const series = playoffSeries(mine);
+  if (!regular.length && !series.length) return null;
+  let stage = state.competition === 'playoffs' && series.length ? 'playoffs' : 'regular';
 
   const panel = el('div', 'panel team-games');
   panel.style.marginTop = '24px';
@@ -3835,47 +3937,67 @@ function teamGamesPanel(idx, teamId) {
   head.appendChild(el('div', 'panel-kicker', S.tg_kicker));
   head.appendChild(el('div', 'panel-title sm', S.tg_title));
   panel.appendChild(head);
+  const ctl = el('div', 'stat-mode-row');
+  ctl.style.paddingTop = '16px';
+  panel.appendChild(ctl);
+  const body = el('div');
+  panel.appendChild(body);
 
   const persp = (g) => {
     const home = g.home.team_id === teamId;
     const us = home ? g.home : g.away, them = home ? g.away : g.home;
     return { home, us, them, win: us.pts > them.pts };
   };
-  const form = el('div', 'gm-form');
-  form.appendChild(el('span', 'lbl', S.tg_form));
-  mine.slice(-10).forEach((g) => {
-    const v = persp(g);
-    const b = el('span', 'gm-wl' + (v.win ? ' w' : ''), v.win ? S.wl_w : S.wl_l);
-    b.title = gDateShort(g.date) + ' · ' + gTeamLabel(v.them.team_id) + ' ' + v.us.pts + '–' + v.them.pts;
-    form.appendChild(b);
-  });
-  panel.appendChild(form);
-
-  const list = el('div', 'gm-list');
-  [...mine].reverse().forEach((g) => {
-    const v = persp(g);
-    const row = el('button', 'gm-row gm-tg');
-    row.type = 'button';
-    row.dataset.gameId = String(g.id);
-    const date = el('span', 'gm-date', gDateShort(g.date));
-    date.appendChild(el('small', null, g.stage === 'regular' ? S.res_round_opt(g.round) : stageName(g.stage)));
-    row.appendChild(date);
-    row.appendChild(el('span', 'gm-wl' + (v.win ? ' w' : ''), v.win ? S.wl_w : S.wl_l));
-    const opp = el('span', 'gm-opp');
-    opp.appendChild(el('small', null, v.home ? S.tg_vs : S.tg_at));
-    opp.appendChild(document.createTextNode(gTeamLabel(v.them.team_id)));
-    row.appendChild(opp);
-    const sc = el('span', 'gm-score');
-    sc.appendChild(el('b', v.win ? 'win' : null, String(v.us.pts)));
-    sc.appendChild(document.createTextNode('–'));
-    sc.appendChild(el('b', v.win ? null : 'win', String(v.them.pts)));
-    if (g.ot) sc.appendChild(el('sup', null, gOtTag(g.ot)));
-    row.appendChild(sc);
-    bindGameRow(row, g);
-    list.appendChild(row);
-  });
-  panel.appendChild(list);
-  if (mine.length > 8) panel.appendChild(showMoreToggle([...list.children], 8, mine.length));
+  const fill = () => {
+    ctl.innerHTML = '';
+    body.innerHTML = '';
+    ctl.appendChild(stageSwitch(stage, series.length > 0, (k) => { stage = k; fill(); }));
+    if (stage === 'playoffs') {
+      const list = el('div', 'gm-list');
+      let last = null;
+      series.forEach((sr) => {
+        if (sr.stage !== last) { list.appendChild(el('div', 'gm-group', stageName(sr.stage))); last = sr.stage; }
+        list.appendChild(seriesCard(sr, { teamId }));
+      });
+      body.appendChild(list);
+      return;
+    }
+    const form = el('div', 'gm-form');
+    form.appendChild(el('span', 'lbl', S.tg_form));
+    regular.slice(-10).forEach((g) => {
+      const v = persp(g);
+      const b = el('span', 'gm-wl' + (v.win ? ' w' : ''), v.win ? S.wl_w : S.wl_l);
+      b.title = gDateShort(g.date) + ' · ' + gTeamLabel(v.them.team_id) + ' ' + v.us.pts + '–' + v.them.pts;
+      form.appendChild(b);
+    });
+    body.appendChild(form);
+    const list = el('div', 'gm-list');
+    [...regular].reverse().forEach((g) => {
+      const v = persp(g);
+      const row = el('button', 'gm-row gm-tg');
+      row.type = 'button';
+      row.dataset.gameId = String(g.id);
+      const date = el('span', 'gm-date', gDateShort(g.date));
+      date.appendChild(el('small', null, S.res_round_opt(g.round)));
+      row.appendChild(date);
+      row.appendChild(el('span', 'gm-wl' + (v.win ? ' w' : ''), v.win ? S.wl_w : S.wl_l));
+      const opp = el('span', 'gm-opp');
+      opp.appendChild(el('small', null, v.home ? S.tg_vs : S.tg_at));
+      opp.appendChild(document.createTextNode(gTeamLabel(v.them.team_id)));
+      row.appendChild(opp);
+      const sc = el('span', 'gm-score');
+      sc.appendChild(el('b', v.win ? 'win' : null, String(v.us.pts)));
+      sc.appendChild(document.createTextNode('–'));
+      sc.appendChild(el('b', v.win ? null : 'win', String(v.them.pts)));
+      if (g.ot) sc.appendChild(el('sup', null, gOtTag(g.ot)));
+      row.appendChild(sc);
+      bindGameRow(row, g);
+      list.appendChild(row);
+    });
+    body.appendChild(list);
+    if (regular.length > 8) body.appendChild(showMoreToggle([...list.children], 8, regular.length));
+  };
+  fill();
   panel.appendChild(el('div', 'team-note', S.res_hint));
   return panel;
 }
@@ -3922,7 +4044,7 @@ function bxRender(doc, g) {
   const body = BX.body;
   BX.title.textContent = gTeamLabel(home.team_id) + ' – ' + gTeamLabel(away.team_id);
 
-  const meta = [gRoundLabel(doc), gDateLong(doc.date) + (doc.time ? ' · ' + doc.time : ''), doc.venue].filter(Boolean).join('  ·  ');
+  const meta = [gRoundLabel(doc), gDateLong(doc.date) + (doc.time ? ' · ' + doc.time : ''), gLoc(doc.venue)].filter(Boolean).join('  ·  ');
   body.appendChild(el('div', 'bx-meta', meta));
 
   const board = el('div', 'bx-board');
@@ -3960,18 +4082,33 @@ function bxRender(doc, g) {
 
   [home, away].forEach((tm) => body.appendChild(bxTeamTable(tm)));
 
+  // More Stats: one column per team, named in the header -- never "18 · 22"
   if (home.more && away.more) {
-    const more = el('div', 'bx-more');
+    body.appendChild(el('div', 'bx-sub', S.bx_more_title));
+    const qs = el('div', 'bx-scroll');
+    const tb = el('table', 'bx-q bx-more-tbl');
+    const hr = el('tr');
+    hr.appendChild(el('th', null, ''));
+    [home, away].forEach((tm) => hr.appendChild(el('th', 'tm', gTeamLabel(tm.team_id))));
+    tb.appendChild(hr);
     Object.keys(S.bx_more).forEach((k) => {
-      const box = el('div');
-      box.appendChild(el('div', 'k', S.bx_more[k]));
-      box.appendChild(el('div', 'v', (home.more[k] ?? '—') + '  ·  ' + (away.more[k] ?? '—')));
-      more.appendChild(box);
+      const r = el('tr');
+      r.appendChild(el('td', null, S.bx_more[k]));
+      const hv = home.more[k], av = away.more[k];
+      // highlight the better side (more is better for all four)
+      const num = (v) => (typeof v === 'number' ? v : Number(String(v || '').replace(':', '.')));
+      [hv, av].forEach((v, i) => {
+        const better = num(v) > num(i ? hv : av);
+        r.appendChild(el('td', better ? 'tot' : null, v != null && v !== '' ? String(v) : '—'));
+      });
+      tb.appendChild(r);
     });
-    body.appendChild(more);
+    qs.appendChild(tb);
+    body.appendChild(qs);
   }
   const foot = [];
-  if (doc.referees && doc.referees.length) foot.push(S.bx_referees + ': ' + doc.referees.join(', '));
+  const refs = gLoc(doc.referees);
+  if (refs && refs.length) foot.push(S.bx_referees + ': ' + refs.join(', '));
   if (doc.attendance) foot.push(S.bx_att + ': ' + Number(doc.attendance).toLocaleString(state.lang === 'he' ? 'he-IL' : 'en-US'));
   foot.push(S.bx_starters);
   body.appendChild(el('div', 'bx-foot', foot.join('  ·  ')));
@@ -3981,7 +4118,8 @@ function bxTeamTable(tm) {
   const wrap = el('div');
   const h = el('div', 'bx-team-head');
   h.appendChild(el('b', null, gTeamLabel(tm.team_id)));
-  if (tm.coach) h.appendChild(el('span', null, S.bx_coach(tm.coach)));
+  const coach = gLoc(tm.coach);
+  if (coach) h.appendChild(el('span', null, S.bx_coach(coach)));
   wrap.appendChild(h);
 
   const COLS = ['MIN', 'PTS', '2PT', '3PT', 'FT', 'OR', 'DR', 'REB', 'AST', 'STL', 'TOV', 'BLK', 'PF', 'FD', '+/-', 'PIR'];
@@ -4060,21 +4198,22 @@ function playerGameLogPanel(p) {
   const season = state.season;
   return Promise.all([loadPlayerLogs(season), loadGameIndex(season)]).then(([logs, idx]) => {
     if (!logs || !idx || season !== state.season) return null;
-    const playoffs = state.competition === 'playoffs';
-    const rows = (logs._byPlayer.get(p.id) || [])
+    const all = (logs._byPlayer.get(p.id) || [])
       .map((r) => ({ ...r, g: gameById(idx, r.game_id) }))
-      .filter((r) => r.g && (playoffs ? r.g.stage !== 'regular' : r.g.stage === 'regular'))
+      .filter((r) => r.g)
       .sort((a, b) => (a.g.date || '').localeCompare(b.g.date || '') || a.game_id - b.game_id);
-    if (!rows.length) return null;
-    return buildGameLog(p, rows);
+    if (!all.length) return null;
+    return buildGameLog(p, all);
   });
 }
 
-function buildGameLog(p, rows) {
+// Regular season and playoffs are never mixed: a switch picks one, defaulting
+// to the active competition (or whichever stage the player actually played).
+function buildGameLog(p, all) {
   const S = STR[state.lang];
-  const n = rows.length;
-  const avg = (k) => rows.reduce((a, r) => a + r[k], 0) / n;
-  const starts = rows.filter((r) => r.starter).length;
+  const reg = all.filter((r) => r.g.stage === 'regular');
+  const po = all.filter((r) => r.g.stage !== 'regular');
+  let stage = state.competition === 'playoffs' ? (po.length ? 'playoffs' : 'regular') : (reg.length ? 'regular' : 'playoffs');
 
   const panel = el('div', 'panel game-log');
   panel.style.marginTop = '24px';
@@ -4082,6 +4221,28 @@ function buildGameLog(p, rows) {
   head.appendChild(el('div', 'panel-kicker', S.glg_kicker));
   head.appendChild(el('div', 'panel-title sm', S.glg_title));
   panel.appendChild(head);
+  const ctl = el('div', 'stat-mode-row');
+  ctl.style.paddingTop = '16px';
+  panel.appendChild(ctl);
+  const body = el('div');
+  panel.appendChild(body);
+  const fill = () => {
+    ctl.innerHTML = '';
+    body.innerHTML = '';
+    const sw = stageSwitch(stage, po.length > 0, (k) => { stage = k; fill(); });
+    if (!reg.length) { const b = sw.querySelector('[data-stage="regular"]'); b.disabled = true; b.setAttribute('aria-disabled', 'true'); }
+    ctl.appendChild(sw);
+    gameLogBody(body, stage === 'playoffs' ? po : reg);
+  };
+  fill();
+  return panel;
+}
+
+function gameLogBody(panel, rows) {
+  const S = STR[state.lang];
+  const n = rows.length;
+  const avg = (k) => rows.reduce((a, r) => a + r[k], 0) / n;
+  const starts = rows.filter((r) => r.starter).length;
 
   // box-score-only numbers: steals / blocks / +/- / fouls drawn don't exist in the season totals
   const tiles = el('div', 'glg-tiles');
@@ -4129,7 +4290,9 @@ function buildGameLog(p, rows) {
     const row = el('button', 'grid-row glg-cols');
     row.type = 'button';
     row.dataset.gameId = String(g.id);
-    row.appendChild(el('span', 'stat-soft sm', gDateShort(g.date)));
+    const dt = el('span', 'gm-date', gDateShort(g.date));
+    if (g.stage !== 'regular') dt.appendChild(el('small', null, stageName(g.stage) + ' ' + g.round));
+    row.appendChild(dt);
     const opp = el('span', 'gm-opp');
     opp.appendChild(el('small', null, home ? S.tg_vs : S.tg_at));
     opp.appendChild(document.createTextNode(gTeamLabel(r.opp_id)));
@@ -4148,7 +4311,6 @@ function buildGameLog(p, rows) {
   panel.appendChild(wrap);
   if (rows.length > 10) panel.appendChild(showMoreToggle([...wrap.querySelectorAll('.grid-row')], 10, rows.length));
   panel.appendChild(el('div', 'team-note', S.res_hint));
-  return panel;
 }
 
 // PIR per game (bars) + 5-game trailing average (line) + season mean (dashed).

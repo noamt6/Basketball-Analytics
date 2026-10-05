@@ -413,6 +413,34 @@ function domainEData(data) {
   checks.push({ label: 'Per-game integrity: player (+Team-row) points == score, sum(quarters incl. OT) == score, made ≤ att',
     status: gameErr.length ? FAIL : PASS,
     detail: gameErr.length ? gameErr.slice(0, 8).join('  ') : `all ${boxes} games consistent (${otGames} overtime games)` });
+  // header fields are parsed per element; a page-wide regex once swallowed
+  // standings + news into "referees" -- guard length and both languages
+  const hdrErr = [], hdrGap = [];
+  for (const season of Object.keys(manifest.seasons)) {
+    const dir = path.join(GAMES_DIR, season, 'g');
+    let files = [];
+    try { files = fs.readdirSync(dir).filter((f) => f.endsWith('.json')); } catch (e) { /* reported above */ }
+    for (const f of files) {
+      const b = readJSON(path.join(dir, f));
+      if (!b) continue;
+      const loc = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : { en: v, he: null });
+      const refs = loc(b.referees), venue = loc(b.venue);
+      for (const lg of ['en', 'he']) {
+        const r = refs[lg] || [];
+        if (r.some((x) => String(x).length > 40)) hdrErr.push(`${b.id}: ${lg} referee field runs on (${String(r.find((x) => String(x).length > 40)).slice(0, 30)}…)`);
+        if (venue[lg] && String(venue[lg]).length > 60) hdrErr.push(`${b.id}: ${lg} venue runs on`);
+        // one language blank AT THE SOURCE: the UI falls back to the other one
+        if (!r.length) hdrGap.push(`${b.id} ${lg} referees`);
+        if (!venue[lg]) hdrGap.push(`${b.id} ${lg} venue`);
+      }
+      if (!(refs.en || []).length && !(refs.he || []).length) hdrErr.push(`${b.id}: no referees in either language`);
+      if (!venue.en && !venue.he) hdrErr.push(`${b.id}: no venue in either language`);
+    }
+  }
+  checks.push({ label: 'Game header: referees + venue in both languages, no runaway text',
+    status: hdrErr.length ? FAIL : (hdrGap.length ? WARN : PASS),
+    detail: hdrErr.length ? `${hdrErr.length} issue(s): ${hdrErr.slice(0, 6).join('  ')}`
+      : (hdrGap.length ? `no runaway text; blank in one language at the source (UI falls back to the other): ${hdrGap.join(', ')}` : 'all box scores clean in both languages') });
   checks.push({ label: 'Source quirks surfaced, not hidden (flagged games / games without a box score)',
     status: (flagged.length || noBox.length) ? WARN : PASS,
     detail: `flagged: ${flagged.join(', ') || 'none'} · no box score: ${noBox.join(', ') || 'none'}` });

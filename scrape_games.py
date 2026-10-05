@@ -64,7 +64,7 @@ HERE = Path(__file__).parent
 DEFAULT_OUT_DIR = HERE / "games"
 DEFAULT_CACHE_DIR = HERE / ".scrape_cache"
 DATA_JSON = HERE / "data.json"
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2  # 2: venue / referees / coach are {"en", "he"}
 
 # Board option label -> stage. Order matters: "Final Series" must not be
 # swallowed by the "Semi Final" / "Quarter Final" patterns.
@@ -243,18 +243,58 @@ def _quarters(soup, label: str) -> list[list[int]]:
     return []
 
 
+def demojibake(html: str) -> str:
+    """The site serves UTF-8 without a charset, so requests decodes it as
+    Latin-1 (Hebrew comes out as "×©××¤××"). Latin-1 maps every byte, so the
+    round trip back to the original UTF-8 is lossless."""
+    if "×" not in html:
+        return html
+    try:
+        return html.encode("latin-1").decode("utf-8")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        return html
+
+
+_COACH = re.compile(r"\(\s*(?:Coach|מאמן)\s*:\s*([^)]+?)\s*\)")
+_WEEKDAY = re.compile(r"^(sunday|monday|tuesday|wednesday|thursday|friday|saturday|יום\s.+|מוצא״?ש)$", re.I)
+
+
+def parse_game_header(html: str) -> dict:
+    """The game header block -- works on the English and the Hebrew page.
+
+    Each field is read from its OWN element (<h6> referees, <h5> venue/date
+    and attendance), never by regex over the whole page: on pages without an
+    "Observer:" line a page-wide match ran on through standings and news.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    out = {"referees": [], "venue": None, "attendance": None, "coaches": []}
+    for h in soup.find_all(["h5", "h6"]):
+        text = _clean(h.get_text(" "))
+        if not text or ":" not in text and not _DATE.search(text):
+            continue
+        label, _, rest = text.partition(":")
+        if h.name == "h6" and not out["referees"]:
+            rest = re.split(r"Observer|משקיף", rest)[0]
+            out["referees"] = [r.strip() for r in rest.split(",") if r.strip()]
+        elif h.name == "h5" and _DATE.search(text) and out["venue"] is None:
+            parts = [x.strip() for x in text.split(",") if x.strip()]
+            parts = [x for x in parts if not _DATE.search(x) and not _TIME.fullmatch(x)]
+            if parts and _WEEKDAY.match(parts[-1]):
+                parts = parts[:-1]
+            out["venue"] = ", ".join(parts) or None
+        elif h.name == "h5" and re.fullmatch(r"[\d,]+", rest.strip() or "x"):
+            out["attendance"] = int(rest.strip().replace(",", ""))
+    for t, rows in _box_tables(soup):
+        m = _COACH.search(_txt(rows[0]))
+        out["coaches"].append(m.group(1) if m else None)
+    return out
+
+
 def parse_box_score(html: str) -> dict:
     """game-zone.asp -> {referees, attendance, teams: [ {team_id, coach, q,
     players, team_row, total, more} x2 ]} in page order (home first)."""
     soup = BeautifulSoup(html, "html.parser")
-    page = _txt(soup)
-
-    refs = []
-    m = re.search(r"Referees:\s*(.*?)(?:Observer:|$)", page)
-    if m:
-        refs = [r for r in (x.strip(" ,") for x in m.group(1).split(",")) if r]
-        refs = [r.split("  ")[0] for r in refs][:4]
-    att = re.search(r"Viewers:\s*([\d,]+)", page)
+    header = parse_game_header(html)
 
     quarters = _quarters(soup, "by quarter")
     more = {}
@@ -267,7 +307,7 @@ def parse_box_score(html: str) -> dict:
     for idx, (t, rows) in enumerate(_box_tables(soup)):
         head = rows[0]
         tlink = head.find("a", href=_TEAM_ID)
-        coach = re.search(r"\(Coach:\s*([^)]+)\)", _txt(head))
+        coach = _COACH.search(_txt(head))
         players, team_row, total = [], None, None
         for tr in rows[3:]:
             cells = [_txt(td) for td in tr.find_all("td")]
@@ -304,8 +344,9 @@ def parse_box_score(html: str) -> dict:
             }
         teams.append(team)
     return {
-        "referees": refs,
-        "attendance": _int(att.group(1)) if att else None,
+        "referees": header["referees"],
+        "venue": header["venue"],
+        "attendance": header["attendance"],
         "teams": teams,
     }
 
@@ -398,7 +439,7 @@ def box_doc(season: str, game: dict, box: dict) -> dict:
         "time": game["time"],
         "venue": game["venue"],
         "ot": game["ot"],
-        "referees": box["referees"],
+        "referees": game["referees"],
         "attendance": box["attendance"],
         **({"flags": game["flags"]} if game.get("flags") else {}),
         "teams": teams,
@@ -562,7 +603,7 @@ def main(argv=None) -> int:
         todo = todo[: args.limit]
 
     # 2) box scores
-    ok, bad, warned, no_box, logs = [], [], [], [], []
+    ok, bad, warned, no_box, logs, he_missing = [], [], [], [], [], []
     out = args.out / season
     for n, g in enumerate(todo, 1):
         try:
@@ -586,6 +627,18 @@ def main(argv=None) -> int:
         # the box page is the more precise source for the quarter line
         g["home"]["q"], g["away"]["q"] = box["teams"][0]["q"], box["teams"][1]["q"]
         g["attendance"] = box["attendance"]
+        # bilingual header: the Hebrew page carries Hebrew referee / venue /
+        # coach names (and sometimes a referee the English page leaves blank)
+        he = {"referees": [], "venue": None, "coaches": []}
+        try:
+            he = parse_game_header(demojibake(fetch.get(
+                "game-zone.asp", {"GameId": g["id"], "lang": "he"}, label=f"game {g['id']} he")))
+        except CacheMiss:
+            he_missing.append(g["id"])
+        g["venue"] = {"en": box["venue"] or g["venue"], "he": he["venue"]}
+        g["referees"] = {"en": box["referees"], "he": he["referees"]}
+        for i, t in enumerate(box["teams"]):
+            t["coach"] = {"en": t["coach"], "he": he["coaches"][i] if i < len(he["coaches"]) else None}
         ok.append(g["id"])
         logs.extend(log_rows(g, box))
         if not args.check:
@@ -642,6 +695,8 @@ def main(argv=None) -> int:
         print(f"  FAIL {gid}: " + "; ".join(errs[:4]))
     for gid, warns in warned:
         print(f"  warn {gid}: " + "; ".join(warns[:4]))
+    if he_missing:
+        print(f"  note: {len(he_missing)} Hebrew pages not in cache (--offline) -- Hebrew names left empty")
     for gid in no_box:
         print(f"  note {gid}: no box score published on the site (kept in index, box=false)")
     print(f"player-game rows: {len(logs)}")

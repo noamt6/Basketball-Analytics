@@ -178,6 +178,30 @@ async function checkBoxModal(page, scope) {
   record(closed, scope, 'box modal: Escape closes it and releases the scroll lock');
 }
 
+/** League tab -> Playoffs: series cards render, one expands to its games
+ * (regular-season and playoff games are never mixed in one list). */
+async function checkPlayoffSeries(page, scope) {
+  await gotoTab(page, 'league');
+  try {
+    await page.waitForSelector('.games-results .gm-stage-switch button[data-stage="playoffs"]', { timeout: 5000 });
+  } catch (e) { record(false, scope, 'series: stage switch missing'); return; }
+  await page.click('.games-results .gm-stage-switch button[data-stage="playoffs"]');
+  await page.waitForTimeout(60);
+  const before = await page.evaluate(() => ({
+    cards: document.querySelectorAll('.games-results .gm-series').length,
+    regularRows: document.querySelectorAll('.games-results .gm-list > .gm-row').length,
+  }));
+  await page.click('.games-results .gm-series-head');
+  await page.waitForTimeout(60);
+  const after = await page.evaluate(() => ({
+    games: document.querySelectorAll('.games-results .gm-series-games:not([hidden]) .gm-row').length,
+    over: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth,
+  }));
+  record(before.cards > 0 && before.regularRows === 0 && after.games > 0 && after.over <= 1, scope,
+    `series: ${before.cards} cards, no regular rows mixed in, first expands to ${after.games} games, h-overflow ${after.over}px`);
+  await page.click('.games-results .gm-stage-switch button[data-stage="regular"]');
+}
+
 async function checkUpgradeNotice(page, scope) {
   await gotoTab(page, 'overview');
   const on = await page.evaluate(() => {
@@ -248,6 +272,7 @@ async function checkStickyPinned(page, scope) {
       }
 
       await checkBoxModal(page, `${lang.code}/${vp.name}/box`);
+      await checkPlayoffSeries(page, `${lang.code}/${vp.name}/series`);
       await checkUpgradeNotice(page, `${lang.code}/${vp.name}/notice`);
 
       await context.close();
