@@ -419,6 +419,80 @@ def _aggregate_team_stats(player_stats_df: pd.DataFrame, pid_to_team: dict,
     return grouped.rename(columns={"TeamID": "TeamId"})[["TeamId", *stat_cols]]
 
 
+def _norm_name(name: str | None) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", (name or "").lower()).strip()
+
+
+def _backfill_roster(season: str, player_rows: list[dict], roster_rows: list[dict],
+                     bio_by_id: dict) -> list[dict]:
+    """Roster rows for players who have season stats but sit on no team page.
+
+    team.asp lists the END-of-season roster, and the site issues a new
+    PlayerId when a player changes team -- so a player released mid-season,
+    or one whose stats row carries his first-club id, has stats but no
+    roster row. export_dashboard_data.py joins stats to roster, so without a
+    row here the player silently disappears from data.json (2025-26: Efi
+    Tyomkin, 28 GP; 2022-23: Travis Warech, 8 GP).
+
+    Resolution order: (a) a unique same-name roster row this season (team,
+    position, jersey); (b) the latest box score in games/<season>/ (from
+    scrape_games.py) that lists him by id or name. Anything left is printed.
+    """
+    rostered = {r["PlayerId"] for r in roster_rows}
+    missing = [pr for pr in player_rows if pr["source_player_id"] not in rostered]
+    if not missing:
+        return []
+
+    by_name: dict[str, list[dict]] = {}
+    for r in roster_rows:
+        nm = _norm_name((bio_by_id.get(r["PlayerId"]) or {}).get("player_name"))
+        if nm:
+            by_name.setdefault(nm, []).append(r)
+
+    # latest box-score appearance per player id and per name (if game data exists)
+    box_by_id: dict[int, tuple] = {}
+    box_by_name: dict[str, tuple] = {}
+    gdir = HERE / "games" / season / "g"
+    if gdir.is_dir():
+        import json
+        for f in gdir.glob("*.json"):
+            try:
+                doc = json.loads(f.read_text(encoding="utf-8"))
+            except ValueError:
+                continue
+            for t in doc.get("teams", []):
+                for p in t.get("players", []):
+                    hit = (doc.get("date") or "", t["team_id"], p.get("jersey"))
+                    for pid in {p.get("id"), p.get("src_id")} - {None}:
+                        if hit > box_by_id.get(pid, ("",)):
+                            box_by_id[pid] = hit
+                    nm = _norm_name(p.get("name"))
+                    if hit > box_by_name.get(nm, ("",)):
+                        box_by_name[nm] = hit
+
+    added, unresolved = [], []
+    for pr in missing:
+        pid, nm = pr["source_player_id"], _norm_name(pr["player_name"])
+        same = by_name.get(nm, [])
+        if len({r["TeamID"] for r in same}) == 1:
+            src = same[-1]
+            added.append({"PlayerId": pid, "TeamID": src["TeamID"], "Position": src["Position"],
+                          "JerseyNumber": src["JerseyNumber"], "YearsOnTeam": None})
+            how = f"roster name match (site id {src['PlayerId']})"
+        elif (hit := box_by_id.get(pid) or box_by_name.get(nm)):
+            added.append({"PlayerId": pid, "TeamID": hit[1], "Position": None,
+                          "JerseyNumber": hit[2], "YearsOnTeam": None})
+            how = f"latest box score {hit[0]}"
+        else:
+            unresolved.append(pr)
+            continue
+        print(f"  roster backfill: {pr['player_name']} ({pid}, {pr['gp']} GP) -> team {added[-1]['TeamID']} via {how}")
+    for pr in unresolved:
+        print(f"  !! no team for {pr['player_name']} ({pr['source_player_id']}, {pr['gp']} GP) -- "
+              f"will be dropped by the export's roster join", file=sys.stderr)
+    return added
+
+
 def scrape_season(fetch: Fetcher, cyear: int, *, skip_bios: bool, limit: int | None,
                   with_playoffs: bool = False) -> dict[str, pd.DataFrame]:
     season = cyear_to_season(cyear)
@@ -450,6 +524,7 @@ def scrape_season(fetch: Fetcher, cyear: int, *, skip_bios: bool, limit: int | N
                 "YearsOnTeam": None,
             })
     print(f"  roster rows: {len(roster_rows)}")
+    roster_rows += _backfill_roster(season, player_rows, roster_rows, bio_by_id)
 
     # players seen in stats but not on any scraped roster still need identity rows
     for pr in player_rows:

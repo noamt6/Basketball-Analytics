@@ -45,6 +45,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -67,6 +68,15 @@ PLAYER_SQL = """
     JOIN players p ON p.player_id = s.player_id
     JOIN roster  r ON r.player_id = s.player_id AND r.season = s.season
     WHERE s.season = %(season)s AND s.competition = %(competition)s
+"""
+
+# Stats rows the roster JOIN above would drop (no roster row for that season):
+# those players vanish from data.json, so the export reports them loudly.
+UNROSTERED_SQL = """
+    SELECT s.player_id, s.competition, s.gp
+    FROM player_season_stats s
+    LEFT JOIN roster r ON r.player_id = s.player_id AND r.season = s.season
+    WHERE s.season = %(season)s AND r.player_id IS NULL
 """
 
 TEAM_SQL = """
@@ -333,6 +343,12 @@ def build_season(engine, season: str, *, hebrew: dict, supplement: dict, include
     reg_teams = pd.read_sql(TEAM_SQL, engine, params={"season": season, "competition": "regular_season"})
     po_players = pd.read_sql(PLAYER_SQL, engine, params={"season": season, "competition": "playoffs"})
     po_teams = pd.read_sql(TEAM_SQL, engine, params={"season": season, "competition": "playoffs"})
+    dropped = pd.read_sql(UNROSTERED_SQL, engine, params={"season": season})
+    if len(dropped):
+        print(f"WARNING {season}: {len(dropped)} stats row(s) have no roster row and are left out "
+              f"of data.json (player_id/competition/gp): "
+              + ", ".join(f"{r.player_id}/{r.competition}/{r.gp}" for r in dropped.itertuples())
+              + " -- re-scrape with scrape_league.py (roster backfill) and re-ingest", file=sys.stderr)
 
     teams_by_id = {r.team_id: f"{r.team_name} {r.city or ''}".strip() for r in reg_teams.itertuples()}
     name_to_pid = dict(zip(
