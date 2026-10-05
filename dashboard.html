@@ -3692,7 +3692,10 @@ function gTeam(id) {
     || ((DATA.playoffs && DATA.playoffs.teams) || []).find((x) => x.id === id) || null;
 }
 function gTeamLabel(id) { const tm = gTeam(id); return tm ? teamLabel(tm) : String(id); }
-function gPlayer(id) { return (DATA.players || []).find((x) => x.id === id) || null; }
+// Only players of the ACTIVE competition get a card link: goPlayer() resolves
+// against activePlayersRaw(), so a playoff-only player linked from the regular
+// view would otherwise open the wrong card.
+function gPlayer(id) { return activePlayersRaw().find((x) => x.id === id) || null; }
 function gDateShort(iso) { if (!iso) return '—'; const [, m, d] = iso.split('-'); return Number(d) + '/' + Number(m); }
 function gDateLong(iso) { if (!iso) return ''; const [y, m, d] = iso.split('-'); return d + '/' + m + '/' + y; }
 function gRoundLabel(g) {

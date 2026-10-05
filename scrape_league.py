@@ -478,6 +478,10 @@ def _backfill_roster(season: str, player_rows: list[dict], roster_rows: list[dic
             src = same[-1]
             added.append({"PlayerId": pid, "TeamID": src["TeamID"], "Position": src["Position"],
                           "JerseyNumber": src["JerseyNumber"], "YearsOnTeam": None})
+            # same person: carry the roster bio (birth date, height) over to the stats id
+            if src["PlayerId"] in bio_by_id and pid not in bio_by_id:
+                bio_by_id[pid] = {**bio_by_id[src["PlayerId"]], "source_player_id": pid,
+                                  "player_name": pr["player_name"]}
             how = f"roster name match (site id {src['PlayerId']})"
         elif (hit := box_by_id.get(pid) or box_by_name.get(nm)):
             added.append({"PlayerId": pid, "TeamID": hit[1], "Position": None,
@@ -544,6 +548,12 @@ def scrape_season(fetch: Fetcher, cyear: int, *, skip_bios: bool, limit: int | N
         for pid in bio_ids:
             html = fetch.get("player.asp", {"PlayerId": pid}, label=f"{season} bio {pid}")
             nationality[pid] = parse_player_nationality(html)
+            # players on no roster widget (see _backfill_roster) have no height
+            # yet; the player page carries it as "Height: 1.95"
+            if bio_by_id.get(pid, {}).get("height_m") is None:
+                hm = re.search(r"Height:(?:&nbsp;|\s|<[^>]*>)*([12]\.\d{2})", html)
+                if hm:
+                    bio_by_id[pid]["height_m"] = float(hm.group(1))
 
     # ---------------- assemble ingest-shaped frames ---------------- #
     teams_df = pd.DataFrame(

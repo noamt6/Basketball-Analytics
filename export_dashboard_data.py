@@ -133,9 +133,10 @@ def _rate(value, *attempts):
     return _pct(value)
 
 
-def _age(birth_date, as_of: date) -> int:
+def _age(birth_date, as_of: date) -> int | None:
+    # Unknown birth date -> None (the dashboard renders "—"), never a fake 0.
     if birth_date is None or (isinstance(birth_date, float) and math.isnan(birth_date)):
-        return 0
+        return None
     if isinstance(birth_date, str):
         birth_date = date.fromisoformat(birth_date[:10])
     if hasattr(birth_date, "date"):

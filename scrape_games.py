@@ -447,9 +447,11 @@ def _norm_name(name: str) -> str:
 
 def load_identity(season: str) -> tuple[set[int], dict[str, int]]:
     try:
-        players = json.loads(DATA_JSON.read_text(encoding="utf-8"))["seasons"][season]["players"]
+        blob = json.loads(DATA_JSON.read_text(encoding="utf-8"))["seasons"][season]
     except (OSError, KeyError, ValueError):
         return set(), {}
+    # regular season + playoff-only players (e.g. a late signing who only played the playoffs)
+    players = blob["players"] + ((blob.get("playoffs") or {}).get("players") or [])
     known = {int(p["id"]) for p in players}
     by_name: dict[str, set[int]] = {}
     for p in players:
