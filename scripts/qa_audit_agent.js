@@ -152,6 +152,12 @@ function domainB(data) {
     detail: `${totPlayers - totJerseyMiss}/${totPlayers} have a number; missing per season -> ${perSeasonJersey.join('  ')}` });
   checks.push({ label: 'Hebrew name (name_he) present', status: totNameHeMiss === 0 ? PASS : (totNameHeMiss <= 5 ? WARN : FAIL),
     detail: totNameHeMiss === 0 ? `all ${totPlayers} rows` : `${totNameHeMiss} missing -> ${perSeasonNameHe.filter((x) => !x.endsWith(' 0/' + x.split('/')[1])).join('  ')}` });
+  // team labels too: a season whose team ids changed (2023-24 moved off the
+  // hand-built club codes) silently lost every Hebrew team name once
+  const teamHeMiss = [];
+  for (const { season, comp, t } of eachTeamRow(data)) if (!t.label_he) teamHeMiss.push(`${season}/${comp}/${t.id}`);
+  checks.push({ label: 'Hebrew team label (label_he) present', status: teamHeMiss.length === 0 ? PASS : FAIL,
+    detail: teamHeMiss.length === 0 ? 'every team row, every season' : `${teamHeMiss.length} missing: ${teamHeMiss.slice(0, 10).join(', ')}` });
 
   // referenced asset files
   const dash = fs.readFileSync(DASH_PATH, 'utf8');

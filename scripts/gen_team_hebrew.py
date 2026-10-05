@@ -62,8 +62,6 @@ def main() -> int:
 
     seen, unknown, added = {}, set(), 0
     for season, blob in dj["seasons"].items():
-        if season == "2023-2024":            # curated codes already in the file
-            continue
         for t in blob["teams"] + blob.get("playoffs", {}).get("teams", []):
             tid, name = t["id"], t["name"]
             if tid in seen:

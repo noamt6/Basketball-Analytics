@@ -38,10 +38,9 @@ _OG = re.compile(r'<meta[^>]+property="og:title"[^>]+content="([^"]*)"', re.I)
 _OG2 = re.compile(r'<meta[^>]+content="([^"]*)"[^>]+property="og:title"', re.I)
 
 
-# The curated 2023-2024 season already ships hand-checked Hebrew names and uses
-# a private 100-113 id remap for one club, which does NOT match the live site —
-# never scrape against those ids.
-SKIP_SEASONS = {"2023-2024"}
+# 2023-2024 used to ship from a hand-built workbook with private ids (100-113)
+# and was skipped here; since 2026-10-05 it uses site ids like every season.
+SKIP_SEASONS: set[str] = set()
 
 
 def player_ids(data_json: Path) -> list[int]:

@@ -108,9 +108,9 @@ def scrape_all(seasons: list[str], delay: float) -> dict:
 
 
 # --------------------------------------------------------------------------- #
-# 2023-2024 ships from the hand-curated official workbook (data/Basketball_Analytics.xlsx)
-# and already carries the official team box score -- leave it untouched.
-SKIP_SEASONS = {"2023-2024"}
+# Every season -- 2023-2024 included since it moved off the hand-built workbook
+# onto the scraped one (2026-10-05) -- takes the official team box score.
+SKIP_SEASONS: set[str] = set()
 
 
 def patch_data_json(official: dict, check_only: bool) -> int:

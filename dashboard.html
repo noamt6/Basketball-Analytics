@@ -4396,7 +4396,8 @@ window.addEventListener('resize', () => {
 });
 
 /* ---- Upgrade notice: one flag turns it on/off; dismissal is remembered per id ---- */
-const UPGRADE_NOTICE = { enabled: true, id: 'games-2025-26' };
+// Off since 2026-10-05: box scores + game logs are live for all 10 seasons.
+const UPGRADE_NOTICE = { enabled: false, id: 'games-2025-26' };
 function renderUpgradeNotice() {
   const host = document.getElementById('upgrade-banner');
   if (!host) return;

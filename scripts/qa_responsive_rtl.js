@@ -204,7 +204,10 @@ async function checkPlayoffSeries(page, scope) {
 
 async function checkUpgradeNotice(page, scope) {
   await gotoTab(page, 'overview');
+  // exercise both states whatever the shipped flag is, then restore it
+  const shipped = await page.evaluate(() => UPGRADE_NOTICE.enabled);
   const on = await page.evaluate(() => {
+    UPGRADE_NOTICE.enabled = true; renderUpgradeNotice();
     const b = document.getElementById('upgrade-banner');
     const r = b.getBoundingClientRect();
     return { shown: !b.hidden, right: Math.round(r.right - window.innerWidth),
@@ -217,9 +220,9 @@ async function checkUpgradeNotice(page, scope) {
     const b = document.getElementById('upgrade-banner');
     const res = { hidden: b.hidden && b.offsetHeight === 0,
       over: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth };
-    UPGRADE_NOTICE.enabled = true; renderUpgradeNotice();
     return res;
   });
+  await page.evaluate((v) => { UPGRADE_NOTICE.enabled = v; renderUpgradeNotice(); }, shipped);
   record(off.hidden && off.over <= 1, scope, `upgrade notice OFF (flag): hidden, h-overflow ${off.over}px`);
 }
 
