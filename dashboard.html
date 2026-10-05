@@ -91,9 +91,17 @@
 
   /* ---------- Top bar ---------- */
   .topbar {
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    padding: 0 40px; height: 64px; border-bottom: 1px solid var(--hair);
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    padding: 0 36px; height: 64px; border-bottom: 1px solid var(--hair);
     background: var(--bg); position: sticky; top: 0; z-index: 20;
+  }
+  /* mid-desktop: single row is tight -- trim outer padding and tab padding so
+     the three zones keep breathing room from ~1081px up to ~1340px. */
+  @media (min-width: 1081px) and (max-width: 1340px) {
+    .topbar { padding: 0 22px; gap: 14px; }
+    nav.tabs { gap: 2px; }
+    nav.tabs button { padding: 8px 9px; letter-spacing: .03em; }
+    .topbar-right { gap: 8px; }
   }
   /* 3-zone header: brand (start) takes leftover space and truncates; nav is
      auto-margin centered; controls sit at their natural width and never
@@ -114,25 +122,39 @@
   @media (max-width: 1100px) { .brand-tagline { display: none; } }
   /* thin divider between the grouped left-zone controls */
   .ctl-sep { width: 1px; height: 20px; background: var(--hair-strong); flex: none; }
+
+  /* ---------- Unified context pill (Season + Stage) ----------
+     Season selector and the regular/playoff toggle share one rounded shell
+     with a hairline divider, so the utilities zone reads as fewer objects. */
+  .context-pill {
+    display: inline-flex; align-items: center; flex: none;
+    border: 1px solid var(--hair); border-radius: 8px;
+    background: rgba(255,255,255,.05); overflow: hidden;
+    transition: border-color .12s ease, background .12s ease;
+  }
+  .context-pill:hover { border-color: var(--ink-4); background: rgba(255,255,255,.08); }
+  .context-pill:focus-within { border-color: var(--accent); }
+  .context-pill .pill-sep { width: 1px; align-self: stretch; background: var(--hair-strong); flex: none; }
+
   /* ---------- Season selector ---------- */
   .season-picker { position: relative; display: inline-flex; align-items: center; flex: none; }
   .season-picker-ico {
-    position: absolute; inset-inline-start: 9px; top: 50%; transform: translateY(-50%);
+    position: absolute; inset-inline-start: 10px; top: 50%; transform: translateY(-50%);
     font-size: 12px; line-height: 1; pointer-events: none; opacity: .8;
   }
   .season-picker select {
     appearance: none; -webkit-appearance: none; -moz-appearance: none;
     font: 600 11.5px/1 var(--font-body); letter-spacing: .04em;
-    color: var(--ink-2); background: rgba(255,255,255,.06);
-    border: 1px solid var(--hair); border-radius: 6px;
-    padding: 6px 26px 6px 26px; cursor: pointer;
-    transition: border-color .12s ease, color .12s ease, background .12s ease;
+    color: var(--ink-2); background: transparent;
+    border: 0; border-radius: 0;
+    padding: 8px 26px 8px 27px; cursor: pointer;
+    transition: color .12s ease, background .12s ease;
   }
-  .season-picker select:hover { color: var(--ink); border-color: var(--ink-4); background: rgba(255,255,255,.1); }
-  .season-picker select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+  .season-picker select:hover { color: var(--ink); background: rgba(255,255,255,.06); }
+  .season-picker select:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
   /* custom chevron */
   .season-picker::after {
-    content: ""; position: absolute; inset-inline-end: 10px; top: 50%;
+    content: ""; position: absolute; inset-inline-end: 11px; top: 50%;
     width: 7px; height: 7px; margin-top: -5px; pointer-events: none;
     border-inline-end: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3);
     transform: rotate(45deg);
@@ -155,7 +177,24 @@
   }
   nav.tabs button[aria-current="true"]:hover { background: rgba(255,255,255,.1); color: var(--ink); }
   .flag-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; display: block; }
-  .topbar-right { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; min-width: max-content; justify-content: flex-end; }
+  /* ---------- Utilities zone (end): search · context pill · glossary · lang ---------- */
+  .topbar-right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; min-width: max-content; justify-content: flex-end; }
+
+  /* compact icon buttons -- search + glossary share one look */
+  .tb-icon-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    height: 34px; min-width: 34px; padding: 0 10px; flex: none;
+    border: 1px solid var(--hair); border-radius: 8px; background: rgba(255,255,255,.04);
+    color: var(--ink-3); cursor: pointer; font: 500 12px/1 var(--font-body);
+    transition: border-color .12s ease, color .12s ease, background .12s ease;
+  }
+  .tb-icon-btn:hover { color: var(--ink-2); border-color: var(--ink-4); background: rgba(255,255,255,.08); }
+  .tb-icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .tb-icon-btn.tb-icon-only { padding: 0; width: 34px; font-size: 15px; line-height: 1; }
+  .tb-icon-btn svg { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+  .sl-kbd { font: 600 10px/1 var(--font-body); border: 1px solid var(--hair-strong); border-radius: 3px; padding: 2px 4px; color: var(--ink-4); }
+  @media (max-width: 900px) { .tb-search .sl-kbd { display: none; } .tb-search { padding: 0; width: 34px; } }
+
   .lang-switch {
     display: flex; align-items: center; gap: 2px; padding: 2px; flex: none;
     border: 1px solid var(--hair-strong); border-radius: 4px;
@@ -167,11 +206,15 @@
   .lang-switch button:hover { color: var(--ink-2); }
   .lang-switch button[aria-pressed="true"] { background: var(--accent); color: #fff; }
   /* header segmented controls: subtle dark, no accent fill */
-  .topbar-right .lang-switch {
-    background: rgba(255,255,255,.06); border-color: var(--hair); border-radius: 6px; padding: 3px;
+  .topbar-right > .lang-switch {
+    background: rgba(255,255,255,.06); border-color: var(--hair); border-radius: 8px; padding: 3px;
   }
   .topbar-right .lang-switch button { border-radius: 4px; }
   .topbar-right .lang-switch button[aria-pressed="true"] { background: rgba(255,255,255,.14); color: var(--ink); }
+  /* stage toggle inside the context pill: no shell of its own */
+  .context-pill .stage-switch { border: 0; border-radius: 0; background: transparent; padding: 3px 4px; }
+  .context-pill .stage-switch button { padding: 5px 9px; }
+  .context-pill .stage-switch button[aria-pressed="true"] { background: rgba(255,255,255,.14); color: var(--ink); }
   .lang-switch button:disabled {
     opacity: .38; cursor: not-allowed; color: var(--ink-4);
     background: transparent;
@@ -375,11 +418,12 @@
   .player-lower { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 28px 40px 34px; border-top: 1px solid var(--hair); }
   @media (max-width: 780px) { .player-lower { grid-template-columns: 1fr; } }
   .section-lbl { font: 600 10px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
-  .bar-line { display: grid; grid-template-columns: 52px 1fr 48px; align-items: center; gap: 14px; }
+  .bar-line { display: grid; grid-template-columns: 40px 1fr auto 52px; align-items: center; gap: 12px; }
   .bar-line .k { font: 500 12px/1 var(--font-body); color: var(--ink-2); }
   .bar-line .tr { height: 6px; background: var(--track); display: block; }
   .bar-line .fl { display: block; height: 100%; background: var(--accent); }
   .bar-line .fl.white { background: #fff; }
+  .bar-line .ma { text-align: right; font: 500 12px/1 var(--font-body); color: var(--ink-3); white-space: nowrap; }
   .bar-line .v { text-align: right; font: 600 14px/1 var(--font-body); }
 
   .flag-banner {
@@ -434,6 +478,12 @@
   .empty-state {
     padding: 40px 28px; text-align: center; font: 500 13px/1.6 var(--font-body); color: var(--ink-3);
   }
+  .limited-sample {
+    margin: 16px 20px 22px; padding: 22px 20px; border: 1px dashed var(--hair-strong);
+    border-radius: 12px; background: rgba(255,255,255,.03);
+  }
+  .limited-sample .ls-title { font: 700 13px/1.4 var(--font-body); color: var(--ink-2); }
+  .limited-sample .ls-sub { margin-top: 5px; font: 500 11.5px/1.55 var(--font-body); color: var(--ink-4); }
 
   .cmp-panel { padding: 22px 28px 26px; }
   .cmp-row { display: grid; grid-template-columns: 96px 1fr 1fr 44px; align-items: center; gap: 12px; padding: 9px 0; }
@@ -473,7 +523,10 @@
   /* viewBox units, not real px -- see the scatter-tick note history; sized up
      front so they stay legible once the SVG scales down on a phone-width panel */
   .radar-axis-label { font: 600 12px var(--font-body); letter-spacing: .04em; fill: var(--ink-3); }
-  .radar-value-label { font: 700 11px var(--font-body); font-variant-numeric: tabular-nums; }
+  .radar-value-label {
+    font: 700 12px var(--font-body); font-variant-numeric: tabular-nums;
+    paint-order: stroke; stroke: var(--bg); stroke-width: 3.5px; stroke-linejoin: round;
+  }
   .radar-legend-name { border: 0; background: transparent; padding: 0; margin: 0; cursor: pointer; font: inherit; color: inherit; }
   .radar-legend-name:hover, .radar-legend-name:focus-visible { color: var(--ink-2); outline: none; }
 
@@ -487,7 +540,7 @@
      <bdi>) plus an explicit LTR direction keeps every stat cell reading
      left-to-right regardless of the active language. */
   .stat-strong, .stat-soft, .pir-cell, .rank-num, .lc-val, .lc-rv, .leader-val,
-  .cmp-bar-value, .cmp-row .v, .bar-line .v, .team-bar-row .vl, .team-bar-row .rk,
+  .cmp-bar-value, .cmp-row .v, .bar-line .v, .bar-line .ma, .team-bar-row .vl, .team-bar-row .rk,
   .stat-row .num, .team-quad .num, .quad4 .num, .pct-cell,
   .radar-value-label {
     unicode-bidi: isolate;
@@ -500,7 +553,7 @@
   .stat-mode-row .gap { flex-basis: 14px; }
 
   /* ---------- Player: stats-by-season table ---------- */
-  .player-season-cols { grid-template-columns: 92px minmax(92px, 148px) 40px repeat(11, 54px); }
+  .player-season-cols { grid-template-columns: 92px minmax(92px, 148px) 40px repeat(6, 54px) repeat(3, 78px) repeat(5, 54px); }
   .grid-row.static { cursor: default; }
   .grid-row.static:hover, .grid-row.static:focus-visible { background: transparent; }
 
@@ -677,30 +730,18 @@
      can't share one row without crowding, so wrap the bar: row 1 = brand +
      controls, row 2 = centered tabs. Content below the bar stays desktop. */
   @media (min-width: 641px) and (max-width: 1080px) {
-    .topbar { flex-wrap: wrap; height: auto; padding: 12px 24px; row-gap: 10px; }
+    .topbar { flex-wrap: wrap; height: auto; padding: 12px 24px; row-gap: 12px; }
     .brand { order: 1; flex: 1 1 auto; }
-    .topbar-right { order: 2; flex: 0 0 auto; }
+    .topbar-right { order: 2; flex: 0 0 auto; gap: 8px; }
     nav.tabs { order: 3; flex: 1 1 100%; margin: 0; justify-content: center; }
     .ctl-sep { display: none; }
-    .sl-trig-label, .sl-kbd { display: none; }
-    .spotlight-trigger { padding: 0 8px; }
+    .tb-search .sl-kbd { display: none; }
+    .tb-search { padding: 0; width: 34px; }
   }
 
   /* ---------- Global Spotlight / quick search ---------- */
-  .spotlight-trigger {
-    display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; flex: none;
-    border: 1px solid var(--hair); border-radius: 6px; background: rgba(255,255,255,.04);
-    color: var(--ink-3); cursor: pointer; font: 500 12px/1 var(--font-body);
-    transition: border-color .12s ease, color .12s ease, background .12s ease;
-  }
-  .spotlight-trigger:hover { color: var(--ink-2); border-color: var(--ink-4); background: rgba(255,255,255,.07); }
-  .spotlight-trigger:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-  .spotlight-trigger svg { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
-  .sl-trig-label { white-space: nowrap; }
-  .sl-kbd { font: 600 10px/1 var(--font-body); border: 1px solid var(--hair-strong); border-radius: 3px; padding: 2px 4px; color: var(--ink-4); }
-  @media (max-width: 640px) { .sl-trig-label, .sl-kbd { display: none; } .spotlight-trigger { padding: 0 8px; } }
-  html[data-mobile] .sl-trig-label, html[data-mobile] .sl-kbd { display: none; }
-  html[data-mobile] .spotlight-trigger { padding: 0 8px; }
+  @media (max-width: 640px) { .tb-search .sl-kbd { display: none; } }
+  html[data-mobile] .tb-search .sl-kbd { display: none; }
 
   .sl-overlay {
     position: fixed; inset: 0; z-index: 200; display: flex; align-items: flex-start; justify-content: center;
@@ -743,14 +784,78 @@
   .sl-empty { padding: 30px 16px; text-align: center; color: var(--ink-3); font: 500 13px/1.5 var(--font-body); }
   html[data-mobile] .sl-overlay { padding: 7vh 10px 16px; }
 
+  /* ---------- Glossary & Methodology modal ---------- */
+  .gl-overlay {
+    position: fixed; inset: 0; z-index: 210; display: flex; align-items: flex-start; justify-content: center;
+    padding: 8vh 16px 24px; background: rgba(5,8,12,.55);
+    backdrop-filter: blur(6px) saturate(1.1); -webkit-backdrop-filter: blur(6px) saturate(1.1);
+    animation: sl-fade .14s ease;
+  }
+  .gl-overlay[hidden] { display: none; }
+  .gl-modal {
+    width: min(720px, 100%); max-height: 84vh; display: flex; flex-direction: column;
+    background: rgba(21,27,35,.9); border: 1px solid var(--hair-strong); border-radius: 16px;
+    box-shadow: 0 28px 90px rgba(0,0,0,.62);
+    backdrop-filter: blur(22px) saturate(1.3); -webkit-backdrop-filter: blur(22px) saturate(1.3);
+    overflow: hidden; animation: gl-rise .18s cubic-bezier(.2,.7,.3,1);
+  }
+  @keyframes gl-rise { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }
+  .gl-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px 14px; border-bottom: 1px solid var(--hair); flex: none; }
+  .gl-head h2 { margin: 0; font: 700 15px/1.2 var(--font-body); color: var(--ink); flex: 1; min-width: 0; }
+  .gl-head .gl-ico { font-size: 17px; flex: none; }
+  .gl-close {
+    flex: none; width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--hair-strong);
+    background: rgba(255,255,255,.04); color: var(--ink-2); font: 500 16px/1 var(--font-body); cursor: pointer;
+  }
+  .gl-close:hover { background: rgba(255,255,255,.09); color: var(--ink); }
+  .gl-search-row { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 1px solid var(--hair); flex: none; }
+  .gl-search-row svg { width: 18px; height: 18px; flex: none; fill: none; stroke: var(--ink-3); stroke-width: 2; stroke-linecap: round; }
+  #gl-input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--ink); font: 500 15px/1.3 var(--font-body); }
+  #gl-input::placeholder { color: var(--ink-3); }
+  .gl-body { overflow-y: auto; padding: 8px 18px 22px; overscroll-behavior: contain; }
+  .gl-cat { font: 700 10px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--accent-hover); padding: 18px 0 8px; }
+  .gl-cat:first-child { padding-top: 10px; }
+  .gl-term { padding: 11px 0; border-bottom: 1px solid var(--hair); }
+  .gl-term:last-child { border-bottom: 0; }
+  .gl-term-name { font: 700 13.5px/1.35 var(--font-body); color: var(--ink); }
+  .gl-term-def { margin-top: 4px; font: 500 12.5px/1.6 var(--font-body); color: var(--ink-2); }
+  .gl-term-formula {
+    margin-top: 7px; padding: 7px 10px; border-radius: 8px; background: rgba(255,255,255,.045);
+    border: 1px solid var(--hair); font: 600 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--ink); direction: ltr; unicode-bidi: isolate; overflow-x: auto; white-space: pre-wrap;
+  }
+  .gl-term-formula::before { content: attr(data-label) " · "; color: var(--ink-4); font-weight: 700; }
+  .gl-empty { padding: 34px 10px; text-align: center; color: var(--ink-3); font: 500 13px/1.5 var(--font-body); }
+  .site-foot {
+    display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap;
+    padding: 22px 24px 30px; margin-top: 26px; border-top: 1px solid var(--hair);
+    font: 500 11.5px/1.5 var(--font-body); color: var(--ink-4);
+  }
+  .site-foot button {
+    background: none; border: 0; color: var(--ink-3); cursor: pointer; font: inherit;
+    display: inline-flex; align-items: center; gap: 6px; padding: 0;
+  }
+  .site-foot button:hover { color: var(--ink); }
+  html[data-mobile] .gl-overlay { padding: 5vh 8px 12px; }
+  @media (max-width: 640px) {
+    .gl-overlay { padding: 4vh 8px 12px; }
+    .gl-modal { max-height: 90vh; }
+    .gl-trig-label { display: none; }
+  }
+
   /* ---------- Mobile (<=640px) ---------- */
   @media (max-width: 640px) {
     .topbar { flex-wrap: wrap; height: auto; padding: 10px 16px; row-gap: 8px; position: static; }
     .shell { overflow-x: clip; }
     .brand { order: 1; flex: 1 1 auto; min-width: 0; }
     .brand-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-    .topbar-right { order: 2; flex: 0 0 100%; justify-content: space-between; }
+    .topbar-right { order: 2; flex: 0 0 100%; min-width: 0; flex-wrap: wrap; row-gap: 8px; justify-content: space-between; }
     .ctl-sep { display: none; }
+    .tb-icon-btn, .tb-icon-btn.tb-icon-only, .tb-search { height: 40px; min-width: 40px; width: 40px; }
+    .context-pill { order: 5; flex: 1 1 100%; }
+    .context-pill .season-picker { flex: 1 1 auto; }
+    .context-pill .season-picker select { width: 100%; min-height: 40px; }
+    .context-pill .stage-switch button { min-height: 40px; }
     nav.tabs {
       order: 3; flex: 0 0 100%;
       display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
@@ -827,8 +932,13 @@
   html[data-mobile] .shell { overflow-x: clip; }
   html[data-mobile] .brand { order: 1; flex: 1 1 auto; min-width: 0; }
   html[data-mobile] .brand-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-  html[data-mobile] .topbar-right { order: 2; flex: 0 0 100%; justify-content: space-between; }
+  html[data-mobile] .topbar-right { order: 2; flex: 0 0 100%; min-width: 0; flex-wrap: wrap; row-gap: 8px; justify-content: space-between; }
   html[data-mobile] .ctl-sep { display: none; }
+  html[data-mobile] .tb-icon-btn, html[data-mobile] .tb-icon-btn.tb-icon-only, html[data-mobile] .tb-search { height: 40px; min-width: 40px; width: 40px; }
+  html[data-mobile] .context-pill { order: 5; flex: 1 1 100%; }
+  html[data-mobile] .context-pill .season-picker { flex: 1 1 auto; }
+  html[data-mobile] .context-pill .season-picker select { width: 100%; min-height: 40px; }
+  html[data-mobile] .context-pill .stage-switch button { min-height: 40px; }
   html[data-mobile] nav.tabs {
     order: 3; flex: 0 0 100%;
     display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
@@ -867,6 +977,159 @@
   html[data-mobile] .leaders-grid { grid-template-columns: 1fr; gap: 12px; }
 
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  /* ============ AI Analytics Assistant ============ */
+  .ai-fab {
+    position: fixed; inset-block-end: 22px; inset-inline-end: 22px; z-index: 60;
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 11px 15px; border-radius: 999px; cursor: pointer;
+    color: var(--ink); font: 600 12.5px/1 var(--font-body); letter-spacing: .01em;
+    background: linear-gradient(135deg, rgba(var(--accent-rgb),.24), rgba(255,255,255,.05));
+    border: 1px solid var(--hair-strong);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
+    box-shadow: 0 8px 30px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.09);
+    transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease;
+  }
+  .ai-fab:hover { transform: translateY(-2px); border-color: var(--accent-ring); box-shadow: 0 12px 38px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.12); }
+  .ai-fab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ai-fab[hidden] { display: none; }
+  .ai-fab-spark { width: 16px; height: 16px; flex: none; color: var(--accent); }
+  .ai-fab kbd {
+    font: 600 10px/1 var(--font-body); color: var(--ink-3);
+    border: 1px solid var(--hair-strong); border-radius: 4px; padding: 3px 5px;
+    background: rgba(255,255,255,.04); unicode-bidi: isolate; direction: ltr;
+  }
+  @media (max-width: 640px) { .ai-fab kbd { display: none; } .ai-fab { inset-block-end: 16px; inset-inline-end: 16px; } }
+
+  /* ---- Floating Glossary trigger: mirror of the AI FAB on the opposite
+     (bottom-start) corner. Glassmorphic, icon-only, with a hover tooltip. ---- */
+  .gl-fab {
+    position: fixed; inset-block-end: 22px; inset-inline-start: 22px; z-index: 60;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 46px; height: 46px; border-radius: 999px; cursor: pointer;
+    font-size: 19px; line-height: 1; color: var(--ink);
+    background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+    border: 1px solid var(--hair-strong);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
+    box-shadow: 0 8px 30px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.09);
+    transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease;
+  }
+  .gl-fab:hover { transform: translateY(-2px); border-color: var(--accent-ring); box-shadow: 0 12px 38px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.12); }
+  .gl-fab:active { transform: translateY(0) scale(.93); }
+  .gl-fab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .gl-fab[hidden] { display: none; }
+  .gl-fab > span { pointer-events: none; }
+  .gl-fab::after {
+    content: attr(aria-label);
+    position: absolute; inset-block-end: calc(100% + 10px); inset-inline-start: 0;
+    padding: 7px 11px; border-radius: 8px; white-space: nowrap;
+    font: 600 11px/1 var(--font-body); color: var(--ink);
+    background: var(--panel); border: 1px solid var(--hair-strong);
+    box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    opacity: 0; transform: translateY(4px); pointer-events: none;
+    transition: opacity .14s ease, transform .14s ease;
+  }
+  .gl-fab:hover::after, .gl-fab:focus-visible::after { opacity: 1; transform: none; }
+  /* Mobile safeguard: tuck into the corner, drop the tooltip, keep it above
+     scrolling table content but below the slide-over overlays. */
+  @media (max-width: 767px) {
+    .gl-fab { inset-block-end: 16px; inset-inline-start: 16px; width: 44px; height: 44px; font-size: 18px; z-index: 55; }
+    .gl-fab::after { display: none; }
+  }
+  html[data-mobile] .gl-fab { inset-block-end: 16px; inset-inline-start: 16px; width: 44px; height: 44px; font-size: 18px; z-index: 55; }
+  html[data-mobile] .gl-fab::after { display: none; }
+
+  .ai-overlay {
+    position: fixed; inset: 0; z-index: 61; display: flex;
+    align-items: stretch; justify-content: flex-end;
+    background: rgba(5,7,10,.55); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+    animation: ai-fade .16s ease;
+  }
+  .ai-overlay[hidden] { display: none; }
+  @keyframes ai-fade { from { opacity: 0 } to { opacity: 1 } }
+
+  .ai-panel {
+    position: relative; display: flex; flex-direction: column;
+    width: min(430px, 100%); height: 100%; max-width: 100%;
+    background: var(--panel); border-inline-start: 1px solid var(--hair);
+    box-shadow: -30px 0 60px rgba(0,0,0,.45);
+    animation: ai-slide .2s cubic-bezier(.2,.7,.3,1);
+  }
+  @keyframes ai-slide { from { transform: translateX(var(--ai-slide-from, 30px)); opacity: .4 } to { transform: none; opacity: 1 } }
+  :root[dir="rtl"] .ai-panel { --ai-slide-from: -30px; }
+
+  .ai-head {
+    position: relative; display: flex; align-items: center; gap: 10px;
+    padding: 15px 16px; border-bottom: 1px solid var(--hair); flex: none; touch-action: none;
+  }
+  .ai-head-ico { width: 18px; height: 18px; color: var(--accent); flex: none; }
+  .ai-head-t { font: 600 13px/1.2 var(--font-body); }
+  .ai-head-sub { font: 500 10px/1 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin-top: 3px; }
+  .ai-head-x {
+    margin-inline-start: auto; flex: none; width: 30px; height: 30px; border-radius: 7px;
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    background: rgba(255,255,255,.05); border: 1px solid var(--hair); color: var(--ink-2); font-size: 13px;
+  }
+  .ai-head-x:hover { color: var(--ink); border-color: var(--ink-4); }
+  .ai-head-grip { display: none; }
+  @media (max-width: 640px) {
+    .ai-overlay { align-items: flex-end; }
+    .ai-panel {
+      width: 100%; height: 88%; border-radius: 16px 16px 0 0;
+      border-inline-start: 0; border-top: 1px solid var(--hair);
+      animation: ai-slide-up .22s cubic-bezier(.2,.7,.3,1);
+    }
+    @keyframes ai-slide-up { from { transform: translateY(40px); opacity: .4 } to { transform: none; opacity: 1 } }
+    .ai-head-grip { display: block; position: absolute; inset-inline: 0; top: 6px; margin: 0 auto; width: 36px; height: 4px; border-radius: 2px; background: var(--hair-strong); }
+    .ai-head { padding-top: 18px; }
+  }
+
+  .ai-log { flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .ai-msg { display: flex; flex-direction: column; gap: 4px; max-width: 92%; }
+  .ai-msg.user { align-self: flex-end; align-items: flex-end; }
+  .ai-msg.bot { align-self: flex-start; }
+  .ai-bubble {
+    padding: 10px 13px; border-radius: 12px; font: 400 13px/1.55 var(--font-body);
+    color: var(--ink); overflow-wrap: anywhere;
+  }
+  .ai-msg.user .ai-bubble { background: var(--accent-wash); border: 1px solid var(--accent-ring); }
+  .ai-msg.bot .ai-bubble { background: var(--panel-2); border: 1px solid var(--hair); }
+  .ai-bubble p { margin: 0 0 8px; } .ai-bubble p:last-child { margin: 0; }
+  .ai-bubble ul, .ai-bubble ol { margin: 4px 0 8px; padding-inline-start: 20px; }
+  .ai-bubble li { margin: 2px 0; }
+  .ai-bubble h3, .ai-bubble h4 { margin: 6px 0 4px; font: 600 13px/1.3 var(--font-body); }
+  .ai-bubble code { font: 500 12px/1 ui-monospace, "SF Mono", Menlo, monospace; background: rgba(255,255,255,.06); padding: 1px 5px; border-radius: 4px; }
+  .ai-bubble strong { font-weight: 700; }
+  .ai-bubble em { font-style: italic; color: var(--ink-2); }
+  .ai-role { font: 600 9.5px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-4); }
+  .ai-cursor::after { content: "\258D"; color: var(--accent); animation: ai-blink 1s step-end infinite; }
+  @keyframes ai-blink { 50% { opacity: 0 } }
+
+  .ai-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 16px 12px; flex: none; }
+  .ai-chips[hidden] { display: none; }
+  .ai-chip {
+    font: 500 12px/1.35 var(--font-body); color: var(--ink-2); text-align: start;
+    background: rgba(255,255,255,.04); border: 1px solid var(--hair); border-radius: 10px;
+    padding: 8px 11px; cursor: pointer; transition: border-color .12s ease, color .12s ease;
+  }
+  .ai-chip:hover { color: var(--ink); border-color: var(--accent-ring); }
+
+  .ai-form { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--hair); flex: none; }
+  .ai-input {
+    flex: 1 1 auto; min-width: 0; resize: none; font: 400 13px/1.45 var(--font-body);
+    color: var(--ink); background: var(--panel-2); border: 1px solid var(--hair);
+    border-radius: 10px; padding: 10px 12px; max-height: 110px;
+  }
+  .ai-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .ai-send {
+    flex: none; width: 40px; border-radius: 10px; cursor: pointer; color: #fff;
+    background: var(--accent); border: 1px solid var(--accent);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .ai-send:hover { background: var(--accent-hover); }
+  .ai-send:disabled { opacity: .5; cursor: default; }
+  .ai-note { padding: 0 16px 10px; font: 500 10px/1.4 var(--font-body); color: var(--ink-4); flex: none; }
+  .ai-note[hidden] { display: none; }
 </style>
 
 <div class="shell">
@@ -891,22 +1154,21 @@
     </div>
     <nav class="tabs" id="tabs" role="tablist" aria-label="Sections"></nav>
     <div class="topbar-right">
-      <button type="button" class="spotlight-trigger" id="spotlight-trigger" aria-haspopup="dialog" aria-label="Search">
+      <div class="context-pill">
+        <span class="season-picker">
+          <span class="season-picker-ico" aria-hidden="true">📅</span>
+          <select id="season-select"></select>
+        </span>
+        <span class="pill-sep" aria-hidden="true"></span>
+        <div class="lang-switch stage-switch" id="comp-switch" role="group" aria-label="Stage">
+          <button type="button" data-comp="regular_season"></button>
+          <button type="button" data-comp="playoffs"></button>
+        </div>
+      </div>
+      <button type="button" class="tb-icon-btn tb-search" id="spotlight-trigger" aria-haspopup="dialog" aria-label="Search">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
-        <span class="sl-trig-label" id="sl-trig-label">Search</span>
         <kbd class="sl-kbd" id="sl-kbd">⌘K</kbd>
       </button>
-      <span class="ctl-sep" aria-hidden="true"></span>
-      <span class="season-picker">
-        <span class="season-picker-ico" aria-hidden="true">📅</span>
-        <select id="season-select"></select>
-      </span>
-      <span class="ctl-sep" aria-hidden="true"></span>
-      <div class="lang-switch" id="comp-switch" role="group">
-        <button type="button" data-comp="regular_season"></button>
-        <button type="button" data-comp="playoffs"></button>
-      </div>
-      <span class="ctl-sep" aria-hidden="true"></span>
       <div class="lang-switch" id="lang-switch" role="group">
         <button type="button" data-lang="he">עברית</button>
         <button type="button" data-lang="en">EN</button>
@@ -915,6 +1177,28 @@
   </div>
 
   <div id="view" class="view"></div>
+
+  <footer class="site-foot">
+    <span id="foot-src"></span>
+    <button type="button" id="glossary-trigger-foot" aria-haspopup="dialog" aria-controls="gl-overlay">
+      <span aria-hidden="true">📖</span><span id="foot-gl-label">Glossary &amp; Methodology</span>
+    </button>
+  </footer>
+</div>
+
+<div class="gl-overlay" id="gl-overlay" hidden>
+  <div class="gl-modal" role="dialog" aria-modal="true" aria-labelledby="gl-title">
+    <div class="gl-head">
+      <span class="gl-ico" aria-hidden="true">📖</span>
+      <h2 id="gl-title">Glossary &amp; Methodology</h2>
+      <button type="button" class="gl-close" id="gl-close" aria-label="Close">✕</button>
+    </div>
+    <div class="gl-search-row">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+      <input id="gl-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Search glossary">
+    </div>
+    <div class="gl-body" id="gl-body"></div>
+  </div>
 </div>
 
 <div class="sl-overlay" id="sl-overlay" hidden>
@@ -928,11 +1212,45 @@
   </div>
 </div>
 
+<button type="button" class="gl-fab" id="glossary-fab" aria-haspopup="dialog" aria-controls="gl-overlay" aria-label="Glossary &amp; Methodology">
+  <span aria-hidden="true">📖</span>
+</button>
+
+<button type="button" class="ai-fab" id="ai-fab" aria-haspopup="dialog" aria-controls="ai-overlay">
+  <svg class="ai-fab-spark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l1.9 5.7L19.6 9l-4.6 3.5L16.2 18 12 14.8 7.8 18l1.2-5.5L4.4 9l5.7-1.3z"/></svg>
+  <span id="ai-fab-label">שאל את האנליסט</span>
+  <kbd id="ai-fab-kbd">Ctrl J</kbd>
+</button>
+
+<div class="ai-overlay" id="ai-overlay" hidden>
+  <div class="ai-panel" role="dialog" aria-modal="true" aria-labelledby="ai-head-t" id="ai-panel">
+    <div class="ai-head" id="ai-head">
+      <span class="ai-head-grip" aria-hidden="true"></span>
+      <svg class="ai-head-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l1.9 5.7L19.6 9l-4.6 3.5L16.2 18 12 14.8 7.8 18l1.2-5.5L4.4 9l5.7-1.3z"/></svg>
+      <div>
+        <div class="ai-head-t" id="ai-head-t">Analytics Assistant</div>
+        <div class="ai-head-sub" id="ai-head-sub">PlusMinus IL</div>
+      </div>
+      <button type="button" class="ai-head-x" id="ai-head-x" aria-label="Close">&#10005;</button>
+    </div>
+    <div class="ai-log" id="ai-log" aria-live="polite"></div>
+    <div class="ai-chips" id="ai-chips"></div>
+    <form class="ai-form" id="ai-form">
+      <textarea class="ai-input" id="ai-input" rows="1" autocomplete="off" spellcheck="false"></textarea>
+      <button type="submit" class="ai-send" id="ai-send" aria-label="Send">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M3 20l18-8L3 4l3.5 8L3 20z"/></svg>
+      </button>
+    </form>
+    <div class="ai-note" id="ai-note"></div>
+  </div>
+</div>
+
 <script>
 // Data is loaded at runtime from ./data.json (generated by export_dashboard_data.py).
 // Shape: { default_season, seasons: { <season>: { teams, players, by_position, transfers, bad_split_count, player_count, playoffs } } }.
 let DATA;   // the active season's blob (RAW.seasons[state.season])
 let RAW;    // the whole data.json: { default_season, seasons: { <season>: blob } }
+let INSIGHTS; // optional ./insights.json — daily GenAI tactical summary (bball-genai-insights Lambda)
 /* ---------------- i18n ---------------- */
 /* Only five real position slots. The source also carries hybrid codes
    (G, F, G-F, F-C); `posGroups` collapses each to one or two of the five,
@@ -953,7 +1271,7 @@ function posLabel(code) { return posGroups(code).join('/') || '—'; }
 const STR = {
   he: {
     brand: 'פלוס מינוס IL',
-    tagline: 'PlusMinus.IL | אנליטיקס כדורסל ישראלי',
+    tagline: 'PlusMinus.IL · אנליטיקס כדורסל ישראלי',
     tab_overview: 'עמוד הבית',
     tab_league: 'ליגה',
     tab_team: 'קבוצה',
@@ -1005,18 +1323,18 @@ const STR = {
     dc_b_title: 'השפעת שחקנים ישראלים מול זרים',
     dc_b_take: 'חלקם של השחקנים הישראלים בדקות המשחק ובנקודות נשחק לאורך העשור עם הרחבת מכסת הזרים ותקנת השחקן המקומי — הפער בין נתח הדקות לנתח הנקודות מלמד על תלות הליגה בקלעים זרים.',
     dc_c_title: 'התפתחות יעילות הזריקה',
-    dc_c_take: 'אחוז הקליעה האמיתי (TS%) ואחוז הקליעה האפקטיבי (eFG%) עלו ככל שבחירת הזריקות השתפרה — יותר שלשות ולֵייאָפים, פחות זריקות ביניים. אחוז העונשין נשאר יציב יחסית.',
+    dc_c_take: 'אחוז הקליעה האמיתי (TS%) ואחוז הקליעה האפקטיבי (eFG%) עלו ככל שבחירת הזריקות השתפרה — יותר שלשות וקליעות מתחת לסל, פחות זריקות ביניים. אחוז העונשין נשאר יציב יחסית.',
     dc_d_title: 'מדד השוויוניות',
     dc_d_take: 'הפער ב-PIR הממוצע למשחק בין שלוש הקבוצות המובילות לשלוש התחתונות מודד את השוויוניות בליגה. פער מתרחב מעיד על ריכוז כוח בצמרת; פער מצטמצם — על ליגה תחרותית יותר. (בהיעדר נתוני יריב בנתוני הסיכום העונתי, PIR משמש כאן כמדד דו-כיווני חלופי לדירוג נטו.)',
     an_sec_advanced: 'מדדים מתקדמים',
-    small_sample_note: 'מדגם קטן — פחות מ-50 דקות בעונה; מדדי ל-36 דקות אינם יציבים.',
+    small_sample_note: 'מדגם קטן — פחות מ-50 דקות בעונה; מדדים ל-36 דקות אינם יציבים.',
     adv_load_tab: 'עומס התקפי מול TS',
     adv_ff_tab: 'ארבעת הגורמים',
     adv_ppr_tab: 'יחס יצירה טהור',
     adv_diet_tab: 'התפלגות זריקות',
-    adv_glass_tab: 'שליטה בלוח',
+    adv_glass_tab: 'שליטה בריבאונד',
     adv_load_title: 'עומס התקפי מול אחוז קליעה אמיתי',
-    adv_load_sub: 'גודל הבועה = נק׳ למשחק · צבע = יחס אסיסט/איבוד',
+    adv_load_sub: 'גודל הבועה = נק׳ למשחק · צבע = יחס אסיסטים/איבודים',
     adv_load_x: 'עומס התקפי משוער %',
     adv_load_q_engine: 'מנוע התקפי ראשי',
     adv_load_q_finisher: 'סוגר עלית',
@@ -1028,17 +1346,17 @@ const STR = {
     adv_ff_title: 'ארבעת הגורמים של דין אוליבר (קבוצות)',
     adv_ff_sub: 'כל עמודה מול חציון הליגה (µ). ירוק = טוב מהחציון, כתום = מתחת.',
     adv_ppr_title: 'יחס יצירה טהור (PPR)',
-    adv_ppr_sub: '100 · ((2/3)·אסיסטים − איבודים) ÷ דקות. חיובי בציאן, שלילי בכתום.',
+    adv_ppr_sub: '100 · ((2/3)·אסיסטים − איבודים) ÷ דקות. חיובי בתכלת, שלילי בכתום.',
     adv_diet_title: 'התפלגות זריקות וריווח מגרש',
     adv_diet_sub: 'חלוקת הניסיונות בין זריקות שתיים, שלוש ועונשין (100%).',
     adv_diet_2p: 'שתיים', adv_diet_3p: 'שלוש', adv_diet_ftl: 'עונשין',
     adv_diet_spacer: 'מרווח מגרש', adv_diet_rim: 'תוקף סל', adv_diet_balanced: 'מאוזן',
-    adv_glass_title: 'מדד שליטה בלוח',
+    adv_glass_title: 'מדד שליטה בריבאונד',
     adv_glass_sub: 'אחוז ריבאונד התקפי/הגנתי מתוך ההזדמנויות במגרש, מול ממוצע העמדה.',
     adv_glass_orb: 'ORB% — ריבאונד התקפי',
     adv_glass_drb: 'DRB% — ריבאונד הגנתי',
     adv_glass_posavg: 'ממוצע עמדה',
-    adv_glass_top: 'מובילי הלוח (ORB%+DRB%)',
+    adv_glass_top: 'מובילי הריבאונד (ORB%+DRB%)',
     adv_court_tab: 'פרופיל זריקות',
     adv_court_title: 'פרופיל זריקות ומפת חום — חצי מגרש',
     adv_court_sub: 'נפח, קליעות/ניסיונות ואחוז קליעה לכל אזור. הצבע משווה את אחוז הקליעה לחציון.',
@@ -1055,7 +1373,7 @@ const STR = {
     court_avg: 'סביב הממוצע',
     court_cold: 'מתחת לממוצע',
     pl_shot_kicker: 'התפלגות זריקות',
-    pl_shot_title: 'פרופיל זריקות — חצי מגרש',
+    pl_shot_title: 'פרופיל זריקות',
     court_scale_title: 'אחוז קליעה מול חציון קבוצת ההשוואה',
     court_scale_low: 'קר',
     court_scale_high: 'חם',
@@ -1067,6 +1385,8 @@ const STR = {
     pl_radar_cmp: 'השוואה מול',
     pl_radar_cmp_none: '— ללא —',
     pl_radar_self: 'השחקן',
+    pl_radar_pctile_col: 'אחוזון בעמדה',
+    pl_radar_raw_col: 'נתוני עונה גולמיים',
     pl_ff_kicker: 'ארבעת הגורמים',
     pl_ff_title: 'ארבעת הגורמים — מול חציון העמדה',
     pl_ff_sub: 'eFG%, אחוז איבודים, ריבאונד התקפי ל-36 ד׳ ויחס זריקות עונשין. הפס מציג את הפער מהחציון.',
@@ -1094,10 +1414,13 @@ const STR = {
     arch_scorer: 'סקורר מוביל',
     arch_glassguard: 'שואב ריבאונד',
     arch_connector: 'שחקן דו-כיווני ומחבר',
+    arch_limited: 'מדגם מוגבל',
+    pct_notice: 'מדגם דקות נמוך לחישוב אחוזונים',
+    pct_notice_sub: 'נדרשים לפחות 5 משחקים ו-40 דקות כדי לדרג אחוזונים, ראדאר וארכיטיפ.',
     an_cmp_kicker: 'השוואת שחקנים',
     an_cmp_title: 'בחרו עד 4 שחקנים להשוואה',
-    an_cmp_none: '— ריק —',
-    an_cmp_empty: 'בחרו לפחות שחקן אחד למעלה כדי להשוות.',
+    an_cmp_none: '— ללא —',
+    an_cmp_empty: 'בחרו שחקן אחד לפחות למעלה כדי להשוות.',
     an_radar_kicker: 'השוואת קבוצות',
     an_radar_title: 'בחרו 2 קבוצות להשוואה',
     nav_aria: 'ניווט',
@@ -1105,32 +1428,32 @@ const STR = {
     comp_regular: 'עונה סדירה',
     comp_playoffs_na: 'אין נתוני פלייאוף לעונה זו',
     comp_playoffs: 'פלייאוף',
-    playoffs_note: (n) => 'הנתונים מוצגים לשלב הפלייאוף בלבד — ' + n + ' מתוך 13 הקבוצות עלו.',
+    playoffs_note: (n) => 'מוצגים נתוני שלב הפלייאוף בלבד — ' + n + ' מתוך 13 הקבוצות העפילו.',
     ov_eyebrow: 'ליגת העל בכדורסל',
     ov_title: 'עונת',
     ov_teams_tracked: 'קבוצות',
     ov_players_profiled: 'שחקנים',
-    ov_flags_to_review: 'דגלים לבדיקה',
+    ov_flags_to_review: 'סימונים לבדיקה',
     ov_team_offense_kicker: 'ליגה · נקודות למשחק',
-    ov_team_offense_title: 'קבוצות לפי התקפה',
+    ov_team_offense_title: 'דירוג הקבוצות לפי התקפה',
     ov_leaders_kicker: 'מובילי הליגה · PIR',
-    home_players_title: 'מובילי הליגה | שחקנים',
-    home_teams_title: 'מובילי הליגה | קבוצות',
-    home_min_note: (n) => 'שחקנים עם ' + n + '+ משחקים בלבד',
+    home_players_title: 'מובילי הליגה · שחקנים',
+    home_teams_title: 'מובילי הליגה · קבוצות',
+    home_min_note: (n) => 'שחקנים עם ' + n + ' משחקים ומעלה בלבד',
     lead_minutes: 'דקות למשחק',
     lead_ts: 'אחוז קליעה אמיתי',
-    lead_efg: 'אחוז קליעה משוקלל',
+    lead_efg: 'אחוז קליעה אפקטיבי',
     lead_fg: 'אחוז קליעה מהשדה',
     lead_fg3: 'אחוז שלוש',
     lead_ft: 'אחוז עונשין',
-    lead_asttov: 'יחס אסיסט/איבוד',
-    lead_oreb: 'ריבאונד התקפה',
-    lead_dreb: 'ריבאונד הגנה',
+    lead_asttov: 'יחס אסיסטים/איבודים',
+    lead_oreb: 'ריבאונד התקפי',
+    lead_dreb: 'ריבאונד הגנתי',
     lead_fg3m: 'שלשות למשחק',
-    lead_few_tov: 'הכי מעט איבודים',
+    lead_few_tov: 'מיעוט איבודים',
     ov_dq_label: 'איכות נתונים',
     ov_dq_title: (n) => n + ' ' + heCount(n, 'רשומה דורשת בדיקה', 'רשומות דורשות בדיקה'),
-    ov_dq_body: '3PM/3PA עולים על FGM/FGA ב-{n} רשומות שחקן-עונה — מצב שאינו אפשרי בתיעוד משחק אמיתי. eFG% ו-TS% אינם אמינים עבור רשומות אלה עד שעמודות המקור יתוקנו.',
+    ov_dq_body: '3PM/3PA עולים על FGM/FGA ב-{n} רשומות שחקן-עונה — מצב שאינו אפשרי ברישום סטטיסטי תקין. eFG% ו-TS% אינם אמינים ברשומות אלו עד שעמודות המקור יתוקנו.',
     ov_dq_link: '← בדיקת שחקנים מסומנים',
     ov_transfers_title: 'מעברים באמצע העונה',
     ov_transfers_desc: (n) => n + ' ' + heCount(n, 'שחקן החליף קבוצה', 'שחקנים החליפו קבוצה') + ' במהלך העונה — כל תקופה מוצגת בנפרד, עם חלוקת המשחקים בפועל בין הקבוצות.',
@@ -1147,6 +1470,12 @@ const STR = {
     search_teams: 'חיפוש קבוצה…',
     search_players: 'חיפוש שחקן…',
     sl_trigger: 'חיפוש',
+    gl_trigger: 'מילון',
+    gl_title: 'מילון מונחים ומתודולוגיה',
+    gl_search_ph: 'חיפוש מונח, קיצור או נוסחה…',
+    gl_empty: 'לא נמצא מונח תואם',
+    gl_formula_label: 'נוסחה',
+    gl_footer_note: 'מילון מונחים ומתודולוגיה',
     sl_placeholder: 'חיפוש שחקנים וקבוצות…',
     sl_grp_players: 'שחקנים',
     sl_grp_teams: 'קבוצות',
@@ -1155,44 +1484,44 @@ const STR = {
     stat_mode_label: 'תצוגה',
     stat_mode_totals: 'סה״כ',
     stat_mode_per_game: 'ממוצע למשחק',
-    stat_mode_per_36: "ל-36 דק'",
+    stat_mode_per_36: 'ל-36 דק׳',
     btn_export: 'ייצוא נתונים',
     no_results: 'לא נמצאו תוצאות',
-    no_players_match: 'לא נמצאו שחקנים התואמים לסינון',
+    no_players_match: 'לא נמצאו שחקנים התואמים את הסינון',
     players_eyebrow: 'ליגת העל בכדורסל · שחקנים',
     players_title: 'שחקני הליגה',
-    players_sub: (n) => n + ' רשומות שחקן · לחצו על שורה לכרטיס המלא',
+    players_sub: (n) => n + ' רשומות שחקנים · לחצו על שורה לצפייה בכרטיס המלא',
     players_all: 'כל השחקנים',
     filter_pos_all: 'כל העמדות',
     filter_team_all: 'כל הקבוצות',
-    stint_note: 'עבר קבוצה באמצע העונה — הנתונים כאן הם עבור התקופה בקבוצה זו בלבד.',
+    stint_note: 'עבר קבוצה באמצע העונה — הנתונים כאן מתייחסים לתקופה בקבוצה זו בלבד.',
     mt_badge: 'שיחק ב-2 קבוצות העונה',
     mt_badge_short: '2 קבוצות',
     team_picker_label: 'קבוצה',
     team_picker_opt: (t) => '#' + t.rank + ' ' + teamLabel(t) + ' (' + t.player_count + ' ' + heCount(t.player_count, 'שחקן', 'שחקנים') + ')',
-    team_eyebrow: (rank, total) => 'ליגת העל · דירוג ' + rank + ' מתוך ' + total + ' בהתקפה',
+    team_eyebrow: (rank, total) => 'ליגת העל · מקום ' + rank + ' מתוך ' + total + ' בהתקפה',
     lbl_points: 'נקודות',
     lbl_assists: 'אסיסטים',
     lbl_rebounds: 'ריבאונדים',
     lbl_blocks: 'חסימות',
-    lbl_turnovers: 'איבודי כדור',
+    lbl_turnovers: 'איבודים',
     lbl_team_pir: 'PIR קבוצתי',
     lbl_pir: 'PIR',
     roster_title: 'סגל',
     roster_sub: (n) => n + ' ' + heCount(n, 'שחקן בסגל', 'שחקנים בסגל') + ' · ממוצע למשחק, לחצו על שורה לפרטים',
-    roster_flag_note: (n) => '● מסמן ' + n + ' ' + heCount(n, 'שחקן בסגל זה ש-3PM/3PA שלו', 'שחקנים בסגל זה ש-3PM/3PA שלהם') + ' עולה על FGM/FGA במקור — פתחו את עמוד השחקן להערה על אחוזי הקליעה.',
-    player_picker_viewing: 'צפייה ב',
+    roster_flag_note: (n) => '● מסמן ' + n + ' ' + heCount(n, 'שחקן בסגל זה ש-3PM/3PA שלו עולים', 'שחקנים בסגל זה ש-3PM/3PA שלהם עולים') + ' על FGM/FGA במקור — פתחו את עמוד השחקן להערה על אחוזי הקליעה.',
+    player_picker_viewing: 'צפייה ב־',
     player_eyebrow: (teamLbl, posName, jersey) => teamLbl + ' · ' + jerseyLabel(jersey),
     player_rank_badge: (total) => 'מתוך ' + total + ' · דירוג PIR בליגה',
-    pl_season_kicker: 'פיצול · לפי עונה',
+    pl_season_kicker: 'פילוח · לפי עונה',
     pl_season_title: 'סטטיסטיקה לפי עונה',
     pl_calc_label: 'אופן חישוב',
     pl_frame_label: 'שלב',
-    pl_no_frame_data: 'אין נתונים למסגרת זו בעונה זו.',
+    pl_no_frame_data: 'אין נתונים לשלב זה בעונה זו.',
     section_shooting: 'קליעה',
-    flag_banner: (efg, ts, fg3) => 'eFG% ' + efg + ' / TS% ' + ts + ' אינם אמינים עבור שחקן זה — 3PM/3PA במקור (' + fg3 + '% בתיעוד) עולים על סך FGM/FGA של שחקן-עונה זה, ולכן מדדי הקליעה המשולבים מחושבים מעל 100%. FG%/3P%/FT% שלמעלה אינם מושפעים.',
+    flag_banner: (efg, ts, fg3) => 'eFG% ' + efg + ' / TS% ' + ts + ' אינם אמינים לגבי שחקן זה — 3PM/3PA במקור (' + fg3 + '% בתיעוד) עולים על סך FGM/FGA של שחקן-עונה זה, ולכן מדדי הקליעה המשולבים יוצאים גבוהים מ-100%. FG%/3P%/FT% שלמעלה אינם מושפעים.',
     section_bio: 'פרטים אישיים',
-    section_usage: 'נתוני משחק',
+    section_usage: 'עומס משחק',
     bio_age: 'גיל',
     bio_height: 'גובה',
     bio_nationality: 'אזרחות',
@@ -1208,9 +1537,9 @@ const STR = {
       p_tsElite: (v, q) => `יעילות קליעה עלית — TS% ${v}, אחוזון ${q}.`,
       p_tsLow: (v, q) => `יעילות קליעה נמוכה — TS% ${v} (אחוזון ${q}).`,
       p_badSplit: 'נתוני השלוש במקור חורגים מזריקות השדה — eFG%/TS% אינם אמינים לשחקן זה.',
-      p_playmaker: (r, a) => `יצירת משחק אמינה — יחס אסיסט/איבוד ${r} עם ${a} אסיסטים למשחק.`,
-      p_tovProne: (r) => `שמירה על הכדור בעייתית — יחס אסיסט/איבוד ${r}.`,
-      p_rebStrong: (v, pos, q) => `שליטה בלוח לעמדת ${pos} — ${v} ריבאונדים למשחק, אחוזון ${q} בעמדה.`,
+      p_playmaker: (r, a) => `יצירת משחק אמינה — יחס אסיסטים/איבודים ${r} עם ${a} אסיסטים למשחק.`,
+      p_tovProne: (r) => `שמירה על הכדור בעייתית — יחס אסיסטים/איבודים ${r}.`,
+      p_rebStrong: (v, pos, q) => `שליטה בריבאונד לעמדת ${pos} — ${v} ריבאונדים למשחק, אחוזון ${q} בעמדה.`,
       p_rebWeak: (v, pos) => `ריבאונד מועט לעמדת ${pos} — ${v} למשחק.`,
       p_three: (v, q) => `איום מעבר לקשת — ${v}% מהשלוש (אחוזון ${q}).`,
       p_pirTop: (rk, v) => `השפעה כוללת עלית — PIR ${v} למשחק, מקום ${rk} בליגה.`,
@@ -1222,7 +1551,7 @@ const STR = {
       t_offLow: (v, q) => `התקפה חלשה — ${v} נק׳ למשחק (אחוזון ${q}).`,
       t_ballMove: (v, q) => `מסירת כדור מצוינת — ${v} אסיסטים למשחק (אחוזון ${q}).`,
       t_tovLow: (v) => `שמירה על הכדור — ${v} איבודים למשחק בלבד, מהנמוכים בליגה.`,
-      t_reb: (v, q) => `שליטה בלוח — ${v} ריבאונדים למשחק (אחוזון ${q}).`,
+      t_reb: (v, q) => `שליטה בריבאונד — ${v} ריבאונדים למשחק (אחוזון ${q}).`,
       t_three: (v, q) => `סכנה מעבר לקשת — ${v}% מהשלוש (אחוזון ${q}).`,
       t_blocks: (v, q) => `הגנת סל — ${v} חסימות למשחק (אחוזון ${q}).`,
       t_balanced: 'פרופיל מאוזן — בלי בלט מיוחד בקצוות.',
@@ -1233,7 +1562,7 @@ const STR = {
   },
   en: {
     brand: 'PlusMinus IL',
-    tagline: 'PlusMinus.IL | אנליטיקס כדורסל ישראלי',
+    tagline: 'PlusMinus.IL · אנליטיקס כדורסל ישראלי',
     tab_overview: 'Home',
     tab_league: 'League',
     tab_team: 'Team',
@@ -1335,7 +1664,7 @@ const STR = {
     court_avg: 'Around average',
     court_cold: 'Below average',
     pl_shot_kicker: 'Shot distribution',
-    pl_shot_title: 'Shot profile — half court',
+    pl_shot_title: 'Shot profile',
     court_scale_title: 'Zone FG% vs the comparison-pool median',
     court_scale_low: 'Cold',
     court_scale_high: 'Hot',
@@ -1347,6 +1676,8 @@ const STR = {
     pl_radar_cmp: 'Compare vs',
     pl_radar_cmp_none: '— none —',
     pl_radar_self: 'Player',
+    pl_radar_pctile_col: 'Positional percentile',
+    pl_radar_raw_col: 'Raw season rates',
     pl_ff_kicker: 'Four factors',
     pl_ff_title: 'Four factors — vs position median',
     pl_ff_sub: 'eFG%, turnover rate, offensive rebounds per 36, and free-throw rate. The bar shows the gap from the median.',
@@ -1374,6 +1705,9 @@ const STR = {
     arch_scorer: 'Go-to scorer',
     arch_glassguard: 'Glass-crashing guard',
     arch_connector: 'Two-way connector',
+    arch_limited: 'Limited Sample',
+    pct_notice: 'Insufficient minutes for percentile rating',
+    pct_notice_sub: 'At least 5 games and 40 minutes are needed to rate percentiles, radar and archetype.',
     an_cmp_kicker: 'Player comparison',
     an_cmp_title: 'Pick up to 4 players to compare',
     an_cmp_none: '— none —',
@@ -1427,6 +1761,12 @@ const STR = {
     search_teams: 'Search teams…',
     search_players: 'Search players…',
     sl_trigger: 'Search',
+    gl_trigger: 'Glossary',
+    gl_title: 'Glossary & Methodology',
+    gl_search_ph: 'Search a term, abbreviation or formula…',
+    gl_empty: 'No matching term',
+    gl_formula_label: 'Formula',
+    gl_footer_note: 'Glossary & Methodology',
     sl_placeholder: 'Search players and teams…',
     sl_grp_players: 'Players',
     sl_grp_teams: 'Teams',
@@ -1756,6 +2096,29 @@ function per36Of(stat, min) { return safeDiv(num0(stat) * 36, num0(min)); }
 function totalMin(p) { return Number.isFinite(p.min) ? p.min : Math.round(num0(p.avg_minutes) * num0(p.gp)); }
 const SMALL_SAMPLE_MIN = 50;
 function isSmallSample(p) { return totalMin(p) < SMALL_SAMPLE_MIN; }
+/* Minimum qualifying sample for percentile-based views (skill radar,
+ * strengths/weaknesses, archetype). Below this the pool-relative rates
+ * distort -- a 3-minute cameo shooting 1/1 would rank 100th percentile --
+ * so those views show a "limited sample" notice instead. */
+const QUAL_MIN_GP = 5, QUAL_MIN_MIN = 40, QUAL_MIN_MPG = 6.0;
+function qualifiesForPercentiles(p) {
+  return num0(p.gp) >= QUAL_MIN_GP && (totalMin(p) >= QUAL_MIN_MIN || num0(p.avg_minutes) >= QUAL_MIN_MPG);
+}
+/* Pool of players eligible to define percentile distributions for the active
+ * season/competition -- qualified players only. Falls back to the looser
+ * analysis pool if too few qualify (e.g. a short playoff series). */
+function percentilePool() {
+  const q = activePlayersRaw().filter(qualifiesForPercentiles);
+  return q.length >= 4 ? q : analysisPool(activePlayersRaw());
+}
+/* Shared "not enough minutes" notice for percentile panels. */
+function limitedSampleNotice() {
+  const S = STR[state.lang];
+  const box = el('div', 'empty-state limited-sample');
+  box.appendChild(el('div', 'ls-title', S.pct_notice));
+  box.appendChild(el('div', 'ls-sub', S.pct_notice_sub));
+  return box;
+}
 /* Playoff series are short (2-8 games) -- drop the qualifying-GP floor so
  * percentile pools don't collapse to a handful of players. */
 function qualGpFloor() { return state.competition === 'playoffs' ? 2 : 3; }
@@ -1830,8 +2193,9 @@ function _pctl(value, pool, invert) {
 
 function playerInsights(p) {
   const I = STR[state.lang].ins;
+  if (!qualifiesForPercentiles(p)) return [STR[state.lang].pct_notice, STR[state.lang].pct_notice_sub];
   const all = activePlayersRaw();
-  const qual = all.filter((x) => x.gp >= 3);
+  const qual = percentilePool();
   const pos = qual.filter((x) => x.position === p.position);
   const col = (arr, f) => arr.map(f);
   const out = [];
@@ -2043,6 +2407,8 @@ function renderChrome() {
   if (seasonSelect.value !== state.season) seasonSelect.value = state.season;
   tabsNav.setAttribute('aria-label', t('nav_aria'));
   if (typeof slSyncChrome === 'function') slSyncChrome();
+  if (typeof glSyncChrome === 'function') glSyncChrome();
+  if (typeof window.aiSyncChrome === 'function') window.aiSyncChrome();
 
   tabsNav.innerHTML = '';
   TAB_KEYS.forEach((tb) => {
@@ -2790,9 +3156,13 @@ function renderPlayerCard(root) {
   const shootCol = el('div');
   shootCol.style.display = 'flex'; shootCol.style.flexDirection = 'column'; shootCol.style.gap = '13px';
   shootCol.appendChild(el('div', 'section-lbl', STR[state.lang].section_shooting));
+  // makes–attempts per game alongside each percentage (NBA-style), so the
+  // shooting row shows volume, not just the ratio
   [
-    ['FG%', p.fg_pct, false], ['3PT%', p.fg3_pct, true], ['FT%', p.ft_pct, false],
-  ].forEach(([k, v, accent]) => {
+    ['FG', p.fg_pct, p.fgm, p.fga, false],
+    ['3PT', p.fg3_pct, p.fg3m, p.fg3a, true],
+    ['FT', p.ft_pct, p.ftm, p.fta, false],
+  ].forEach(([k, v, m, a, accent]) => {
     const line = el('div', 'bar-line');
     line.appendChild(el('span', 'k', k));
     const track = el('span', 'tr');
@@ -2800,7 +3170,10 @@ function renderPlayerCard(root) {
     fill.style.width = pct(v) + '%';
     track.appendChild(fill);
     line.appendChild(track);
-    line.appendChild(el('span', 'v', fmt(v)));
+    const maStr = (a == null || !p.gp) ? '—'
+      : fmt(safeDiv(m, p.gp), 1) + '–' + fmt(safeDiv(a, p.gp), 1);
+    line.appendChild(el('span', 'ma', maStr));
+    line.appendChild(el('span', 'v', fmt(v, 1) + '%'));
     shootCol.appendChild(line);
   });
   if (p.bad_split) {
@@ -2848,7 +3221,7 @@ function renderPlayerCard(root) {
     const sig = playerSignatureCard(p, sigAxes);
     if (sig) root.appendChild(sig);
     root.appendChild(playerSkillRadarPanel(p));
-    if (num0(p.fga) >= 20) root.appendChild(playerFourFactorsPanel(p));
+    if (qualifiesForPercentiles(p) && num0(p.fga) >= 20) root.appendChild(playerFourFactorsPanel(p));
   }
 
   /* ---- stats by season (NBA-style splits) ----
@@ -2908,6 +3281,7 @@ function renderPlayerCard(root) {
     const heads = [
       [STR[state.lang].col_season, false], [STR[state.lang].col_team, false], [STR[state.lang].col_age, true],
       ['GP', true], ['MIN', true], ['PTS', true], ['REB', true], ['AST', true], ['PIR', true],
+      ['FG', true], ['3PT', true], ['FT', true],
       ['FG%', true], ['3P%', true], ['FT%', true], ['eFG%', true], ['TS%', true],
     ];
     const wrap = el('div', 'table-wrap');
@@ -2929,6 +3303,16 @@ function renderPlayerCard(root) {
       r.appendChild(el('span', 'stat-soft sm cell-right', fmt(row[CALC.r], dec)));
       r.appendChild(el('span', 'stat-soft sm cell-right', fmt(row[CALC.a], dec)));
       r.appendChild(el('span', 'pir-cell sm cell-right', fmt(row[CALC.pir], dec)));
+      const volDec = state.playerCalcMode === 'totals' ? 0 : 1;
+      const vol = (m, a) => {
+        let mm = num0(m), aa = num0(a);
+        if (state.playerCalcMode === 'per_game') { const g = row.gp || 1; mm /= g; aa /= g; }
+        else if (state.playerCalcMode === 'per_36') { const mn = row.min || (row.avg_minutes * row.gp) || 1; mm = mm * 36 / mn; aa = aa * 36 / mn; }
+        return fmt(mm, volDec) + ' / ' + fmt(aa, volDec);
+      };
+      r.appendChild(el('span', 'stat-soft sm cell-right', vol(row.fgm, row.fga)));
+      r.appendChild(el('span', 'stat-soft sm cell-right', vol(row.fg3m, row.fg3a)));
+      r.appendChild(el('span', 'stat-soft sm cell-right', vol(row.ftm, row.fta)));
       r.appendChild(el('span', 'stat-soft sm cell-right', fmt(row.fg_pct, 1)));
       r.appendChild(el('span', 'stat-soft sm cell-right', fmt(row.fg3_pct, 1)));
       r.appendChild(el('span', 'stat-soft sm cell-right', fmt(row.ft_pct, 1)));
@@ -4201,7 +4585,7 @@ function courtZoneTable(entity, pool) {
 }
 /* comparison pool: same-position qualified players, or the whole league */
 function courtPool(base, pos) {
-  const q = analysisPool(activePlayersRaw());
+  const q = percentilePool();
   if (base === 'position' && pos) {
     const same = q.filter((p) => p.position === pos);
     if (same.length >= 4) return same;
@@ -4336,7 +4720,8 @@ function buildSkillRadar(series, axisLabels) {
   const n = axisLabels.length;
   const W = 470, H = 470, cx = W / 2, cy = H / 2, R = 150;
   const svg = document.createElementNS(NS, 'svg');
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  // pad the viewBox so the pushed-out axis / value labels aren't clipped
+  svg.setAttribute('viewBox', `-30 -22 ${W + 60} ${H + 44}`);
   svg.setAttribute('class', 'radar-svg');
   svg.setAttribute('role', 'img');
   svg.setAttribute('aria-label', STR[state.lang].pl_radar_title);
@@ -4364,7 +4749,7 @@ function buildSkillRadar(series, axisLabels) {
     axisLine.setAttribute('stroke', 'var(--hair-strong)');
     axisLine.setAttribute('stroke-width', '1');
     svg.appendChild(axisLine);
-    const [lx, ly] = pointFor(i, 1.17);
+    const [lx, ly] = pointFor(i, 1.26);
     const label = document.createElementNS(NS, 'text');
     label.setAttribute('x', lx); label.setAttribute('y', ly);
     label.setAttribute('text-anchor', 'middle');
@@ -4381,32 +4766,41 @@ function buildSkillRadar(series, axisLabels) {
     svg.appendChild(label);
   });
 
-  series.forEach((s, si) => {
+  const solo = series.length === 1;
+  series.forEach((s) => {
     const coords = s.q.map((v, i) => pointFor(i, Math.max(0.04, v / 100)));
     const poly = document.createElementNS(NS, 'polygon');
     poly.setAttribute('points', coords.map((p) => p.join(',')).join(' '));
     poly.setAttribute('fill', s.color);
-    poly.setAttribute('fill-opacity', series.length > 1 ? '0.13' : '0.18');
+    poly.setAttribute('fill-opacity', solo ? '0.18' : '0.12');
     poly.setAttribute('stroke', s.color);
     poly.setAttribute('stroke-width', '2');
     svg.appendChild(poly);
-    coords.forEach(([x, y], i) => {
+    coords.forEach(([x, y]) => {
       const dot = document.createElementNS(NS, 'circle');
-      dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('r', '3.5');
+      dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('r', solo ? '3.5' : '3');
       dot.setAttribute('fill', s.color);
       svg.appendChild(dot);
-      const la = angleFor(i) + (si === 0 ? -0.16 : 0.16);
-      const ld = series.length > 1 ? (si === 0 ? 13 : 22) : 14;
+    });
+  });
+
+  /* Value labels: one per axis, pinned just outside the outer ring (never at
+     the polygon vertex -- low scores otherwise pile every number onto the
+     centre). Solo only; in compare mode the numbers live in the table below,
+     so the chart stays a clean shape-vs-shape read. */
+  if (solo) {
+    const s = series[0];
+    s.q.forEach((v, i) => {
+      const [lx, ly] = pointFor(i, 1.08);
       const val = document.createElementNS(NS, 'text');
-      val.setAttribute('x', x + Math.cos(la) * ld);
-      val.setAttribute('y', y + Math.sin(la) * ld);
+      val.setAttribute('x', lx); val.setAttribute('y', ly + 3.5);
       val.setAttribute('text-anchor', 'middle');
       val.setAttribute('class', 'radar-value-label');
       val.setAttribute('fill', s.color);
-      val.textContent = String(s.q[i]);
+      val.textContent = String(v);
       svg.appendChild(val);
     });
-  });
+  }
 
   wrap.appendChild(svg);
   return wrap;
@@ -4437,8 +4831,9 @@ function playerArchetype(axes) {
 
 function playerSignatureCard(p, axes) {
   const S = STR[state.lang];
+  const qualified = qualifiesForPercentiles(p);
   const ranked = [...axes].filter((a) => a.q > 0).sort((a, b) => b.q - a.q);
-  if (ranked.length < 3) return null;
+  if (qualified && ranked.length < 3) return null;
   const strengths = ranked.slice(0, 3);
   const weaknesses = ranked.slice(-2).reverse();
 
@@ -4451,7 +4846,7 @@ function playerSignatureCard(p, axes) {
 
   const arch = el('div', 'sig-arch');
   arch.appendChild(el('span', 'sig-pill', S.sig_arch_label));
-  arch.appendChild(el('b', null, playerArchetype(axes)));
+  arch.appendChild(el('b', null, qualified ? playerArchetype(axes) : S.arch_limited));
   const career = playerCareerRows(p.id);
   const trend = el('span', 'sig-trend');
   if (career.length < 2) { trend.textContent = S.sig_trend_new; }
@@ -4464,6 +4859,12 @@ function playerSignatureCard(p, axes) {
   }
   arch.appendChild(trend);
   body.appendChild(arch);
+
+  if (!qualified) {
+    body.appendChild(limitedSampleNotice());
+    panel.appendChild(body);
+    return panel;
+  }
 
   const cols = el('div', 'sig-cols');
   const mkCol = (title, list) => {
@@ -4489,12 +4890,17 @@ function playerSignatureCard(p, axes) {
 
 function playerSkillRadarPanel(p) {
   const S = STR[state.lang];
-  const poolAll = analysisPool(activePlayersRaw());
+  const poolAll = percentilePool();
   const pool = courtPool('position', p.position);
   const axes = playerSkillAxes(p, pool);
   const axisLabels = axes.map((a) => a.label);
 
   const panel = advPanel(S.pl_radar_kicker, S.pl_radar_title, S.pl_radar_sub);
+
+  if (!qualifiesForPercentiles(p)) {
+    panel.appendChild(limitedSampleNotice());
+    return panel;
+  }
 
   // compare-vs picker
   const others = poolAll.filter((x) => x.id !== p.id)
@@ -4514,19 +4920,23 @@ function playerSkillRadarPanel(p) {
 
   const cmp = state.playerCmpId ? poolAll.find((x) => x.id === state.playerCmpId) : null;
   const series = [{ name: playerName(p), color: CMP_COLORS[0], q: axes.map((a) => a.q) }];
+  let cmpAxes = null;
   if (cmp) {
-    const cmpAxes = playerSkillAxes(cmp, courtPool('position', cmp.position));
+    cmpAxes = playerSkillAxes(cmp, courtPool('position', cmp.position));
     series.push({ name: playerName(cmp), color: CMP_COLORS[1], q: cmpAxes.map((a) => a.q), onClick: () => goPlayer(cmp.id) });
   }
   panel.appendChild(buildSkillRadar(series, axisLabels));
 
-  if (cmp) panel.appendChild(playerRadarCompareTable(p, cmp));
+  if (cmp) panel.appendChild(playerRadarCompareTable(p, cmp, axes, cmpAxes));
   return panel;
 }
 
-function playerRadarCompareTable(a, b) {
+/* Compare mode drops the numbers off the radar, so they land here: first the
+   eight axis percentiles (exactly what the chart plots), then a few raw
+   season rates for context. */
+function playerRadarCompareTable(a, b, aAxes, bAxes) {
   const S = STR[state.lang];
-  const rows = [
+  const rawRows = [
     [S.axis_scoring + ' /36', (p) => fmt(num0(p.per_36_points))],
     [S.axis_rebounding + ' /36', (p) => fmt(num0(p.per_36_rebounds))],
     [S.axis_playmaking + ' /36', (p) => fmt(num0(p.per_36_assists))],
@@ -4537,11 +4947,24 @@ function playerRadarCompareTable(a, b) {
   ];
   const tbl = el('div', 'pr-tbl');
   const head = el('div', 'pr-trow pr-thead');
-  head.appendChild(el('div', null, ''));
+  head.appendChild(el('div', null, S.pl_radar_pctile_col));
   head.appendChild(el('div', 'pr-tv', playerName(a)));
   head.appendChild(el('div', 'pr-tv', playerName(b)));
   tbl.appendChild(head);
-  rows.forEach(([label, fn]) => {
+  aAxes.forEach((ax, i) => {
+    const r = el('div', 'pr-trow');
+    r.appendChild(el('div', 'pr-tk', ax.label));
+    r.appendChild(el('div', 'pr-tv', String(ax.q)));
+    r.appendChild(el('div', 'pr-tv', String(bAxes[i].q)));
+    tbl.appendChild(r);
+  });
+  const sub = el('div', 'pr-trow pr-thead');
+  sub.style.marginTop = '8px';
+  sub.appendChild(el('div', null, S.pl_radar_raw_col));
+  sub.appendChild(el('div', null, ''));
+  sub.appendChild(el('div', null, ''));
+  tbl.appendChild(sub);
+  rawRows.forEach(([label, fn]) => {
     const r = el('div', 'pr-trow');
     r.appendChild(el('div', 'pr-tk', label));
     r.appendChild(el('div', 'pr-tv', fn(a)));
@@ -4762,6 +5185,13 @@ async function boot() {
     syncSeasonQueryParam(state.season);
     populateSeasonSelect();
     normalizeSelection();
+
+    // Optional: the daily GenAI tactical summary (./insights.json, produced by the
+    // bball-genai-insights Lambda). Best-effort — its absence never blocks boot.
+    try {
+      const ir = await fetch('./insights.json?v=' + Date.now(), { cache: 'no-store' });
+      if (ir.ok) INSIGHTS = await ir.json();
+    } catch (e) { /* insights are optional */ }
   } catch (err) {
     const v = document.getElementById('view');
     if (v) v.innerHTML = '<div style="padding:2.5rem 1rem;text-align:center;color:var(--muted,#667);font:15px/1.5 system-ui,sans-serif">'
@@ -4789,7 +5219,11 @@ function slSyncChrome() {
   const kbd = document.getElementById('sl-kbd');
   if (label) label.textContent = t('sl_trigger');
   if (kbd) kbd.textContent = SL_IS_MAC ? '⌘K' : 'Ctrl K';
-  if (SL.trigger) SL.trigger.setAttribute('aria-label', t('sl_trigger'));
+  if (SL.trigger) {
+    const hint = t('sl_trigger') + ' · ' + (SL_IS_MAC ? '⌘K' : 'Ctrl K');
+    SL.trigger.setAttribute('aria-label', t('sl_trigger'));
+    SL.trigger.setAttribute('title', hint);
+  }
   if (SL.input) SL.input.placeholder = t('sl_placeholder');
 }
 function slNorm(s) { return (s || '').toString().toLowerCase().trim(); }
@@ -4928,6 +5362,1120 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === 'Enter') { e.preventDefault(); slActivate(); }
 });
 slSyncChrome();
+
+/* ---------------- Glossary & Methodology modal ---------------- */
+const GLOSSARY = [
+  { cat: { he: 'זריקה מתקדמת', en: 'Advanced shooting' }, terms: [
+    { name: { he: 'TS% — אחוז קליעה אמיתי', en: 'TS% — True Shooting %' },
+      def: { he: 'יעילות קליעה כוללת שמשקללת שתיים, שלוש ועונשין למדד אחד. המקדם 0.44 מעריך כמה זריקות עונשין "עולות" בהחזקה.', en: 'Overall scoring efficiency that folds twos, threes and free throws into one number. The 0.44 coefficient estimates how many possessions free-throw trips cost.' },
+      formula: 'TS% = PTS / (2 * (FGA + 0.44 * FTA))' },
+    { name: { he: 'eFG% — אחוז קליעה אפקטיבי', en: 'eFG% — Effective FG %' },
+      def: { he: 'אחוז קליעה מהשדה שמעניק משקל יתר לשלשה, כי היא שווה נקודה נוספת.', en: 'Field-goal percentage that credits a made three-pointer as worth 1.5 makes, since it scores an extra point.' },
+      formula: 'eFG% = (FGM + 0.5 * 3PM) / FGA' },
+    { name: { he: '3PAr — נתח ניסיונות השלשה', en: '3PAr — Three-point attempt rate' },
+      def: { he: 'חלקן של השלשות מתוך כלל ניסיונות הקליעה מהשדה.', en: 'Share of a player or team’s field-goal attempts that are three-pointers.' },
+      formula: '3PAr = 3PA / FGA' },
+    { name: { he: 'FTr — נתח ניסיונות העונשין', en: 'FTr — Free-throw rate' },
+      def: { he: 'כמה זריקות עונשין מיוצרות ביחס לניסיונות מהשדה — מדד לתקיפת הסל וגרימת עבירות.', en: 'Free-throw attempts generated per field-goal attempt — a proxy for rim pressure and drawing fouls.' },
+      formula: 'FTr = FTA / FGA' },
+  ]},
+  { cat: { he: 'יצירה ודירוגים', en: 'Playmaking & ratings' }, terms: [
+    { name: { he: 'PPR — Pure Point Rating', en: 'PPR — Pure Point Rating' },
+      def: { he: 'איזון אסיסטים–איבודים מנורמל לקצב, במונחי אסיסטים לכל 100 מהלכים פחות איבודים. חיובי = יצירה נקייה.', en: 'Pace-adjusted balance of creation and turnovers, in assists per 100 possessions minus turnovers. Positive = clean distribution.' },
+      formula: 'PPR = 100 * (AST * 2/3 - TOV) / POSS' },
+    { name: { he: 'AST/TOV — יחס אסיסטים לאיבודים', en: 'AST/TOV — Assist-to-turnover ratio' },
+      def: { he: 'מספר האסיסטים על כל איבוד. מעל 2.0 נחשב שמירה טובה על הכדור לגארד יוצר.', en: 'Assists produced per turnover committed. Above 2.0 is solid ball security for a creating guard.' },
+      formula: 'AST/TOV = AST / TOV' },
+    { name: { he: 'USG% / Offensive Load (קירוב)', en: 'USG% / Offensive Load (proxy)' },
+      def: { he: 'הערכת נתח ההחזקות שהשחקן מסיים בזריקה, עבירה או איבוד. ללא נתוני החזקה מלאים זהו קירוב מנתוני הבוקס בלבד.', en: 'Estimated share of team possessions a player finishes with a shot, foul or turnover. Without full possession data this is a box-score proxy.' },
+      formula: 'USG% ≈ (FGA + 0.44 * FTA + TOV) / TeamPoss' },
+    { name: { he: 'PIR — מדד היעילות (Index)', en: 'PIR — Performance Index Rating' },
+      def: { he: 'המדד המצרפי הרשמי של היורוליג/הליגה: סכום התרומות החיוביות פחות ההחמצות והאיבודים.', en: 'The official EuroLeague/league composite: positive contributions minus missed shots and turnovers.' },
+      formula: 'PIR = (PTS + REB + AST + STL + BLK + FoulsDrawn)\n      - (FGmiss + FTmiss + TOV + BLKagainst + FoulsCommitted)' },
+  ]},
+  { cat: { he: 'קצב והחזקות', en: 'Pace & possessions' }, terms: [
+    { name: { he: 'הערכת החזקות (Dean Oliver)', en: 'Possession estimate (Dean Oliver)' },
+      def: { he: 'אומדן מספר ההחזקות מנתוני בוקס: כל ניסיון מהשדה, ~44% מניסיונות העונשין, מינוס ריבאונד התקפי שמאריך החזקה, ועוד איבודים.', en: 'Estimates possessions from the box score: every field-goal attempt, ~44% of free-throw attempts, minus offensive rebounds that extend a possession, plus turnovers.' },
+      formula: 'POSS = FGA + 0.44 * FTA - OREB + TOV' },
+    { name: { he: 'Pace — קצב', en: 'Pace' },
+      def: { he: 'החזקות לכל 40 דקות משחק — כמה מהר הקבוצה משחקת, מנוטרל מזמן.', en: 'Possessions per 40 minutes — how fast a team plays, normalised for game length.' },
+      formula: 'Pace = 40 * POSS / TeamMinutes' },
+    { name: { he: 'Per-36 — ל-36 דקות', en: 'Per-36' },
+      def: { he: 'סטטיסטיקה משוקללת לקצב של 36 דקות משחק, להשוואה הוגנת בין שחקנים עם דקות שונות.', en: 'A stat scaled to a 36-minute workload, so players with different minutes can be compared fairly.' },
+      formula: 'Per36 = Stat * 36 / MIN' },
+  ]},
+  { cat: { he: 'ארבעת הגורמים ומדדי מגרש', en: 'Four Factors & court metrics' }, terms: [
+    { name: { he: 'eFG% (גורם 1 — קליעה)', en: 'eFG% (Factor 1 — shooting)' },
+      def: { he: 'הגורם המשפיע ביותר על ניצחונות: יעילות הקליעה מהשדה כולל בונוס שלשה.', en: 'The most win-predictive factor: field-goal efficiency with the three-point bonus.' },
+      formula: 'eFG% = (FGM + 0.5 * 3PM) / FGA' },
+    { name: { he: 'TOV% — שיעור איבודים (גורם 2)', en: 'TOV% — Turnover rate (Factor 2)' },
+      def: { he: 'אחוז ההחזקות שמסתיימות באיבוד כדור.', en: 'Share of possessions that end in a turnover.' },
+      formula: 'TOV% = TOV / (FGA + 0.44 * FTA + TOV)' },
+    { name: { he: 'ORB% — ריבאונד התקפי (גורם 3)', en: 'ORB% — Offensive rebound rate (Factor 3)' },
+      def: { he: 'אחוז ההחמצות של הקבוצה שנאספות ריבאונד התקפי מתוך כלל ההזדמנויות.', en: 'Share of available offensive rebounds a team collects after its own misses.' },
+      formula: 'ORB% = OREB / (OREB + Opp_DREB)' },
+    { name: { he: 'FTr (גורם 4 — קו העונשין)', en: 'FTr (Factor 4 — free-throw line)' },
+      def: { he: 'כמה נקודות עונשין מיוצרות ביחס לניסיונות מהשדה.', en: 'How much a team gets to the line relative to its shot volume.' },
+      formula: 'FTr = FTA / FGA   (also reported as FTM / FGA)' },
+    { name: { he: 'Glass Dominance — שליטה בריבאונד', en: 'Glass Dominance' },
+      def: { he: 'מדד משולב של נוכחות בלוח ההתקפי וההגנתי מול ממוצע העמדה — סכום דירוגי ORB% ו-DRB%.', en: 'Combined presence on the offensive and defensive glass versus the position average — the sum of ORB% and DRB% percentile standing.' },
+      formula: 'Glass = ORB% + DRB%   (vs position median)' },
+  ]},
+  { cat: { he: 'בסיס הנתונים והנחות', en: 'Data foundation & assumptions' }, terms: [
+    { name: { he: 'מקור הנתונים', en: 'Data source' },
+      def: { he: 'סכומי עונה רשמיים מ־ליגת העל הישראלית בכדורסל (Israeli Basketball Super League). כל המדדים נגזרים מנתוני הבוקס-סקור בלבד — אין קואורדינטות זריקה, play-by-play או יומני משחק.', en: 'Official season totals from the Israeli Basketball Super League. Every metric is derived from the box score alone — there are no shot coordinates, play-by-play or game logs.' },
+      formula: null },
+    { name: { he: 'עונה סדירה מול פלייאוף', en: 'Regular season vs playoffs' },
+      def: { he: 'הנתונים מפוצלים לשתי מסגרות נפרדות. מתג "פלייאוף" בסרגל העליון מחליף את כל הלוח; עונות היסטוריות ללא רשומות פלייאוף משביתות אותו.', en: 'Data is split into two separate frameworks. The playoff toggle in the top bar swaps the entire dashboard; historical seasons with no playoff records disable it.' },
+      formula: null },
+    { name: { he: 'בידוד מעברי שחקנים באמצע העונה', en: 'Isolating mid-season transfers' },
+      def: { he: 'שחקן שעבר קבוצה מופיע עם רשומת סטטיסטיקה נפרדת לכל שהות (stint). למדדי הקבוצה הרשמיים נלקח רק הפלח הרלוונטי לאותה קבוצה, כך שסכום נקודות הסגל לא מנופח מעבר לסך הרשמי (סטייה עד +5% נקייה, +5–25% מסומנת כרעש פיצול, מעליה נכשלת).', en: 'A player who changed teams carries a separate stat row per stint. Official team metrics use only the stint that belongs to that club, so the roster point-sum is not inflated past the official team total (≤ +5% clean, +5–25% flagged as split noise, above that fails).' },
+      formula: null },
+  ]},
+];
+
+const GL = {
+  overlay: document.getElementById('gl-overlay'),
+  body: document.getElementById('gl-body'),
+  input: document.getElementById('gl-input'),
+  open: false,
+};
+function glNorm(s) { return (s || '').toString().toLowerCase().trim(); }
+function glRender() {
+  const L = state.lang;
+  const q = glNorm(GL.input && GL.input.value);
+  GL.body.innerHTML = '';
+  let shown = 0;
+  GLOSSARY.forEach((group) => {
+    const hits = group.terms.filter((tm) => {
+      if (!q) return true;
+      return (glNorm(tm.name[L]) + ' ' + glNorm(tm.name.en) + ' ' + glNorm(tm.def[L]) + ' ' + glNorm(tm.formula)).includes(q);
+    });
+    if (!hits.length) return;
+    GL.body.appendChild(el('div', 'gl-cat', group.cat[L]));
+    hits.forEach((tm) => {
+      shown++;
+      const wrap = el('div', 'gl-term');
+      wrap.appendChild(el('div', 'gl-term-name', tm.name[L]));
+      wrap.appendChild(el('div', 'gl-term-def', tm.def[L]));
+      if (tm.formula) {
+        const f = el('div', 'gl-term-formula', tm.formula);
+        f.setAttribute('data-label', t('gl_formula_label'));
+        wrap.appendChild(f);
+      }
+      GL.body.appendChild(wrap);
+    });
+  });
+  if (!shown) GL.body.appendChild(el('div', 'gl-empty', t('gl_empty')));
+}
+function glOpen() {
+  if (GL.open) return;
+  GL.open = true;
+  GL.overlay.hidden = false;
+  document.documentElement.style.overflow = 'hidden';
+  GL.input.value = '';
+  glRender();
+  requestAnimationFrame(() => GL.input.focus());
+}
+function glClose() {
+  if (!GL.open) return;
+  GL.open = false;
+  GL.overlay.hidden = true;
+  document.documentElement.style.overflow = '';
+}
+function glSyncChrome() {
+  const fl = document.getElementById('foot-gl-label');
+  if (fl) fl.textContent = t('gl_footer_note');
+  const fs = document.getElementById('foot-src');
+  if (fs) fs.textContent = state.lang === 'he'
+    ? 'נתונים: ליגת העל הישראלית בכדורסל · סכומי עונה רשמיים'
+    : 'Data: Israeli Basketball Super League · official season totals';
+  const ttl = document.getElementById('gl-title');
+  if (ttl) ttl.textContent = t('gl_title');
+  [document.getElementById('glossary-fab'), document.getElementById('glossary-trigger-foot')].forEach((b) => {
+    if (b) { b.setAttribute('aria-label', t('gl_title')); b.setAttribute('title', t('gl_title')); }
+  });
+  if (GL.input) GL.input.placeholder = t('gl_search_ph');
+  if (GL.open) glRender();
+}
+['glossary-fab', 'glossary-trigger-foot'].forEach((id) => {
+  const b = document.getElementById(id);
+  if (b) b.addEventListener('click', glOpen);
+});
+document.getElementById('gl-close').addEventListener('click', glClose);
+GL.overlay.addEventListener('mousedown', (e) => { if (e.target === GL.overlay) glClose(); });
+GL.input.addEventListener('input', glRender);
+document.addEventListener('keydown', (e) => {
+  if (GL.open && e.key === 'Escape') { e.preventDefault(); glClose(); return; }
+  const tag = ((e.target && e.target.tagName) || '').toLowerCase();
+  const typing = tag === 'input' || tag === 'textarea' || tag === 'select';
+  if (!GL.open && e.key === '?' && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); glOpen(); }
+});
+glSyncChrome();
+
+/* ============================================================================
+ * AI Analytics Assistant -- embedded basketball-analyst chat widget.
+ *
+ * Data path:  data.json (already in memory as RAW/DATA)  ->  aiSnapshot()
+ *   builds a small structured digest of the ACTIVE season + competition
+ *   (standings, team ratings, Four Factors, efficiency + scoring leaders,
+ *   shot-profile splits) -> sent as context to a configurable LLM endpoint.
+ *
+ * Endpoint resolution (first hit wins), all optional:
+ *   window.AI_ASSISTANT_ENDPOINT           -- set inline / by the host page
+ *   <meta name="ai-endpoint" content="…">  -- set at deploy time
+ *   localStorage 'sls-ai-endpoint'         -- set by a power user in devtools
+ * The matching bearer key, if the endpoint needs one:
+ *   window.AI_ASSISTANT_KEY / <meta name="ai-key"> / localStorage 'sls-ai-key'
+ *
+ * The endpoint is expected to be OpenAI-chat-compatible: POST {model?, messages,
+ * stream:true}; response is either an SSE stream of `data: {choices:[{delta:
+ * {content}}]}` lines (also accepts Anthropic-style `content_block_delta`) or a
+ * plain-text chunked body. Anything else -> we fall back to the offline
+ * heuristic answerer so the widget always responds.
+ * ========================================================================== */
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const fab = $('ai-fab'), overlay = $('ai-overlay'), panel = $('ai-panel'),
+    logEl = $('ai-log'), chipsEl = $('ai-chips'), formEl = $('ai-form'),
+    inputEl = $('ai-input'), sendEl = $('ai-send'), noteEl = $('ai-note'),
+    headEl = $('ai-head'), headX = $('ai-head-x');
+  if (!fab || !overlay) return;
+
+  const IS_MAC = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent || '');
+  const AI = { open: false, busy: false, history: [], lastFocus: null };
+
+  const I18N = {
+    he: {
+      fab: 'שאל את האנליסט', title: 'עוזר אנליטיקה',
+      placeholder: 'שאל על שחקנים, קבוצות, מדדים…',
+      note_online: 'מחובר למנוע AI · תשובות עשויות לכלול אי-דיוקים — הצליבו מול הטבלאות.',
+      note_offline: '',
+      greet: 'שלום! אני עוזר האנליטיקה של PlusMinus IL. שאלו אותי על ליגת העל — קלענים יעילים, Four Factors, פילוח זריקות, מדדי יעילות ועוד. הנתונים הם לעונת **{season}** ({comp}).',
+      comp_rs: 'עונה סדירה', comp_po: 'פלייאוף',
+      err: 'המנוע לא זמין כרגע — הנה תשובה מקומית מתוך הנתונים:',
+      thinking: 'חושב…', nodata: 'הנתונים עדיין נטענים, נסו שוב בעוד רגע.',
+      chips: [
+        'מגמות בולטות בעונה זו',
+        "מי הקלעי הכי יעיל העונה מעל 15 נק'?",
+        'איזה קבוצה מובילה ב-Four Factors?',
+        'השווה את פילוח הזריקות של מכבי והפועל',
+      ],
+    },
+    en: {
+      fab: 'Ask the analyst', title: 'Analytics Assistant',
+      placeholder: 'Ask about players, teams, metrics…',
+      note_online: 'Connected to an AI engine · answers may contain errors — cross-check the tables.',
+      note_offline: '',
+      greet: "Hi! I'm the PlusMinus IL analytics assistant. Ask me about the Super League — efficient scorers, Four Factors, shot profiles, efficiency metrics and more. Data shown is for **{season}** ({comp}).",
+      comp_rs: 'regular season', comp_po: 'playoffs',
+      err: 'The engine is unavailable right now — here is a local answer from the data:',
+      thinking: 'Thinking…', nodata: 'Data is still loading, try again in a moment.',
+      chips: [
+        'What are the key trends this season?',
+        'Most efficient scorer averaging over 15 pts this season?',
+        'Which team leads the Four Factors?',
+        'Compare the shot profiles of Maccabi and Hapoel',
+      ],
+    },
+  };
+  const L = () => I18N[(typeof state !== 'undefined' && state.lang === 'en') ? 'en' : 'he'];
+
+  /* ---------- endpoint config ---------- */
+  function metaVal(n) { const m = document.querySelector('meta[name="' + n + '"]'); return m && m.content || ''; }
+  function lsVal(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+  function aiEndpoint() {
+    return (window.AI_ASSISTANT_ENDPOINT || metaVal('ai-endpoint') || lsVal('sls-ai-endpoint') || '').trim();
+  }
+  function aiKey() {
+    return (window.AI_ASSISTANT_KEY || metaVal('ai-key') || lsVal('sls-ai-key') || '').trim();
+  }
+  function aiModel() { return (window.AI_ASSISTANT_MODEL || metaVal('ai-model') || lsVal('sls-ai-model') || '').trim(); }
+
+  /* ---------- season snapshot ---------- */
+  function n0(v) { const x = Number(v); return Number.isFinite(x) ? x : 0; }
+  function div(a, b) { a = Number(a); b = Number(b); return (Number.isFinite(a) && Number.isFinite(b) && b !== 0) ? a / b : 0; }
+  function r1(v) { return Math.round(v * 10) / 10; }
+
+  function teamFourFactors(t) {
+    // From season totals. OREB% has no opponent DREB in this dataset -> proxy
+    // with the team's own OREB / (OREB + DREB); flagged as approximate.
+    const efg = div(n0(t.fgm) + 0.5 * n0(t.fg3m), n0(t.fga)) * 100;
+    const tov = div(n0(t.tov), n0(t.fga) + 0.44 * n0(t.fta) + n0(t.tov)) * 100;
+    const orebProxy = div(n0(t.oreb), n0(t.oreb) + n0(t.dreb)) * 100;
+    const ftRate = div(n0(t.ftm), n0(t.fga)) * 100;
+    return { efg: r1(efg), tov_pct: r1(tov), oreb_pct_proxy: r1(orebProxy), ft_rate: r1(ftRate) };
+  }
+  function teamShotProfile(t) {
+    const fga = n0(t.fga), fg3a = n0(t.fg3a), fg2a = Math.max(0, fga - fg3a);
+    return {
+      fga, fg3a, fg2a,
+      three_rate: r1(div(fg3a, fga) * 100),
+      two_rate: r1(div(fg2a, fga) * 100),
+      ft_att_per_100_fga: r1(div(n0(t.fta), fga) * 100),
+      fg3_pct: r1(n0(t.fg3_pct)),
+      efg: teamFourFactors(t).efg,
+      pts_per_game: r1(n0(t.avg_points)),
+    };
+  }
+  function zRank(arr, key, dir) {
+    const vals = arr.map((x) => x[key]);
+    const mean = vals.reduce((s, v) => s + v, 0) / (vals.length || 1);
+    const sd = Math.sqrt(vals.reduce((s, v) => s + (v - mean) * (v - mean), 0) / (vals.length || 1)) || 1;
+    return arr.map((x) => ({ x, z: dir * (x[key] - mean) / sd }));
+  }
+  function aiSnapshot() {
+    if (typeof DATA === 'undefined' || !DATA) return null;
+    const comp = (typeof state !== 'undefined' && state.competition === 'playoffs') ? 'playoffs' : 'regular_season';
+    const teamsRaw = (typeof activeTeams === 'function') ? activeTeams() : (DATA.teams || []);
+    const playersRaw = (typeof activePlayersRaw === 'function') ? activePlayersRaw() : (DATA.players || []);
+    const teams = [...teamsRaw].map((t) => {
+      const ff = teamFourFactors(t);
+      return {
+        name: t.label, name_he: t.label_he, rank: t.rank, gp: t.gp,
+        pts_per_game: r1(n0(t.avg_points)), pir_per_game: r1(n0(t.avg_pir)),
+        ast_per_game: r1(n0(t.avg_assists)), reb_per_game: r1(n0(t.avg_rebounds)),
+        tov_per_game: r1(n0(t.avg_turnovers)), fg3_pct: r1(n0(t.fg3_pct)),
+        four_factors: ff, shot_profile: teamShotProfile(t),
+      };
+    }).sort((a, b) => a.rank - b.rank);
+
+    // composite Four-Factors ranking (weights: eFG .40, TOV .25, OREB .20, FT .15)
+    const ffList = teamsRaw.map((t) => ({ name: t.label, name_he: t.label_he, ...teamFourFactors(t) }));
+    const zEfg = zRank(ffList, 'efg', 1), zTov = zRank(ffList, 'tov_pct', -1),
+      zOreb = zRank(ffList, 'oreb_pct_proxy', 1), zFt = zRank(ffList, 'ft_rate', 1);
+    const ffScored = ffList.map((f, i) => ({
+      name: f.name, name_he: f.name_he, efg: f.efg, tov_pct: f.tov_pct,
+      oreb_pct_proxy: f.oreb_pct_proxy, ft_rate: f.ft_rate,
+      composite: r1(0.40 * zEfg[i].z + 0.25 * zTov[i].z + 0.20 * zOreb[i].z + 0.15 * zFt[i].z),
+    })).sort((a, b) => b.composite - a.composite);
+
+    const pool = playersRaw.filter((p) => n0(p.gp) >= (comp === 'playoffs' ? 2 : 3));
+    const mapP = (p) => ({
+      name: p.name, name_he: p.name_he, team: p.team_id, pos: p.position,
+      gp: p.gp, pts_per_game: r1(n0(p.avg_points)), min_per_game: r1(n0(p.avg_minutes)),
+      ts_pct: r1(n0(p.ts_pct)), efg_pct: r1(n0(p.efg_pct)), fg3_pct: r1(n0(p.fg3_pct)),
+      pir_per_game: r1(n0(p.avg_pir)), per36_pts: r1(n0(p.per_36_points)),
+      ast_to_tov: r1(n0(p.ast_to_tov)),
+    });
+    const scorers = [...pool].sort((a, b) => n0(b.avg_points) - n0(a.avg_points)).slice(0, 12).map(mapP);
+    const efficientScorers = [...pool].filter((p) => n0(p.avg_points) >= 15 && !p.bad_split)
+      .sort((a, b) => n0(b.ts_pct) - n0(a.ts_pct)).slice(0, 10).map(mapP);
+    const pirLeaders = [...pool].sort((a, b) => n0(b.avg_pir) - n0(a.avg_pir)).slice(0, 10).map(mapP);
+
+    const season = DATA.season || (typeof state !== 'undefined' ? state.season : '');
+    // The daily GenAI summary. It is generated for one season only (INSIGHTS.season);
+    // expose it whenever it loaded, carrying its own season + a flag for whether that
+    // matches what the user is currently viewing, so consumers can caveat instead of
+    // silently dropping it.
+    const ins = (INSIGHTS && INSIGHTS.summary_he) ? INSIGHTS : null;
+
+    return {
+      season,
+      competition: comp,
+      generated_at: new Date().toISOString(),
+      notes: 'Season-total box-score data only. No possessions/opponent splits; OREB% is an own-glass proxy. eFG%/TS% flagged bad_split are excluded from leaders.',
+      auto_insights: ins ? {
+        season: ins.season || null,
+        matches_active_view: (ins.season == null || ins.season === season) && comp === 'regular_season',
+        generated_at: ins.generated_at, model: ins.model,
+        summary_he: ins.summary_he, highlights: ins.highlights,
+      } : undefined,
+      standings: teams.map((t) => ({ rank: t.rank, name: t.name, name_he: t.name_he, pts_per_game: t.pts_per_game, pir_per_game: t.pir_per_game })),
+      team_ratings: teams,
+      four_factors_ranked: ffScored,
+      scoring_leaders: scorers,
+      efficient_scorers_over_15ppg: efficientScorers,
+      efficiency_leaders_pir: pirLeaders,
+    };
+  }
+
+  /* ---------- markdown (tiny, escaped) ---------- */
+  function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+  function inlineMd(s) {
+    return s
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>');
+  }
+  function renderMd(src) {
+    const lines = esc(src == null ? '' : src).replace(/\r/g, '').split('\n');
+    let html = '', list = null;
+    const close = () => { if (list) { html += '</' + list + '>'; list = null; } };
+    for (const ln of lines) {
+      if (/^\s*#{1,6}\s+/.test(ln)) { close(); html += '<h4>' + inlineMd(ln.replace(/^\s*#{1,6}\s+/, '')) + '</h4>'; continue; }
+      let m = ln.match(/^\s*[-*]\s+(.*)/);
+      if (m) { if (list !== 'ul') { close(); html += '<ul>'; list = 'ul'; } html += '<li>' + inlineMd(m[1]) + '</li>'; continue; }
+      m = ln.match(/^\s*\d+\.\s+(.*)/);
+      if (m) { if (list !== 'ol') { close(); html += '<ol>'; list = 'ol'; } html += '<li>' + inlineMd(m[1]) + '</li>'; continue; }
+      if (!ln.trim()) { close(); continue; }
+      close(); html += '<p>' + inlineMd(ln) + '</p>';
+    }
+    close();
+    return html || '<p></p>';
+  }
+
+  /* ---------- chat log ---------- */
+  function scrollDown() { logEl.scrollTop = logEl.scrollHeight; }
+  function addMsg(role, md) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ai-msg ' + role;
+    const r = document.createElement('div');
+    r.className = 'ai-role';
+    r.textContent = role === 'user' ? (L() === I18N.en ? 'You' : 'אתם') : (L() === I18N.en ? 'Analyst' : 'אנליסט');
+    const b = document.createElement('div');
+    b.className = 'ai-bubble';
+    b.innerHTML = renderMd(md);
+    wrap.appendChild(r); wrap.appendChild(b);
+    logEl.appendChild(wrap);
+    scrollDown();
+    return b;
+  }
+
+  /* ============================================================================
+   * Offline answer engine -- rule-based, no network. Parses the question into an
+   * intent + entities (player / team names, a stat keyword, a numeric filter,
+   * a top-N, a direction) and answers straight off the active season's raw
+   * box-score rows. Bilingual (he/en). It is pattern-based: it will not reason
+   * about truly novel phrasing, but it covers player cards & stat lookups,
+   * player/team comparisons, any-stat leaderboards with "over N" / "top N" /
+   * "worst", team cards, Four Factors, shot profiles, standings and counts.
+   * ========================================================================== */
+  function pName(o) { return (L() === I18N.he && o.name_he) ? o.name_he : (o.name || o.name_he || ''); }
+  function fnum(v, d) { return (typeof fmt === 'function') ? fmt(v, d == null ? 1 : d) : (Math.round(v * 10) / 10).toFixed(d == null ? 1 : d); }
+
+  function aiRawPlayers() { return (typeof activePlayersRaw === 'function') ? activePlayersRaw() : ((typeof DATA !== 'undefined' && DATA && DATA.players) || []); }
+  function aiRawTeams() { return (typeof activeTeams === 'function') ? activeTeams() : ((typeof DATA !== 'undefined' && DATA && DATA.teams) || []); }
+  function aiPool() {
+    const floor = (typeof state !== 'undefined' && state.competition === 'playoffs') ? 2 : 3;
+    return aiRawPlayers().filter((p) => n0(p.gp) >= floor);
+  }
+  function aiTeamById(id) { return aiRawTeams().find((t) => t.id === id) || null; }
+  function aiTeamTag(id) {
+    const t = aiTeamById(id);
+    if (!t) return id || '—';
+    return (L() === I18N.he && t.label_he) ? t.label_he : (t.label || t.name || id);
+  }
+  function aiTeamName(t) { return (L() === I18N.he && t && t.label_he) ? t.label_he : (t && (t.label || t.name) || ''); }
+
+  function aiNorm(s) {
+    return String(s || '').toLowerCase()
+      .replace(/[֑-ׇ]/g, '')          // Hebrew niqqud / cantillation
+      .replace(/["'`.,;:!?()\[\]{}"'׳״–—’“”/\\-]/g, ' ')
+      .replace(/\s+/g, ' ').trim();
+  }
+  // significant words of a name (>=3 chars), used for fuzzy in-question matching
+  function aiNameWords(o) {
+    const raw = [(o.name || ''), (o.name_he || '')].join(' ');
+    return aiNorm(raw).split(' ').filter((w) => w.length >= 3 &&
+      !['the', 'jr', 'ii', 'iii', 'de', 'la', 'van', 'von'].includes(w));
+  }
+  function aiEntityWords(t) {
+    const raw = [t.label, t.label_he, t.name, t.name_he, t.city, t.city_he].filter(Boolean).join(' ');
+    return aiNorm(raw).split(' ').filter((w) => w.length >= 2 && !['fc', 'bc'].includes(w));
+  }
+  function aiFindPlayers(qn) {
+    const out = [];
+    for (const p of aiRawPlayers()) {
+      const words = aiNameWords(p);
+      if (!words.length) continue;
+      const hit = words.filter((w) => qn.includes(w));
+      if (!hit.length) continue;
+      out.push({ p, score: hit.join('').length + hit.length * 2 });
+    }
+    out.sort((a, b) => b.score - a.score || n0(b.p.avg_pir) - n0(a.p.avg_pir));
+    return out.map((x) => x.p);
+  }
+  function aiFindTeams(qn) {
+    const out = [];
+    for (const t of aiRawTeams()) {
+      const words = [...new Set(aiEntityWords(t))];
+      const hit = words.filter((w) => qn.includes(w));
+      if (!hit.length) continue;
+      // "strong" = the full team label (either language) appears in the question,
+      // e.g. "מכבי תל אביב" / "hapoel jerusalem" -> an unambiguous, named team.
+      const labels = [aiNorm(t.label), aiNorm(t.label_he)].filter(Boolean);
+      const strong = labels.some((lab) => { const ws = lab.split(' ').filter((w) => w.length >= 2); return ws.length && ws.every((w) => qn.includes(w)); });
+      out.push({ t, strong, score: hit.join('').length + hit.length });
+    }
+    out.sort((a, b) => (b.strong - a.strong) || (b.score - a.score) || (n0(a.t.rank) - n0(b.t.rank)));
+    return out.map((x) => { x.t.__strong = x.strong; return x.t; });
+  }
+
+  /* stat dictionary -- keyword -> field on a raw player / team row */
+  const AI_STATS = [
+    { id: 'pts', p: 'avg_points', t: 'avg_points', he: 'נק׳ למשחק', en: 'pts/g', kw: ['point', 'points', 'ppg', 'scor', 'נקוד', 'נקודות', 'נק', 'קלע', 'קליע'] },
+    { id: 'reb', p: 'avg_rebounds', t: 'avg_rebounds', he: 'ריבאונדים למשחק', en: 'reb/g', kw: ['rebound', 'rebounds', 'reb', 'rpg', 'ריבאונד', 'ריבאונדים', 'ריב'] },
+    { id: 'ast', p: 'avg_assists', t: 'avg_assists', he: 'אסיסטים למשחק', en: 'ast/g', kw: ['assist', 'assists', 'apg', 'passing', 'אסיסט', 'אסיסטים', 'בישול', 'בישולים', 'מסירות'] },
+    { id: 'pir', p: 'avg_pir', t: 'avg_pir', he: 'PIR למשחק', en: 'PIR/g', kw: ['pir', 'index rating', 'מדד יעילות', 'יעילות', 'תרומה', 'מדד'] },
+    { id: 'min', p: 'avg_minutes', t: null, he: 'דקות למשחק', en: 'min/g', kw: ['minute', 'minutes', 'mpg', 'דקות', 'דקה'] },
+    { id: 'tov', p: 'tov_pg', t: 'avg_turnovers', he: 'איבודים למשחק', en: 'TOV/g', kw: ['turnover', 'turnovers', 'tov', 'turn it over', 'turns it over', 'turns the ball over', 'ball security', 'take care of the ball', 'איבוד', 'איבודים', 'איבודי כדור', 'שמירה על הכדור', 'מאבד כדורים', 'מאבדת כדורים', 'מאבד', 'מאבדת', 'מעט כדורים', 'הכי מעט כדור'] },
+    { id: 'blk', p: null, t: 'avg_blocks', he: 'חסימות למשחק', en: 'blocks/g', kw: ['block', 'blocks', 'blocked shot', 'rim protection', 'חסימה', 'חסימות'] },
+    { id: 'fg3m', p: 'fg3m_pg', t: 'avg_fg3m', he: 'שלשות למשחק', en: '3PM/g', kw: ['three made', '3pm', 'threes', 'triples', 'שלשה', 'שלשות', 'שלושים', 'מעבר לקשת'] },
+    { id: 'fg3_pct', p: 'fg3_pct', t: 'fg3_pct', he: 'אחוזי שלוש', en: '3P%', pct: 1, kw: ['3p%', '3pt%', 'three point %', 'three-point %', '3 point percentage', 'אחוז שלוש', 'אחוזי שלוש', 'אחוז מהקשת', 'קליעה לשלוש'] },
+    { id: 'fg_pct', p: 'fg_pct', t: null, he: 'אחוזי קליעה מהשדה', en: 'FG%', pct: 1, kw: ['fg%', 'field goal %', 'field-goal %', 'shooting %', 'אחוז קליעה', 'אחוזי קליעה', 'קליעה מהשדה'] },
+    { id: 'ft_pct', p: 'ft_pct', t: null, he: 'אחוזי עונשין', en: 'FT%', pct: 1, kw: ['ft%', 'free throw %', 'free-throw %', 'אחוז עונשין', 'אחוזי עונשין', 'קו העונשין'] },
+    { id: 'efg_pct', p: 'efg_pct', t: null, he: 'eFG% (אחוז קליעה אפקטיבי)', en: 'eFG%', pct: 1, kw: ['efg', 'effective fg', 'effective field goal', 'אחוז קליעה אפקטיבי', 'אפקטיבי', 'אחוז קליעה משוקלל', 'משוקלל'] },
+    { id: 'ts_pct', p: 'ts_pct', t: null, he: 'TS% (אחוז קליעה אמיתי)', en: 'TS%', pct: 1, kw: ['ts%', 'ts ', 'true shooting', 'אחוז קליעה אמיתי', 'קליעה אמיתית', 'אמת'] },
+    { id: 'ast_to_tov', p: 'ast_to_tov', t: null, he: 'יחס אסיסטים/איבודים', en: 'AST/TOV', ratio: 1, kw: ['ast/tov', 'ast to tov', 'assist to turnover', 'assist-to-turnover', 'יחס אסיסטים', 'יחס מסירות', 'מסירות לאיבוד', 'אסיסטים לאיבוד'] },
+    { id: 'per36_pts', p: 'per_36_points', t: null, he: 'נק׳ ל-36 דקות', en: 'pts/36', kw: ['per 36 point', 'per-36 point', 'points per 36', 'נקודות ל-36', 'נק ל 36'] },
+    { id: 'eff', p: 'efficiency', t: null, he: 'אינדקס יעילות', en: 'efficiency index', kw: ['efficiency index', 'net efficiency', 'אינדקס יעילות'] },
+  ];
+  function aiDetectStat(qn) {
+    let best = null, bestLen = 0;
+    for (const st of AI_STATS) for (const k of st.kw) {
+      if (qn.includes(k) && k.length > bestLen) { best = st; bestLen = k.length; }
+    }
+    return best;
+  }
+  function aiStatVal(row, st) {
+    if (st.p === 'tov_pg') return div(n0(row.tov), n0(row.gp));
+    if (st.p === 'fg3m_pg') return div(n0(row.fg3m), n0(row.gp));
+    return n0(row[st.p]);
+  }
+  function aiTeamStatVal(t, st) {
+    if (st.id === 'efg_pct') return teamFourFactors(t).efg;
+    if (st.id === 'fg_pct') return div(n0(t.fgm), n0(t.fga)) * 100;
+    if (st.id === 'ft_pct') return div(n0(t.ftm), n0(t.fta)) * 100;
+    return st.t ? n0(t[st.t]) : NaN;
+  }
+  function aiFmtStat(st, v) {
+    if (st.pct) return fnum(v, 1) + '%';
+    if (st.ratio) return fnum(v, 2);
+    return fnum(v, 1);
+  }
+  function aiParseNum(qn, re) { const m = qn.match(re); return m ? parseFloat(m[1] || m[2]) : null; }
+  function aiTopN(qn) {
+    if (/\b(five|top ?5|top ?five)\b|חמישי|חמשת/.test(qn)) return 5;
+    const n = aiParseNum(qn, /top\s*(\d+)|(\d+)\s*(?:המובילים|הראשונים|הטובים|best|top)/);
+    return n && n > 0 && n <= 30 ? n : 6;
+  }
+  function aiWantsWorst(qn) { return /\bworst\b|\bbottom\b|\bleast\b|\bfewest\b|הכי גרוע|הגרוע|תחתית|הכי פחות|הכי מעט|הכי נמוך/.test(qn); }
+
+  function aiPlayerLine(p, st) {
+    const t = aiTeamById(p.team_id);
+    const bits = [
+      fnum(n0(p.avg_points)) + (L() === I18N.he ? ' נק׳' : ' pts'),
+      fnum(n0(p.avg_rebounds)) + (L() === I18N.he ? ' ריב' : ' reb'),
+      fnum(n0(p.avg_assists)) + (L() === I18N.he ? ' אס' : ' ast'),
+      'PIR ' + fnum(n0(p.avg_pir)),
+    ];
+    let head = '**' + pName(p) + '** (' + aiTeamTag(p.team_id) + (p.position ? ', ' + (typeof posLabel === 'function' ? posLabel(p.position) : p.position) : '') + ')';
+    if (st && !['pts', 'reb', 'ast', 'pir'].includes(st.id)) {
+      head += ' — ' + (L() === I18N.he ? st.he : st.en) + ' **' + aiFmtStat(st, aiStatVal(p, st)) + '**';
+    }
+    return head + ' — ' + bits.join(', ') + (t ? '' : '');
+  }
+
+  function aiPlayerCard(p) {
+    const he = L() === I18N.he;
+    const t = aiTeamById(p.team_id);
+    const g = n0(p.gp);
+    const rows = [
+      [he ? 'משחקים' : 'Games', fnum(g, 0)],
+      [he ? 'דקות' : 'Minutes', fnum(n0(p.avg_minutes)) + (he ? '/משחק' : '/g')],
+      [he ? 'נקודות' : 'Points', fnum(n0(p.avg_points)) + (he ? '/משחק' : '/g') + '  ·  ' + fnum(n0(p.per_36_points)) + '/36'],
+      [he ? 'ריבאונדים' : 'Rebounds', fnum(n0(p.avg_rebounds)) + (he ? '/משחק' : '/g')],
+      [he ? 'אסיסטים' : 'Assists', fnum(n0(p.avg_assists)) + (he ? '/משחק' : '/g') + '  ·  AST/TOV ' + fnum(n0(p.ast_to_tov), 2)],
+      ['FG% · 3P% · FT%', fnum(n0(p.fg_pct)) + '% · ' + fnum(n0(p.fg3_pct)) + '% · ' + fnum(n0(p.ft_pct)) + '%'],
+      ['eFG% · TS%', p.bad_split ? (he ? 'לא אמין (באג פילוח במקור)' : 'unreliable (source split bug)') : (fnum(n0(p.efg_pct)) + '% · ' + fnum(n0(p.ts_pct)) + '%')],
+      ['PIR', fnum(n0(p.avg_pir)) + (he ? '/משחק' : '/g') + '  ·  ' + fnum(n0(p.per_36_pir)) + '/36'],
+    ];
+    const bio = [];
+    if (p.position) bio.push((typeof positionFull === 'function' ? positionFull(p.position) : p.position));
+    if (p.age) bio.push((he ? 'גיל ' : 'age ') + p.age);
+    if (p.height_m) bio.push(fnum(p.height_m, 2) + 'm');
+    if (p.nationality) bio.push(p.nationality);
+    return (he ? '### ' : '### ') + pName(p) + '\n'
+      + (t ? (he ? '' : '') + aiTeamName(t) + (p.position ? ' · ' + (typeof posLabel === 'function' ? posLabel(p.position) : p.position) : '') + '\n' : '')
+      + (bio.length ? '*' + bio.join(' · ') + '*\n' : '')
+      + '\n' + rows.map(([k, v]) => '- **' + k + ':** ' + v).join('\n')
+      + '\n\n*' + (he ? 'עונת ' : 'Season ') + (DATA && DATA.season) + ' · ' + (he ? 'סך העונה' : 'season totals') + '.*';
+  }
+
+  function aiTeamCard(t) {
+    const he = L() === I18N.he;
+    const ff = teamFourFactors(t);
+    const sp = teamShotProfile(t);
+    return '### ' + aiTeamName(t) + '\n'
+      + '*' + (he ? 'מקום ' : 'Rank ') + n0(t.rank) + ' · ' + n0(t.gp) + (he ? ' משחקים' : ' games') + '*\n\n'
+      + '- **' + (he ? 'נקודות' : 'Points') + ':** ' + fnum(n0(t.avg_points)) + (he ? '/משחק' : '/g') + '\n'
+      + '- **' + (he ? 'אסיסטים / ריבאונדים' : 'Assists / Rebounds') + ':** ' + fnum(n0(t.avg_assists)) + ' / ' + fnum(n0(t.avg_rebounds)) + '\n'
+      + '- **' + (he ? 'איבודים' : 'Turnovers') + ':** ' + fnum(n0(t.avg_turnovers)) + (he ? '/משחק' : '/g') + '\n'
+      + '- **PIR:** ' + fnum(n0(t.avg_pir)) + (he ? '/משחק' : '/g') + '\n'
+      + '- **Four Factors:** eFG% ' + fnum(ff.efg) + ' · TOV% ' + fnum(ff.tov_pct) + ' · OREB% ' + fnum(ff.oreb_pct_proxy) + ' · FT rate ' + fnum(ff.ft_rate) + '\n'
+      + '- **' + (he ? 'פילוח זריקות' : 'Shot profile') + ':** ' + fnum(sp.three_rate) + '% ' + (he ? 'מהניסיונות מהקשת' : 'of attempts from three') + ' · 3P% ' + fnum(sp.fg3_pct) + '\n\n'
+      + '*' + (he ? 'OREB% הוא קירוב (אין נתוני יריב). עונת ' : 'OREB% is a proxy (no opponent data). Season ') + (DATA && DATA.season) + '.*';
+  }
+
+  function aiCompareTeams(a, b) {
+    const he = L() === I18N.he;
+    const metrics = [
+      [he ? 'מקום בטבלה' : 'Table rank', (t) => n0(t.rank), 0, true],
+      [he ? 'נק׳/משחק' : 'Pts/g', (t) => n0(t.avg_points), 1],
+      [he ? 'אס/משחק' : 'Ast/g', (t) => n0(t.avg_assists), 1],
+      [he ? 'ריב/משחק' : 'Reb/g', (t) => n0(t.avg_rebounds), 1],
+      [he ? 'איבודים/משחק' : 'TOV/g', (t) => n0(t.avg_turnovers), 1, true],
+      ['PIR/g', (t) => n0(t.avg_pir), 1],
+      ['eFG%', (t) => teamFourFactors(t).efg, 1],
+      ['3P%', (t) => n0(t.fg3_pct), 1],
+      [he ? '3PA שיעור' : '3PA rate', (t) => teamShotProfile(t).three_rate, 1],
+    ];
+    const lines = metrics.map(([label, fn, dec, lowGood]) => {
+      const va = fn(a), vb = fn(b);
+      const better = lowGood ? (va < vb ? a : b) : (va > vb ? a : b);
+      const mark = (t) => (t === better ? ' ◀' : '');
+      return '- **' + label + ':** ' + aiTeamName(a) + ' ' + fnum(va, dec) + mark(a) + '  ·  ' + aiTeamName(b) + ' ' + fnum(vb, dec) + mark(b);
+    });
+    return '### ' + aiTeamName(a) + ' ' + (he ? 'מול' : 'vs') + ' ' + aiTeamName(b) + '\n\n' + lines.join('\n')
+      + '\n\n*◀ = ' + (he ? 'הצד הטוב יותר במדד. עונת ' : 'better side on that metric. Season ') + (DATA && DATA.season) + '.*';
+  }
+
+  function aiComparePlayers(a, b) {
+    const he = L() === I18N.he;
+    const metrics = [
+      [he ? 'נק׳/משחק' : 'Pts/g', 'avg_points', 1],
+      [he ? 'ריב/משחק' : 'Reb/g', 'avg_rebounds', 1],
+      [he ? 'אס/משחק' : 'Ast/g', 'avg_assists', 1],
+      [he ? 'דק׳/משחק' : 'Min/g', 'avg_minutes', 1],
+      ['PIR/g', 'avg_pir', 1],
+      ['TS%', 'ts_pct', 1],
+      ['eFG%', 'efg_pct', 1],
+      ['3P%', 'fg3_pct', 1],
+      ['AST/TOV', 'ast_to_tov', 2],
+      [he ? 'נק׳/36' : 'Pts/36', 'per_36_points', 1],
+    ];
+    const lines = metrics.map(([label, f, dec]) => {
+      const va = n0(a[f]), vb = n0(b[f]);
+      const better = va === vb ? null : (va > vb ? a : b);
+      const mark = (p) => (p === better ? ' ◀' : '');
+      return '- **' + label + ':** ' + pName(a) + ' ' + fnum(va, dec) + mark(a) + '  ·  ' + pName(b) + ' ' + fnum(vb, dec) + mark(b);
+    });
+    return '### ' + pName(a) + ' ' + (he ? 'מול' : 'vs') + ' ' + pName(b) + '\n'
+      + '*' + aiTeamTag(a.team_id) + ' · ' + aiTeamTag(b.team_id) + '*\n\n' + lines.join('\n')
+      + '\n\n*◀ = ' + (he ? 'ערך גבוה יותר. סך העונה.' : 'higher value. Season totals.') + '*';
+  }
+
+  function aiLeaderboard(st, qn) {
+    const he = L() === I18N.he;
+    const asc = aiWantsWorst(qn);
+    const nTop = aiTopN(qn);
+    const teamMode = /\bteams?\b|קבוצ/.test(qn) && !aiFindTeams(qn).length;
+    const minV = aiParseNum(qn, /(?:over|above|at least|more than|>=?|מעל|לפחות|יותר מ)\s*(\d+(?:\.\d+)?)|(\d+(?:\.\d+)?)\s*\+/);
+
+    if (teamMode && st.t !== null || (teamMode && ['efg_pct', 'fg_pct', 'ft_pct'].includes(st.id))) {
+      let rows = aiRawTeams().map((t) => ({ t, v: aiTeamStatVal(t, st) })).filter((x) => Number.isFinite(x.v));
+      rows.sort((a, b) => asc ? a.v - b.v : b.v - a.v);
+      rows = rows.slice(0, nTop);
+      const body = rows.map((x, i) => (i + 1) + '. **' + aiTeamName(x.t) + '** — ' + aiFmtStat(st, x.v)).join('\n');
+      return (he ? '### ' + (asc ? 'תחתית' : 'מוביל') + ' — ' + st.he + '\n\n' : '### ' + (asc ? 'Bottom' : 'Leaders') + ' — ' + st.en + '\n\n') + body
+        + '\n\n*' + (he ? 'קבוצות · עונת ' : 'Teams · season ') + (DATA && DATA.season) + '.*';
+    }
+
+    // rotation floor so bench-scrap lines don't top a per-game / rate board
+    let pool = aiPool().filter((p) => !(st.pct && p.bad_split) && n0(p.avg_minutes) >= 10);
+    // volume floor for shooting-percentage boards (a 1/1 night isn't a leader)
+    const VOL = { fg3_pct: ['fg3a', 30], fg_pct: ['fga', 80], ft_pct: ['fta', 20], efg_pct: ['fga', 80], ts_pct: ['fga', 80] };
+    if (VOL[st.id]) { const [f, min] = VOL[st.id]; pool = pool.filter((p) => n0(p[f]) >= min); }
+    // efficiency-scorer phrasing: rank by shooting but keep a scoring floor
+    const effScorer = /efficient|efficiency|יעיל/.test(qn) && /scor|קלע|נק|point/.test(qn);
+    let sortSt = st;
+    if (effScorer) { sortSt = AI_STATS.find((s) => s.id === 'ts_pct'); pool = aiPool().filter((p) => n0(p.avg_points) >= (minV || 15) && !p.bad_split); }
+    else if (minV != null) {
+      // apply the floor to the mentioned stat, or to points if the stat is a rate
+      const floorSt = (st.pct || st.ratio) ? AI_STATS.find((s) => s.id === 'pts') : st;
+      pool = pool.filter((p) => aiStatVal(p, floorSt) >= minV);
+    }
+    let rows = pool.map((p) => ({ p, v: aiStatVal(p, sortSt) })).filter((x) => Number.isFinite(x.v));
+    rows.sort((a, b) => asc ? a.v - b.v : b.v - a.v);
+    rows = rows.slice(0, nTop);
+    if (!rows.length) return he ? 'לא נמצאו שחקנים שעונים על התנאים.' : 'No players match those conditions.';
+    const body = rows.map((x, i) => {
+      const extra = (sortSt.id !== 'pts') ? '' : '';
+      return (i + 1) + '. **' + pName(x.p) + '** (' + aiTeamTag(x.p.team_id) + ') — '
+        + (L() === I18N.he ? sortSt.he : sortSt.en) + ' ' + aiFmtStat(sortSt, x.v)
+        + (sortSt.id !== 'pts' ? '  ·  ' + fnum(n0(x.p.avg_points)) + (he ? ' נק׳' : ' pts') : '')
+        + (sortSt.id !== 'pir' ? '  ·  PIR ' + fnum(n0(x.p.avg_pir)) : '');
+    }).join('\n');
+    const title = effScorer
+      ? (he ? 'הקלעים היעילים ביותר' + (minV || 15 ? ' (מעל ' + (minV || 15) + ' נק׳)' : '') : 'Most efficient scorers' + (minV || 15 ? ' (over ' + (minV || 15) + ' pts)' : ''))
+      : (he ? (asc ? 'תחתית' : 'מוביל') + ' — ' + sortSt.he : (asc ? 'Bottom' : 'Leaders') + ' — ' + sortSt.en);
+    return '### ' + title + '\n\n' + body
+      + '\n\n*' + (he ? 'עונת ' : 'Season ') + (DATA && DATA.season) + ' · ' + (he ? 'מינימום ' : 'min ')
+      + ((typeof state !== 'undefined' && state.competition === 'playoffs') ? 2 : 3) + (he ? ' משחקים.' : ' GP.') + '*';
+  }
+
+  function aiBestFive(qn) {
+    const he = L() === I18N.he;
+    const minMin = 14; // avg minutes floor so it's a real rotation player
+    const pool = aiPool().filter((p) => n0(p.avg_minutes) >= minMin && !p.bad_split && n0(p.avg_points) >= 8);
+    const zz = (key, dir) => {
+      const v = pool.map((p) => n0(p[key])); const m = v.reduce((s, x) => s + x, 0) / (v.length || 1);
+      const sd = Math.sqrt(v.reduce((s, x) => s + (x - m) * (x - m), 0) / (v.length || 1)) || 1;
+      return pool.map((p) => dir * (n0(p[key]) - m) / sd);
+    };
+    const zTs = zz('ts_pct', 1), zPir = zz('avg_pir', 1), zPts = zz('avg_points', 1);
+    const scored = pool.map((p, i) => ({ p, s: 0.45 * zTs[i] + 0.35 * zPir[i] + 0.20 * zPts[i] }))
+      .sort((a, b) => b.s - a.s).slice(0, 5);
+    const body = scored.map((x, i) => (i + 1) + '. **' + pName(x.p) + '** (' + aiTeamTag(x.p.team_id) + ', '
+      + (typeof posLabel === 'function' ? posLabel(x.p.position) : x.p.position) + ') — '
+      + fnum(n0(x.p.avg_points)) + (he ? ' נק׳' : ' pts') + ', TS% ' + fnum(n0(x.p.ts_pct)) + ', PIR ' + fnum(n0(x.p.avg_pir))).join('\n');
+    return (he
+      ? '### חמישייה לפי יעילות + קליעה\nשקלול: TS% ‎.45‎, PIR ‎.35‎, נקודות ‎.20‎ (מסוננים לשחקנים עם ‎14+‎ דק׳ ו‎8+‎ נק׳).\n\n'
+      : '### Best five on efficiency + shooting\nWeights: TS% .45, PIR .35, points .20 (rotation players, 14+ min & 8+ pts).\n\n') + body
+      + '\n\n*' + (he ? 'ללא נתוני עמדות אמיתיים לאיזון — זו החמישייה החזקה ביותר לפי המדד, לא בהכרח חמש עמדות שונות.' : 'No true position balancing — this is the five highest on the blended score, not necessarily five distinct positions.') + '*';
+  }
+
+  function aiStandings(qn) {
+    const he = L() === I18N.he;
+    const asc = !aiWantsWorst(qn);
+    const rows = [...aiRawTeams()].sort((a, b) => n0(a.rank) - n0(b.rank));
+    const body = rows.map((t) => n0(t.rank) + '. **' + aiTeamName(t) + '** — ' + fnum(n0(t.avg_points)) + (he ? ' נק׳' : ' pts') + ', PIR ' + fnum(n0(t.avg_pir))).join('\n');
+    return '### ' + (he ? 'טבלת ליגת העל — ' : 'Super League table — ') + (DATA && DATA.season) + '\n\n' + body;
+  }
+
+  /* ---------- main router ---------- */
+  function heuristic(q) {
+    const snap = aiSnapshot();
+    if (!snap) return L().nodata;
+    const he = L() === I18N.he;
+    const qn = aiNorm(q);
+    const has = (...xs) => xs.some((x) => qn.includes(x));
+    const seasonTag = (typeof DATA !== 'undefined' && DATA && DATA.season) || snap.season;
+    const compTag = snap.competition === 'playoffs' ? L().comp_po : L().comp_rs;
+
+    const players = aiFindPlayers(qn);
+    const teams = aiFindTeams(qn);
+    const namedTeams = teams.filter((t) => t.__strong);   // full label appeared verbatim
+    const st = aiDetectStat(qn);
+    const wantsCompare = has('compare', 'comparison', 'versus', ' vs ', 'vs.', 'better', 'השוו', 'השווה', 'לעומת', ' מול ', 'הבדל בין', 'מי עדיף', 'מי יותר טוב');
+    const wantsShot = has('shot profile', 'shot-profile', 'shot chart', 'shot distribution', 'shot selection', 'פילוח זריק', 'פילוח הזריק', 'התפלגות זריק', 'מאיפה קולע', 'בחירת זריקות');
+    const wantsFF = has('four factor', 'four-factor', 'four factors', 'ארבעת הגורמים', 'ארבעת גורמי');
+
+    // 0) help / capabilities
+    if (has('what can you', 'what can i ask', 'help', 'capabilities', 'מה אפשר לשאול', 'מה אתה יודע', 'איך משתמשים', 'עזרה', 'מה השאלות')) {
+      return (he
+        ? 'אני עונה **לא־מקוון** מתוך נתוני העונה הפעילה (' + seasonTag + ', ' + compTag + '). דברים שאפשר לשאול:\n\n' +
+          '- **כרטיס שחקן** — "ספר לי על גבריאל לונדברג", "כמה נקודות ל...".\n' +
+          '- **מוביל בסטטיסטיקה** — "מי מוביל בריבאונדים", "5 הקלעים הטובים", "הכי הרבה שלשות", "אחוזי שלוש הגבוהים", "קלעים יעילים מעל 15 נק׳".\n' +
+          '- **השוואת שחקנים** — "השווה את X ל-Y".\n' +
+          '- **כרטיס קבוצה / השוואת קבוצות** — "ספר לי על הפועל ירושלים", "השווה את מכבי תל אביב והפועל תל אביב".\n' +
+          '- **Four Factors** — מוביל, או "Four Factors של מכבי".\n' +
+          '- **פילוח זריקות** — קבוצה אחת או השוואה.\n' +
+          '- **טבלה** — "טבלת הליגה", "מי במקום הראשון".\n\n' +
+          'המדדים מחושבים מסך העונה (אין play-by-play / נתוני יריב). לתשובות פתוחות באמת צריך לחבר מנוע AI.'
+        : 'I answer **offline** from the active season (' + seasonTag + ', ' + compTag + '). Things you can ask:\n\n' +
+          '- **Player card** — "tell me about Gabriel Lundberg", "how many points for ...".\n' +
+          '- **Stat leaders** — "who leads in rebounds", "top 5 scorers", "most threes made", "best 3P%", "efficient scorers over 15 pts".\n' +
+          '- **Compare players** — "compare X and Y".\n' +
+          '- **Team card / compare teams** — "tell me about Hapoel Jerusalem", "compare Maccabi Tel Aviv and Hapoel Tel Aviv".\n' +
+          '- **Four Factors** — the leader, or "Four Factors for Maccabi".\n' +
+          '- **Shot profile** — one team or a comparison.\n' +
+          '- **Standings** — "league table", "who is first".\n\n' +
+          'Metrics are from season totals (no play-by-play / opponent data). Truly open-ended answers need an AI engine wired in.');
+    }
+
+    // 0b) season trends — "מגמות" / "סיכום" / "מה חדש" / trends.
+    // If the active season IS the one insights.json covers -> the Bedrock summary.
+    // Any OTHER season -> a local, season-accurate blurb from data.json (never the
+    // 2023-2024 summary).
+    if (has('מגמ', 'סיכום', 'מה חדש', 'תובנות', 'טרנד', 'trend', 'summary', 'insight', 'what changed', 'headline')) {
+      const ai = snap.auto_insights;
+      if (ai && ai.summary_he && ai.matches_active_view) {
+        const when = String(ai.generated_at || '').slice(0, 10);
+        const top = (ai.highlights && ai.highlights.top_pir || []).slice(0, 3)
+          .map((p, i) => (i + 1) + '. **' + (p.name || '') + '** (' + (p.team || '') + ') — PIR ' + fnum(n0(p.pir)) + ', ' + fnum(n0(p.avg_points)) + (he ? ' נק׳' : ' pts')).join('\n');
+        return (he
+          ? '### מגמות בולטות — ' + seasonTag + (when ? ' · עודכן ' + when : '') + '\n\n' + ai.summary_he +
+            (top ? '\n\n**מובילי PIR:**\n' + top : '') + '\n\n*סיכום שנוצר אוטומטית (' + (ai.model || 'GenAI') + '); הצליבו מול הטבלאות.*'
+          : '### Key trends — ' + seasonTag + (when ? ' · updated ' + when : '') + '\n\n' + ai.summary_he +
+            (top ? '\n\n**PIR leaders:**\n' + top : '') + '\n\n*Auto-generated summary (' + (ai.model || 'GenAI') + '); cross-check the tables.*');
+      }
+      // other season (or summary unavailable) — derive it locally for THIS season
+      const t0 = snap.team_ratings[0], sc = snap.scoring_leaders[0], pr = snap.efficiency_leaders_pir[0];
+      if (!t0 || !sc || !pr) {
+        return (he ? 'אין מספיק נתונים לעונת ' + seasonTag + ' כדי לחלץ מגמות.' : 'Not enough data for ' + seasonTag + ' to extract trends.');
+      }
+      const insSeason = (ai && ai.season) || '2023-2024';
+      const compNote = snap.competition === 'playoffs' ? (he ? ' · פלייאוף' : ' · playoffs') : '';
+      return (he
+        ? '### מגמות בולטות — ' + seasonTag + compNote + '\n\n' +
+          '- **מקום ראשון:** ' + (t0.name_he || t0.name) + ' — ' + fnum(t0.pts_per_game) + ' נק׳ למשחק, PIR ' + fnum(t0.pir_per_game) + '\n' +
+          '- **מלך הסלים:** ' + pName(sc) + ' (' + aiTeamTag(sc.team) + ') — ' + fnum(sc.pts_per_game) + ' נק׳ למשחק\n' +
+          '- **מוביל PIR:** ' + pName(pr) + ' (' + aiTeamTag(pr.team) + ') — ' + fnum(pr.pir_per_game) + ' PIR למשחק\n\n' +
+          '*חושב ישירות מנתוני עונת ' + seasonTag + '. סיכום ה-AI המלא זמין לעונת ' + insSeason + ' בלבד.*'
+        : '### Key trends — ' + seasonTag + compNote + '\n\n' +
+          '- **First place:** ' + t0.name + ' — ' + fnum(t0.pts_per_game) + ' pts/g, PIR ' + fnum(t0.pir_per_game) + '\n' +
+          '- **Scoring leader:** ' + pName(sc) + ' (' + aiTeamTag(sc.team) + ') — ' + fnum(sc.pts_per_game) + ' pts/g\n' +
+          '- **PIR leader:** ' + pName(pr) + ' (' + aiTeamTag(pr.team) + ') — ' + fnum(pr.pir_per_game) + ' PIR/g\n\n' +
+          '*Computed directly from ' + seasonTag + ' data. The full AI summary covers ' + insSeason + ' only.*');
+    }
+
+    // 1) two-player comparison (only when a comparison is explicitly asked for --
+    // two players sharing a first name must NOT auto-trigger this)
+    if (wantsCompare && players.length >= 2 && namedTeams.length < 2) {
+      return aiComparePlayers(players[0], players[1]);
+    }
+
+    // 2) two-team comparison / shot-profile comparison
+    if ((wantsCompare && teams.length >= 2 && players.length < 2) || (wantsShot && namedTeams.length >= 2)) {
+      const a = namedTeams[0] || teams[0];
+      const b = namedTeams[1] || teams.find((t) => t !== a) || teams[1];
+      if (wantsShot && !st) {
+        const row = (t) => {
+          const sp = teamShotProfile(t);
+          return '**' + aiTeamName(t) + '** — ' + (he ? '3PA שיעור' : '3PA rate') + ' ' + fnum(sp.three_rate) + '%, ' +
+            (he ? '2PA שיעור' : '2PA rate') + ' ' + fnum(sp.two_rate) + '%, 3P% ' + fnum(sp.fg3_pct) + ', eFG% ' + fnum(sp.efg) + ', ' +
+            (he ? 'עונשין ל-100 ניסיונות שדה' : 'FTA/100 FGA') + ' ' + fnum(sp.ft_att_per_100_fga);
+        };
+        const d = teamShotProfile(a).three_rate - teamShotProfile(b).three_rate;
+        const lead = d > 0 ? a : b;
+        return (he ? '### השוואת פילוח זריקות — ' : '### Shot-profile comparison — ') + seasonTag + '\n\n- ' + row(a) + '\n- ' + row(b) +
+          '\n\n**' + aiTeamName(lead) + '** ' + (he ? 'נשענת יותר על הקשת' : 'leans more on the arc') + ' (' + fnum(Math.abs(d)) + ' ' + (he ? 'נק׳ אחוז הפרש' : 'pp gap') + ').';
+      }
+      return aiCompareTeams(a, b);
+    }
+
+    // 3) Four Factors -- for a named team, or the league leader
+    if (wantsFF) {
+      if (namedTeams.length >= 1) {
+        const ff = teamFourFactors(namedTeams[0]);
+        return '### Four Factors — ' + aiTeamName(namedTeams[0]) + '\n\n' +
+          '- **eFG%:** ' + fnum(ff.efg) + '\n- **TOV%:** ' + fnum(ff.tov_pct) + '\n- **OREB% (' + (he ? 'קירוב' : 'proxy') + '):** ' + fnum(ff.oreb_pct_proxy) + '\n- **FT rate:** ' + fnum(ff.ft_rate) +
+          '\n\n*' + (he ? 'עונת ' : 'Season ') + seasonTag + '.*';
+      }
+      const f = snap.four_factors_ranked;
+      const w = f[0];
+      const list = f.slice(0, 5).map((t, i) => (i + 1) + '. **' + (he && t.name_he ? t.name_he : t.name) + '** — eFG% ' + fnum(t.efg) + ', TOV% ' + fnum(t.tov_pct) + ', OREB% ' + fnum(t.oreb_pct_proxy) + ', FT rate ' + fnum(t.ft_rate)).join('\n');
+      return (he
+        ? '**' + (w.name_he || w.name) + '** מובילה בקומפוזיט של ארבעת הגורמים (' + seasonTag + '). משקלים: eFG% .40, TOV% .25, ריבאונד התקפי .20, קו עונשין .15.\n\n' + list + '\n\n*OREB% הוא קירוב — אין נתוני יריב.*'
+        : '**' + w.name + '** leads the composite Four Factors (' + seasonTag + '). Weights: eFG% .40, TOV% .25, OREB% .20, FT rate .15.\n\n' + list + '\n\n*OREB% is a proxy — no opponent data.*');
+    }
+
+    // 4) single-team shot profile
+    if (wantsShot && (namedTeams.length >= 1 || teams.length === 1)) {
+      const tgt = namedTeams[0] || teams[0];
+      const sp = teamShotProfile(tgt);
+      return '### ' + (he ? 'פילוח זריקות — ' : 'Shot profile — ') + aiTeamName(tgt) + '\n\n' +
+        '- **' + (he ? 'ניסיונות מהקשת' : 'From three') + ':** ' + fnum(sp.three_rate) + '% ' + (he ? 'מהניסיונות' : 'of attempts') + ' (' + sp.fg3a + ' 3PA)\n' +
+        '- **' + (he ? 'ניסיונות לשתיים' : 'From two') + ':** ' + fnum(sp.two_rate) + '% (' + sp.fg2a + ' 2PA)\n' +
+        '- **3P%:** ' + fnum(sp.fg3_pct) + '  ·  **eFG%:** ' + fnum(sp.efg) + '\n' +
+        '- **' + (he ? 'עונשין ל-100 ניסיונות שדה' : 'FTA per 100 FGA') + ':** ' + fnum(sp.ft_att_per_100_fga) + '\n\n*' + (he ? 'עונת ' : 'Season ') + seasonTag + '.*';
+    }
+
+    // 5) best-five / lineup by efficiency + shooting
+    if (has('best five', 'best 5', 'top five', 'starting five', 'lineup', 'חמישייה', 'חמישיה', 'חמישית', 'הרכב') && has('efficien', 'shoot', 'יעיל', 'קליע', 'קלע')) {
+      return aiBestFive(qn);
+    }
+
+    // 6) standings / table
+    if (has('standing', 'league table', 'the table', 'טבלת', 'טבלה', 'דירוג הקבוצות', 'מי ראשונ', 'מי במקום הראשון', 'ראש הטבלה', 'תחתית הטבלה', 'first place')) {
+      return aiStandings(qn);
+    }
+
+    // 7) counts
+    if (has('how many teams', 'number of teams', 'כמה קבוצות')) {
+      return (he ? 'בעונת ' + seasonTag + ' יש **' + aiRawTeams().length + '** קבוצות בנתונים.' : 'There are **' + aiRawTeams().length + '** teams in the ' + seasonTag + ' data.');
+    }
+    if (has('how many players', 'number of players', 'כמה שחקנים')) {
+      return (he ? 'בעונת ' + seasonTag + ' יש **' + aiRawPlayers().length + '** רשומות שחקן (' + aiPool().length + ' עם 3+ משחקים).' : 'There are **' + aiRawPlayers().length + '** player rows in ' + seasonTag + ' (' + aiPool().length + ' with 3+ GP).');
+    }
+
+    // 7b) a stat that only exists at team level (blocks) -- steer accordingly
+    if (st && st.p === null) {
+      if (players.length && namedTeams.length === 0) {
+        return (he
+          ? 'נתוני **' + st.he.replace(' למשחק', '') + '** אינם קיימים ברמת השחקן במאגר הזה (סך עונה בלבד). ברמת הקבוצה: ' + aiTeamName([...aiRawTeams()].sort((a, b) => n0(b[st.t]) - n0(a[st.t]))[0]) + ' מובילה עם ' + fnum(n0([...aiRawTeams()].sort((a, b) => n0(b[st.t]) - n0(a[st.t]))[0][st.t])) + '.'
+          : 'Player-level **' + st.en + '** is not in this dataset (season totals only). At team level: ' + aiTeamName([...aiRawTeams()].sort((a, b) => n0(b[st.t]) - n0(a[st.t]))[0]) + ' leads with ' + fnum(n0([...aiRawTeams()].sort((a, b) => n0(b[st.t]) - n0(a[st.t]))[0][st.t])) + '.');
+      }
+      if (namedTeams.length >= 1) {
+        const t = namedTeams[0]; const v = n0(t[st.t]);
+        const rank = aiRawTeams().filter((x) => n0(x[st.t]) > v).length + 1;
+        return '**' + aiTeamName(t) + '** — ' + (he ? st.he : st.en) + ': **' + fnum(v) + '** (' + (he ? 'מקום ' : 'rank ') + rank + '/' + aiRawTeams().length + ').';
+      }
+      const rows = [...aiRawTeams()].sort((a, b) => aiWantsWorst(qn) ? n0(a[st.t]) - n0(b[st.t]) : n0(b[st.t]) - n0(a[st.t])).slice(0, aiTopN(qn));
+      return '### ' + (he ? (aiWantsWorst(qn) ? 'תחתית' : 'מוביל') + ' — ' + st.he : (aiWantsWorst(qn) ? 'Bottom' : 'Leaders') + ' — ' + st.en) + '\n\n'
+        + rows.map((t, i) => (i + 1) + '. **' + aiTeamName(t) + '** — ' + fnum(n0(t[st.t]))).join('\n')
+        + '\n\n*' + (he ? 'ברמת הקבוצה בלבד — אין נתון שחקן במאגר. עונת ' : 'Team level only — no player figure in the dataset. Season ') + seasonTag + '.*';
+    }
+
+    // 8) a named player -> stat answer or full card
+    if (players.length && namedTeams.length === 0) {
+      const p = players[0];
+      if (st) {
+        const v = aiStatVal(p, st);
+        const rank = aiPool().filter((x) => aiStatVal(x, st) > v).length + 1;
+        return (he
+          ? '**' + pName(p) + '** (' + aiTeamTag(p.team_id) + ') — ' + st.he + ': **' + aiFmtStat(st, v) + '** (מקום ' + rank + ' בליגה מתוך ' + aiPool().length + ').\n\n' + aiPlayerLine(p)
+          : '**' + pName(p) + '** (' + aiTeamTag(p.team_id) + ') — ' + st.en + ': **' + aiFmtStat(st, v) + '** (rank ' + rank + ' of ' + aiPool().length + ').\n\n' + aiPlayerLine(p));
+      }
+      return aiPlayerCard(p);
+    }
+
+    // 9) a named team
+    if (namedTeams.length >= 1 && !st) {
+      return aiTeamCard(namedTeams[0]);
+    }
+    if (namedTeams.length >= 1 && st && st.t !== null) {
+      const t = namedTeams[0];
+      const v = aiTeamStatVal(t, st);
+      const rank = aiRawTeams().filter((x) => aiTeamStatVal(x, st) > v).length + 1;
+      return '**' + aiTeamName(t) + '** — ' + (he ? st.he : st.en) + ': **' + aiFmtStat(st, v) + '** (' + (he ? 'מקום ' : 'rank ') + rank + '/' + aiRawTeams().length + ').';
+    }
+
+    // 10) a stat with no entity -> leaderboard
+    if (st) return aiLeaderboard(st, qn);
+
+    // 11) generic "best player" / efficient-scorer intents without an explicit stat keyword
+    if (has('efficient', 'efficiency', 'יעיל') && has('scor', 'קלע', 'נק', 'point')) {
+      return aiLeaderboard(AI_STATS.find((s) => s.id === 'ts_pct'), qn + ' efficient scorer');
+    }
+    if (has('best player', 'mvp', 'most valuable', 'top player', 'השחקן הטוב', 'שחקן העונה', 'הכי טוב בליגה')) {
+      return aiLeaderboard(AI_STATS.find((s) => s.id === 'pir'), qn);
+    }
+
+    // 11b) explicit "tell me about X" that matched no player/team in this season
+    if (has('tell me about', 'who is', 'ספר לי על', 'מי זה', 'מי הוא', 'how good is')) {
+      return (he
+        ? 'לא מצאתי שחקן או קבוצה בשם הזה בנתוני עונת ' + seasonTag + ' (' + compTag + '). ייתכן שהשם כתוב אחרת, או שהעונה/המסגרת שבחרת שונה. נסו שם מלא, או החליפו עונה למעלה.'
+        : 'I could not find a player or team by that name in the ' + seasonTag + ' (' + compTag + ') data. Try the full name, or switch the season/competition at the top.');
+    }
+
+    // 12) fallback -- snapshot highlights + how to ask
+    const t0 = snap.team_ratings[0], sc = snap.scoring_leaders[0], pir = snap.efficiency_leaders_pir[0];
+    const insLine = (snap.auto_insights && snap.auto_insights.summary_he && snap.auto_insights.matches_active_view)
+      ? (he ? '**מגמות (סיכום אוטומטי):** ' : '**Trends (auto summary):** ') + snap.auto_insights.summary_he + '\n\n'
+      : '';
+    return insLine + (he
+      ? 'לא הצלחתי למפות את השאלה לתבנית שאני מכיר (אני עובד לא־מקוון, ללא מנוע AI).\n\n' +
+        '**תמונת מצב — ' + seasonTag + ' (' + compTag + '):**\n' +
+        '- מובילת הטבלה: **' + (t0.name_he || t0.name) + '** (' + fnum(t0.pts_per_game) + ' נק׳, PIR ' + fnum(t0.pir_per_game) + ')\n' +
+        '- קלע מוביל: **' + pName(sc) + '** — ' + fnum(sc.pts_per_game) + ' נק׳\n' +
+        '- PIR מוביל: **' + pName(pir) + '** — ' + fnum(pir.pir_per_game) + '\n\n' +
+        'נסו למשל: "ספר לי על ' + pName(sc) + '", "מי מוביל בריבאונדים", "השווה את ' + (t0.name_he || t0.name) + ' והפועל תל אביב", או כתבו "עזרה".'
+      : 'I could not map that to a pattern I know (I am running offline, no AI engine).\n\n' +
+        '**Snapshot — ' + seasonTag + ' (' + snap.competition + '):**\n' +
+        '- Table leader: **' + t0.name + '** (' + fnum(t0.pts_per_game) + ' pts, PIR ' + fnum(t0.pir_per_game) + ')\n' +
+        '- Top scorer: **' + pName(sc) + '** — ' + fnum(sc.pts_per_game) + ' pts\n' +
+        '- PIR leader: **' + pName(pir) + '** — ' + fnum(pir.pir_per_game) + '\n\n' +
+        'Try e.g.: "tell me about ' + sc.name + '", "who leads in rebounds", "compare ' + t0.name + ' and Hapoel Tel Aviv", or type "help".');
+  }
+
+  /* ---------- streaming LLM call ---------- */
+  function systemPrompt(snap) {
+    return [
+      'You are the PlusMinus IL basketball analytics assistant for the Israeli Basketball Super League (ליגת העל).',
+      'Answer ONLY from the JSON snapshot provided by the user; never invent players, teams or numbers not present.',
+      'The snapshot is season-total box-score data: no possessions, no opponent splits, no shot coordinates. OREB% is an own-glass proxy. Say so when it matters.',
+      'Be concise and quantitative. Use short Markdown (bold for names/metrics, lists, small tables). Always cite the concrete numbers you used.',
+      'Reply in the language of the question. Use standard Israeli basketball terminology in Hebrew (eFG% = אחוז קליעה אפקטיבי, TS% = אחוז קליעה אמיתי, Four Factors = ארבעת הגורמים, PIR = מדד יעילות) and keep metric acronyms in Latin script.',
+      'If the question cannot be answered from the snapshot, say what is missing.',
+      'If the snapshot carries an "auto_insights" object, it is a pre-generated editorial summary (Hebrew, refreshed daily) for the season in "auto_insights.season" — you may quote or build on its "summary_he" and "highlights", but still cross-check every number against the rest of the snapshot. When "auto_insights.matches_active_view" is false, say the summary refers to that other season.',
+      'Snapshot season: ' + (snap ? snap.season + ' / ' + snap.competition : 'unavailable') + '.',
+    ].join(' ');
+  }
+
+  async function streamLLM(question, bubble, onText) {
+    const endpoint = aiEndpoint();
+    if (!endpoint) throw new Error('no-endpoint');
+    const snap = aiSnapshot();
+    const headers = { 'Content-Type': 'application/json' };
+    const key = aiKey();
+    if (key) headers.Authorization = 'Bearer ' + key;
+    const body = {
+      model: aiModel() || undefined,
+      stream: true,
+      messages: [
+        { role: 'system', content: systemPrompt(snap) },
+        ...AI.history.slice(-6),
+        { role: 'user', content: 'SNAPSHOT:\n```json\n' + JSON.stringify(snap) + '\n```\n\nQUESTION: ' + question },
+      ],
+    };
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 45000);
+    let res;
+    try {
+      res = await fetch(endpoint, { method: 'POST', headers, body: JSON.stringify(body), signal: ctrl.signal });
+    } finally { clearTimeout(timer); }
+    if (!res.ok || !res.body) throw new Error('HTTP ' + (res && res.status));
+
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let raw = '', acc = '', sawSSE = false, sseConsumed = 0;
+    const pushDelta = (d) => { if (d) { acc += d; onText(acc); } };
+    const drainSSE = (flush) => {
+      let work = raw.slice(sseConsumed);
+      const parts = work.split(/\r?\n\r?\n/);
+      const tail = flush ? '' : parts.pop();
+      for (const part of parts) {
+        for (const line of part.split(/\r?\n/)) {
+          const ln = line.trim();
+          if (!ln.startsWith('data:')) continue;
+          sawSSE = true;
+          const payload = ln.slice(5).trim();
+          if (!payload || payload === '[DONE]') continue;
+          try {
+            const j = JSON.parse(payload);
+            const d = (j.choices && j.choices[0] && ((j.choices[0].delta && j.choices[0].delta.content) || j.choices[0].text)) ||
+              (j.delta && j.delta.text) || (j.content_block && j.content_block.text) || '';
+            pushDelta(d);
+          } catch (e) { /* keep-alive / partial JSON */ }
+        }
+      }
+      sseConsumed = raw.length - (tail ? tail.length : 0);
+    };
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      raw += dec.decode(value, { stream: true });
+      if (/^\s*data:/m.test(raw)) drainSSE(false);
+      else { acc = raw; onText(acc); }   // plain-text stream
+    }
+    drainSSE(true);
+    if (!sawSSE) {
+      // try one whole-body JSON (non-streaming endpoint that ignored stream:true)
+      try {
+        const j = JSON.parse(raw);
+        acc = (j.choices && j.choices[0] && ((j.choices[0].message && j.choices[0].message.content) || j.choices[0].text)) ||
+          (j.content && (Array.isArray(j.content) ? j.content.map((c) => c.text || '').join('') : j.content)) || acc;
+        onText(acc);
+      } catch (e) { /* leave acc as the plain text we accumulated */ }
+    }
+    if (!acc.trim()) throw new Error('empty-stream');
+    return acc;
+  }
+
+  /* ---------- ask flow ---------- */
+  async function ask(question) {
+    question = (question || '').trim();
+    if (!question || AI.busy) return;
+    AI.busy = true; sendEl.disabled = true;
+    hideChips();
+    addMsg('user', question);
+    AI.history.push({ role: 'user', content: question });
+    inputEl.value = ''; autosize();
+    const bubble = addMsg('bot', '');
+    bubble.classList.add('ai-cursor');
+    bubble.textContent = L().thinking;
+
+    let answer = '', usedFallback = false;
+    try {
+      answer = await streamLLM(question, bubble, (txt) => {
+        bubble.innerHTML = renderMd(txt);
+        scrollDown();
+      });
+    } catch (err) {
+      usedFallback = true;
+      answer = heuristic(question);
+      const pre = (aiEndpoint() ? L().err : '');
+      bubble.innerHTML = renderMd((pre ? pre + '\n\n' : '') + answer);
+    }
+    bubble.classList.remove('ai-cursor');
+    if (!usedFallback) bubble.innerHTML = renderMd(answer);
+    AI.history.push({ role: 'assistant', content: answer });
+    scrollDown();
+    AI.busy = false; sendEl.disabled = false;
+    inputEl.focus();
+  }
+
+  /* ---------- chips ---------- */
+  function buildChips() {
+    chipsEl.innerHTML = '';
+    L().chips.forEach((c) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'ai-chip'; b.textContent = c;
+      b.addEventListener('click', () => ask(c));
+      chipsEl.appendChild(b);
+    });
+    chipsEl.hidden = false;
+  }
+  function hideChips() { chipsEl.hidden = true; }
+
+  /* ---------- open / close ---------- */
+  function syncChrome() {
+    const l = L();
+    $('ai-fab-label').textContent = l.fab;
+    $('ai-fab-kbd').textContent = IS_MAC ? '⌘J' : 'Ctrl J';
+    $('ai-head-t').textContent = l.title;
+    fab.setAttribute('aria-label', l.fab + '  (' + ($('ai-fab-kbd').textContent) + ')');
+    inputEl.setAttribute('aria-label', l.placeholder);
+    inputEl.placeholder = l.placeholder;
+    const online = !!aiEndpoint();
+    noteEl.textContent = online ? l.note_online : l.note_offline;
+    noteEl.hidden = !noteEl.textContent;
+  }
+  function greet() {
+    if (logEl.childElementCount) return;
+    const snap = aiSnapshot();
+    const l = L();
+    const comp = snap && snap.competition === 'playoffs' ? l.comp_po : l.comp_rs;
+    addMsg('bot', l.greet.replace('{season}', snap ? snap.season : '—').replace('{comp}', comp));
+  }
+  function openAI() {
+    if (AI.open) return;
+    AI.open = true;
+    AI.lastFocus = document.activeElement;
+    syncChrome();
+    overlay.hidden = false;
+    document.documentElement.style.overflow = 'hidden';
+    buildChips();
+    greet();
+    requestAnimationFrame(() => inputEl.focus());
+  }
+  function closeAI() {
+    if (!AI.open) return;
+    AI.open = false;
+    overlay.hidden = true;
+    document.documentElement.style.overflow = '';
+    if (AI.lastFocus && AI.lastFocus.focus) AI.lastFocus.focus();
+    else fab.focus();
+  }
+  function toggleAI() { AI.open ? closeAI() : openAI(); }
+
+  /* ---------- input autosize ---------- */
+  function autosize() {
+    inputEl.style.height = 'auto';
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 110) + 'px';
+  }
+
+  /* ---------- wire up ---------- */
+  fab.addEventListener('click', toggleAI);
+  headX.addEventListener('click', closeAI);
+  overlay.addEventListener('mousedown', (e) => { if (e.target === overlay) closeAI(); });
+  formEl.addEventListener('submit', (e) => { e.preventDefault(); ask(inputEl.value); });
+  inputEl.addEventListener('input', autosize);
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(inputEl.value); }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'j') {
+      e.preventDefault(); toggleAI(); return;
+    }
+    if (e.key === 'Escape' && AI.open) { e.preventDefault(); e.stopPropagation(); closeAI(); }
+  }, true);
+
+  // mobile: swipe the header down to dismiss
+  let dragY = null;
+  headEl.addEventListener('touchstart', (e) => { dragY = e.touches[0].clientY; panel.style.transition = 'none'; }, { passive: true });
+  headEl.addEventListener('touchmove', (e) => {
+    if (dragY == null) return;
+    const dy = e.touches[0].clientY - dragY;
+    if (dy > 0) panel.style.transform = 'translateY(' + dy + 'px)';
+  }, { passive: true });
+  headEl.addEventListener('touchend', (e) => {
+    if (dragY == null) return;
+    const dy = (e.changedTouches[0].clientY - dragY);
+    panel.style.transition = '';
+    panel.style.transform = '';
+    if (dy > 90) closeAI();
+    dragY = null;
+  });
+
+  // keep the FAB label / kbd / notes in sync when the UI language flips
+  window.aiSyncChrome = syncChrome;
+  syncChrome();
+})();
 
 boot();
 </script>
