@@ -8,6 +8,7 @@ dashboard.html:
     games/<season>/index.json         schedule + results (all games, all stages)
     games/<season>/g/<game_id>.json   one full box score per played game
     games/<season>/player_logs.json   columnar: one row per player per game
+    games/seasons.json                manifest: which seasons have game data
 
 Source pages (basket.co.il, English):
   * results.asp?cYear=<Y>&Board=<b> ... one fixtures/results table per
@@ -336,6 +337,8 @@ def validate_game(game: dict, box: dict) -> tuple[list[str], list[str]]:
         s = sum(p["pts"] for p in t["players"]) + tr.get("pts", 0)
         if s != t["total"]["pts"]:
             errs.append(f"{tag}: sum pts {s} != Total {t['total']['pts']}")
+        if tr.get("pts"):
+            warns.append(f"{tag}: {tr['pts']} pts credited to the Team row, not a player (source)")
         for k in _SOFT_SUM_KEYS:
             s = sum(p[k] for p in t["players"]) + tr.get(k, 0)
             if s != t["total"][k]:
@@ -376,7 +379,10 @@ def box_doc(season: str, game: dict, box: dict) -> dict:
             "coach": t["coach"],
             "pts": side["pts"],
             "q": t["q"],
-            "team_reb": {"oreb": tr.get("oreb", 0), "dreb": tr.get("dreb", 0)},
+            # the site's "Team" row: team rebounds / turnovers, and occasionally
+            # points the statisticians did not attribute to any player
+            "team_row": {k: tr.get(k, 0 if k not in ("fg2", "fg3", "ft") else [0, 0])
+                         for k in ("pts", "fg2", "fg3", "ft", "oreb", "dreb", "ast", "stl", "tov", "blk", "pf")},
             "players": t["players"],
         }
         if "more" in t:
@@ -609,6 +615,17 @@ def main(argv=None) -> int:
             "schema_version": SCHEMA_VERSION, "season": season, "generated_at": now,
             "cols": LOG_COLS, "rows": logs,
         })
+        # games/seasons.json: which seasons have game data. The dashboard reads
+        # this first so it never requests (and 404s on) a season without games.
+        manifest_path = args.out / "seasons.json"
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            manifest = {}
+        seasons = manifest.get("seasons", {})
+        seasons[season] = {"generated_at": now, "games": len(ok)}
+        _write_json(manifest_path, {"schema_version": SCHEMA_VERSION,
+                                    "seasons": dict(sorted(seasons.items()))})
 
     # 4) report
     print()

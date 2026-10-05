@@ -13,6 +13,12 @@
  *     deliberately un-sticks it so the wrapped 3-row bar doesn't eat the
  *     viewport), `sticky` above -- and at a desktop control width the sticky
  *     bar actually stays pinned to top:0 after a scroll.
+ *   - Box-score modal (games/ pilot): opening a game from the League tab's
+ *     results list renders the modal without horizontal page overflow, the
+ *     modal box stays inside the viewport (its wide stat table scrolls inside
+ *     its own container), and Escape closes it.
+ *   - Upgrade notice (UPGRADE_NOTICE flag): no overflow with the banner on,
+ *     and switching the flag off hides it cleanly -- QA is valid either way.
  *
  * Playwright is NOT a repo dependency. Install it once:
  *     cd scripts && npm init -y && npm i -D playwright && npx playwright install chromium
@@ -144,6 +150,55 @@ async function checkTopbar(page, scope, width) {
   record(r.position === expected, scope, `topbar position ${r.position} (expected ${expected} @ ${width}px)`);
 }
 
+async function checkBoxModal(page, scope) {
+  await gotoTab(page, 'league');
+  try {
+    await page.waitForSelector('.games-results .gm-row:not([aria-disabled])', { timeout: 5000 });
+  } catch (e) {
+    record(false, scope, 'box modal: results list did not render (games/ data missing?)');
+    return;
+  }
+  await page.click('.games-results .gm-row:not([aria-disabled])');
+  await page.waitForSelector('#bx-overlay:not([hidden]) .bx-table', { timeout: 5000 });
+  await page.waitForTimeout(60);
+  const m = await page.evaluate(() => {
+    const r = document.querySelector('.bx-modal').getBoundingClientRect();
+    return {
+      over: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth,
+      left: Math.round(r.left), right: Math.round(r.right - window.innerWidth),
+      tables: document.querySelectorAll('#bx-body .bx-table').length,
+    };
+  });
+  record(m.over <= 1 && m.left >= -1 && m.right <= 1 && m.tables === 2, scope,
+    `box modal: 2 team tables, page h-overflow ${m.over}px, modal box in viewport (left ${m.left}px, right +${m.right}px)`);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(40);
+  const closed = await page.evaluate(() => document.getElementById('bx-overlay').hidden
+    && document.documentElement.style.overflow === '');
+  record(closed, scope, 'box modal: Escape closes it and releases the scroll lock');
+}
+
+async function checkUpgradeNotice(page, scope) {
+  await gotoTab(page, 'overview');
+  const on = await page.evaluate(() => {
+    const b = document.getElementById('upgrade-banner');
+    const r = b.getBoundingClientRect();
+    return { shown: !b.hidden, right: Math.round(r.right - window.innerWidth),
+      over: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth };
+  });
+  record(on.shown && on.over <= 1 && on.right <= 1, scope,
+    `upgrade notice ON: visible, h-overflow ${on.over}px`);
+  const off = await page.evaluate(() => {
+    UPGRADE_NOTICE.enabled = false; renderUpgradeNotice();
+    const b = document.getElementById('upgrade-banner');
+    const res = { hidden: b.hidden && b.offsetHeight === 0,
+      over: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth };
+    UPGRADE_NOTICE.enabled = true; renderUpgradeNotice();
+    return res;
+  });
+  record(off.hidden && off.over <= 1, scope, `upgrade notice OFF (flag): hidden, h-overflow ${off.over}px`);
+}
+
 async function checkStickyPinned(page, scope) {
   await page.evaluate(() => window.scrollTo(0, 600));
   await page.waitForTimeout(60);
@@ -191,6 +246,9 @@ async function checkStickyPinned(page, scope) {
         if (vp.width > 640) await checkStickyPinned(page, scope);
         if (tab === 'team') await checkEveryTeamRoster(page, scope);
       }
+
+      await checkBoxModal(page, `${lang.code}/${vp.name}/box`);
+      await checkUpgradeNotice(page, `${lang.code}/${vp.name}/notice`);
 
       await context.close();
     }

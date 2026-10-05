@@ -1130,6 +1130,159 @@
   .ai-send:disabled { opacity: .5; cursor: default; }
   .ai-note { padding: 0 16px 10px; font: 500 10px/1.4 var(--font-body); color: var(--ink-4); flex: none; }
   .ai-note[hidden] { display: none; }
+
+  /* ---------- Upgrade notice (UPGRADE_NOTICE flag) ----------
+     Thin, dismissible, NOT sticky -- it scrolls away with the page and never
+     pushes or overlaps the (sticky) top bar. */
+  .upg-banner {
+    display: flex; align-items: center; gap: 12px; padding: 9px 40px;
+    background: rgba(var(--accent-rgb), .10); border-bottom: 1px solid rgba(var(--accent-rgb), .28);
+    font: 500 12.5px/1.45 var(--font-body); color: var(--ink-2);
+  }
+  .upg-banner[hidden] { display: none; }
+  .upg-banner .upg-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex: none; }
+  .upg-banner .upg-text { flex: 1; min-width: 0; }
+  .upg-banner .upg-close {
+    flex: none; width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--hair-strong);
+    background: transparent; color: var(--ink-3); font: 500 14px/1 var(--font-body); cursor: pointer;
+  }
+  .upg-banner .upg-close:hover { color: var(--ink); background: rgba(255,255,255,.06); }
+
+  /* ---------- Games: results list / team games ---------- */
+  .gm-list { padding: 4px 0; }
+  .gm-row {
+    display: grid; grid-template-columns: 52px minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px;
+    width: 100%; padding: 11px 28px; border: 0; border-bottom: 1px solid var(--hair-soft);
+    background: transparent; color: inherit; font-family: inherit; text-align: inherit; cursor: pointer;
+  }
+  .gm-row:last-child { border-bottom: 0; }
+  .gm-row[hidden] { display: none; }
+  .gm-row:hover, .gm-row:focus-visible { background: rgba(255,255,255,.035); outline: none; }
+  .gm-row[aria-disabled="true"] { cursor: default; opacity: .6; }
+  .gm-row[aria-disabled="true"]:hover { background: transparent; }
+  .gm-date { font: 500 11.5px/1.3 var(--font-body); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .gm-date small { display: block; font-size: 10px; color: var(--ink-4); }
+  .gm-team { font: 600 13.5px/1.2 var(--font-body); color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .gm-team.home { text-align: end; }
+  .gm-team.win { color: var(--ink); }
+  .gm-score {
+    display: inline-flex; align-items: baseline; gap: 6px; justify-content: center; min-width: 78px;
+    font: 600 15px/1 var(--font-body); font-variant-numeric: tabular-nums; color: var(--ink-3);
+  }
+  .gm-score b { font-weight: 700; color: var(--ink-3); }
+  .gm-score b.win { color: var(--ink); }
+  .gm-score sup { font: 700 9px/1 var(--font-body); color: var(--accent); letter-spacing: .04em; }
+  .gm-tg { grid-template-columns: 52px 24px minmax(0, 1fr) auto; }
+  .gm-wl {
+    width: 22px; height: 22px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center;
+    font: 700 11px/1 var(--font-body); color: #fff; background: rgba(96,122,158,.55);
+  }
+  .gm-wl.w { background: var(--accent); }
+  .gm-opp { font: 600 13.5px/1.2 var(--font-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .gm-opp small { font: 500 11px/1 var(--font-body); color: var(--ink-4); margin-inline-end: 6px; }
+  .gm-form { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; padding: 14px 28px 4px; }
+  .gm-form .lbl { font: 600 10px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin-inline-end: 6px; }
+  .gm-loading { padding: 28px; text-align: center; font: 500 12.5px/1.5 var(--font-body); color: var(--ink-3); }
+  .gm-select {
+    background: var(--panel); color: var(--ink); border: 1px solid var(--hair-strong); border-radius: 4px;
+    padding: 7px 11px; font: 600 12px/1 var(--font-body); cursor: pointer; max-width: 100%;
+  }
+
+  /* ---------- Box-score modal (shares the glossary overlay shell) ---------- */
+  .bx-modal { width: min(1000px, 100%); max-height: 88vh; }
+  .bx-body { overflow-y: auto; overscroll-behavior: contain; padding: 0 0 20px; }
+  .bx-meta { padding: 14px 20px 0; font: 500 11.5px/1.5 var(--font-body); color: var(--ink-3); text-align: center; }
+  .bx-board { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 14px; padding: 10px 20px 16px; }
+  .bx-board .tm { font: 700 15px/1.25 var(--font-body); color: var(--ink-2); overflow-wrap: anywhere; }
+  .bx-board .tm.home { text-align: end; }
+  .bx-board .tm.win { color: var(--ink); }
+  .bx-board .sc { display: flex; align-items: center; gap: 10px; font: 400 40px/1 var(--font-display); font-variant-numeric: tabular-nums; color: var(--ink-3); }
+  .bx-board .sc .win { color: var(--accent); }
+  .bx-board .sc i { font-style: normal; font-size: 22px; color: var(--ink-4); }
+  .bx-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+  .bx-q { margin: 0 auto 6px; border-collapse: collapse; font: 500 12px/1 var(--font-body); font-variant-numeric: tabular-nums; }
+  .bx-q th, .bx-q td { padding: 6px 10px; text-align: center; border-bottom: 1px solid var(--hair-soft); white-space: nowrap; }
+  .bx-q th { font: 600 9.5px/1 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+  .bx-q td:first-child, .bx-q th:first-child { text-align: start; color: var(--ink-2); max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+  .bx-q td.tot { font-weight: 700; color: var(--ink); }
+  .bx-note { margin: 10px 20px 0; padding: 8px 12px; border: 1px dashed var(--hair-strong); border-radius: 8px; font: 500 11.5px/1.5 var(--font-body); color: var(--ink-3); }
+  .bx-team-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 20px 20px 8px; }
+  .bx-team-head b { font: 400 20px/1.1 var(--font-display); text-transform: uppercase; color: var(--ink); }
+  .bx-team-head span { font: 500 11px/1.3 var(--font-body); color: var(--ink-3); }
+  .bx-table { border-collapse: separate; border-spacing: 0; min-width: 100%; font: 500 12.5px/1 var(--font-body); font-variant-numeric: tabular-nums; }
+  .bx-table th, .bx-table td { padding: 8px 9px; text-align: center; border-bottom: 1px solid var(--hair-soft); white-space: nowrap; }
+  .bx-table th { font: 600 9.5px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); border-bottom-color: var(--hair-strong); }
+  .bx-table .nm {
+    position: sticky; inset-inline-start: 0; z-index: 1; text-align: start; min-width: 150px; max-width: 190px;
+    background: #151b23; overflow: hidden; text-overflow: ellipsis;
+  }
+  .bx-table td.nm { font-weight: 600; color: var(--ink); }
+  .bx-table .nm .jr { display: inline-block; min-width: 22px; color: var(--ink-4); font-weight: 500; }
+  .bx-table .nm .st { color: var(--accent); margin-inline-start: 4px; }
+  .bx-table .nm button { all: unset; cursor: pointer; }
+  .bx-table .nm button:hover, .bx-table .nm button:focus-visible { color: var(--accent); text-decoration: underline; }
+  .bx-table td.pts { font-weight: 700; color: var(--ink); }
+  .bx-table td.dim { color: var(--ink-4); }
+  .bx-table td.pos { color: #5fbf8f; }
+  .bx-table td.neg { color: #d9826f; }
+  .bx-table tr.tot td { font-weight: 700; color: var(--ink); border-top: 1px solid var(--hair-strong); border-bottom: 0; }
+  .bx-more { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding: 18px 20px 0; }
+  .bx-more div { background: rgba(255,255,255,.035); border: 1px solid var(--hair); border-radius: 10px; padding: 10px 12px; }
+  .bx-more .k { font: 600 9.5px/1.3 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+  .bx-more .v { margin-top: 6px; font: 600 13px/1.3 var(--font-body); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .bx-foot { padding: 16px 20px 0; font: 500 11px/1.6 var(--font-body); color: var(--ink-4); text-align: center; }
+
+  /* ---------- Player game log ---------- */
+  .glg-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-bottom: 1px solid var(--hair); }
+  .glg-tiles > div { padding: 18px 20px; border-inline-end: 1px solid var(--hair); }
+  .glg-tiles > div:last-child { border-inline-end: 0; }
+  .glg-tiles .num { font: 400 32px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+  .glg-tiles .num.hi { color: var(--accent); }
+  .glg-tiles .lbl { margin-top: 7px; font: 600 9.5px/1.3 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+  .glg-chart { padding: 16px 20px 4px; }
+  .glg-chart svg { display: block; width: 100%; height: auto; direction: ltr; }
+  .glg-chart .bar { cursor: pointer; }
+  .glg-chart .bar:hover rect, .glg-chart .bar:focus-visible rect { fill-opacity: 1; }
+  .glg-chart .bar:focus-visible { outline: none; }
+  .glg-legend { display: flex; gap: 16px; flex-wrap: wrap; padding: 4px 20px 14px; font: 500 11px/1.3 var(--font-body); color: var(--ink-3); }
+  .glg-legend i { display: inline-block; width: 14px; height: 3px; vertical-align: middle; margin-inline-end: 6px; border-radius: 2px; }
+  .glg-cols { grid-template-columns: 58px minmax(120px, 1fr) 104px repeat(9, 46px); column-gap: 8px; min-width: 800px; height: 46px; }
+  .grid-row.glg-cols[hidden] { display: none; }
+  .grid-head.glg-cols { height: 42px; }
+  .glg-res { font: 600 12.5px/1 var(--font-body); font-variant-numeric: tabular-nums; }
+  .glg-res .w { color: var(--accent); } .glg-res .l { color: var(--ink-3); }
+  /* signed numbers keep their sign on the left in RTL too */
+  .glg-tiles .num, .glg-pm, .bx-table td.pos, .bx-table td.neg { direction: ltr; unicode-bidi: isolate; }
+  .gm-more {
+    display: block; width: 100%; padding: 12px 28px; border: 0; border-top: 1px solid var(--hair);
+    background: transparent; color: var(--ink-2); font: 600 11px/1 var(--font-body); letter-spacing: .1em;
+    text-transform: uppercase; cursor: pointer; text-align: center;
+  }
+  .gm-more:hover { color: var(--ink); background: rgba(255,255,255,.03); }
+  @media (max-width: 760px) {
+    .glg-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .glg-tiles > div:nth-child(3) { border-inline-end: 0; }
+    .glg-tiles > div:nth-child(n+4) { border-top: 1px solid var(--hair); }
+    .bx-more { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .upg-banner { padding: 9px 16px; font-size: 12px; }
+    .gm-row { padding: 10px 14px; gap: 8px; grid-template-columns: 44px minmax(0, 1fr) auto minmax(0, 1fr); }
+    .gm-tg { grid-template-columns: 44px 22px minmax(0, 1fr) auto; }
+    .gm-team, .gm-opp { font-size: 12.5px; }
+    .gm-score { min-width: 64px; font-size: 14px; gap: 4px; }
+    .gm-form { padding: 12px 14px 2px; }
+    .bx-board { gap: 8px; padding: 8px 12px 14px; }
+    .bx-board .tm { font-size: 12.5px; }
+    .bx-board .sc { font-size: 30px; gap: 6px; }
+    .bx-team-head { padding: 18px 12px 8px; }
+    .bx-table .nm { min-width: 118px; max-width: 132px; }
+    .bx-more { padding: 16px 12px 0; }
+    .glg-tiles > div { padding: 14px 12px; }
+    .glg-tiles .num { font-size: 26px; }
+    .glg-chart { padding: 12px 10px 2px; }
+    .glg-legend { padding: 4px 14px 12px; }
+  }
 </style>
 
 <div class="shell">
@@ -1176,6 +1329,8 @@
     </div>
   </div>
 
+  <div class="upg-banner" id="upgrade-banner" role="status" hidden></div>
+
   <div id="view" class="view"></div>
 
   <footer class="site-foot">
@@ -1198,6 +1353,17 @@
       <input id="gl-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Search glossary">
     </div>
     <div class="gl-body" id="gl-body"></div>
+  </div>
+</div>
+
+<div class="gl-overlay bx-overlay" id="bx-overlay" hidden>
+  <div class="gl-modal bx-modal" role="dialog" aria-modal="true" aria-labelledby="bx-title">
+    <div class="gl-head">
+      <span class="gl-ico" aria-hidden="true">🏀</span>
+      <h2 id="bx-title">Box Score</h2>
+      <button type="button" class="gl-close" id="bx-close" aria-label="Close">✕</button>
+    </div>
+    <div class="bx-body" id="bx-body"></div>
   </div>
 </div>
 
@@ -1476,6 +1642,48 @@ const STR = {
     gl_empty: 'לא נמצא מונח תואם',
     gl_formula_label: 'נוסחה',
     gl_footer_note: 'מילון מונחים ומתודולוגיה',
+    // ---- games: results / box score / game log ----
+    upg_notice: 'האתר עובר שדרוג: נתוני Box Scores ו-Game Logs של עונת 2025-26 מתווספים בהדרגה',
+    upg_close: 'סגירת ההודעה',
+    res_kicker: 'משחקים',
+    res_title: 'תוצאות ו-Box Score',
+    res_round_label: 'מחזור / שלב',
+    res_round_opt: (n) => 'מחזור ' + n,
+    res_game_n: (n) => 'משחק ' + n,
+    res_loading: 'טוען משחקים…',
+    res_hint: 'לחצו על משחק כדי לפתוח את ה-Box Score המלא.',
+    res_no_box: 'לא פורסם Box Score למשחק זה',
+    res_empty: 'אין משחקים להצגה',
+    stage_regular: 'עונה סדירה', stage_playin: 'פליי-אין', stage_quarterfinal: 'רבע גמר',
+    stage_semifinal: 'חצי גמר', stage_final: 'גמר',
+    tg_kicker: 'יומן הקבוצה',
+    tg_title: 'משחקי הקבוצה',
+    tg_form: 'כושר · 10 אחרונים',
+    tg_show_all: (n) => 'הצג את כל ' + n + ' המשחקים',
+    tg_show_less: 'הצג פחות',
+    tg_vs: 'נגד', tg_at: '@',
+    wl_w: 'נ', wl_l: 'ה',
+    bx_title: 'Box Score',
+    bx_close: 'סגירה',
+    bx_player: 'שחקן',
+    bx_team: 'קבוצה',
+    bx_total: 'סה״כ',
+    bx_starters: '● פותח בחמישייה',
+    bx_coach: (c) => 'מאמן: ' + c,
+    bx_referees: 'שופטים',
+    bx_att: 'קהל',
+    bx_flag_note: 'הערה: בנתוני המקור של משחק זה יש אי-התאמה קטנה (למשל עבירה או ריבאונד שנרשמו רק בשורת הסיכום).',
+    bx_more: { pts_off_tov: 'נק׳ מאיבודים', pts_paint: 'נק׳ בצבע', second_chance: 'הזדמנות שנייה', time_leading: 'זמן בהובלה' },
+    bx_error: 'לא ניתן לטעון את ה-Box Score',
+    glg_kicker: 'יומן משחקים',
+    glg_title: 'משחק אחר משחק',
+    glg_new: 'מדדים חדשים מה-Box Score',
+    glg_chart_bar: 'PIR במשחק',
+    glg_chart_avg: 'ממוצע נע · 5 משחקים',
+    glg_chart_mean: 'ממוצע עונתי',
+    glg_tile_starts: (s, g) => 'פתח ' + s + ' מתוך ' + g,
+    lbl_stl: 'חטיפות למשחק', lbl_blk: 'חסימות למשחק', lbl_pm: '+/- למשחק', lbl_fd: 'עבירות שספג למשחק', lbl_gp_starts: 'משחקים',
+    col_date: 'תאריך', col_opp: 'יריבה', col_result: 'תוצאה',
     sl_placeholder: 'חיפוש שחקנים וקבוצות…',
     sl_grp_players: 'שחקנים',
     sl_grp_teams: 'קבוצות',
@@ -1767,6 +1975,48 @@ const STR = {
     gl_empty: 'No matching term',
     gl_formula_label: 'Formula',
     gl_footer_note: 'Glossary & Methodology',
+    // ---- games: results / box score / game log ----
+    upg_notice: 'Site upgrade in progress: 2025-26 Box Scores and Game Logs are being added gradually',
+    upg_close: 'Dismiss notice',
+    res_kicker: 'Games',
+    res_title: 'Results & box scores',
+    res_round_label: 'Round / stage',
+    res_round_opt: (n) => 'Round ' + n,
+    res_game_n: (n) => 'Game ' + n,
+    res_loading: 'Loading games…',
+    res_hint: 'Click a game to open its full box score.',
+    res_no_box: 'No box score was published for this game',
+    res_empty: 'No games to show',
+    stage_regular: 'Regular season', stage_playin: 'Play-In', stage_quarterfinal: 'Quarterfinal',
+    stage_semifinal: 'Semifinal', stage_final: 'Final',
+    tg_kicker: 'Team log',
+    tg_title: 'Team games',
+    tg_form: 'Form · last 10',
+    tg_show_all: (n) => 'Show all ' + n + ' games',
+    tg_show_less: 'Show fewer',
+    tg_vs: 'vs', tg_at: '@',
+    wl_w: 'W', wl_l: 'L',
+    bx_title: 'Box Score',
+    bx_close: 'Close',
+    bx_player: 'Player',
+    bx_team: 'Team',
+    bx_total: 'Total',
+    bx_starters: '● starter',
+    bx_coach: (c) => 'Coach: ' + c,
+    bx_referees: 'Referees',
+    bx_att: 'Attendance',
+    bx_flag_note: 'Note: the league source has a minor inconsistency in this game (e.g. a foul or rebound recorded only in the totals row).',
+    bx_more: { pts_off_tov: 'Pts off TO', pts_paint: 'Paint pts', second_chance: '2nd chance', time_leading: 'Time leading' },
+    bx_error: 'Could not load this box score',
+    glg_kicker: 'Game log',
+    glg_title: 'Game by game',
+    glg_new: 'New from the box score',
+    glg_chart_bar: 'PIR per game',
+    glg_chart_avg: '5-game rolling avg',
+    glg_chart_mean: 'Season average',
+    glg_tile_starts: (s, g) => s + ' starts of ' + g,
+    lbl_stl: 'Steals / game', lbl_blk: 'Blocks / game', lbl_pm: '+/- per game', lbl_fd: 'Fouls drawn / game', lbl_gp_starts: 'Games',
+    col_date: 'Date', col_opp: 'Opponent', col_result: 'Result',
     sl_placeholder: 'Search players and teams…',
     sl_grp_players: 'Players',
     sl_grp_teams: 'Teams',
@@ -2325,6 +2575,7 @@ function setLang(lang) {
   document.title = t('brand');
   renderChrome();
   render();
+  if (BX.open) bxOpen(BX.season, BX.gameId);
 }
 function setCompetition(comp) {
   if (comp === state.competition) return;
@@ -2409,6 +2660,7 @@ function renderChrome() {
   if (typeof slSyncChrome === 'function') slSyncChrome();
   if (typeof glSyncChrome === 'function') glSyncChrome();
   if (typeof window.aiSyncChrome === 'function') window.aiSyncChrome();
+  renderUpgradeNotice();
 
   tabsNav.innerHTML = '';
   TAB_KEYS.forEach((tb) => {
@@ -2801,6 +3053,7 @@ function renderLeague(root) {
   });
   panel.appendChild(wrap);
   root.appendChild(panel);
+  gamesSlot(root, () => loadGameIndex(state.season).then((idx) => (idx ? resultsPanel(idx) : null)));
 }
 
 /* ---------------- Team ---------------- */
@@ -2955,6 +3208,8 @@ function renderTeam(root) {
   // NB: `t` is the team object in this function, not the i18n helper -- use STR.
   if (roster.some(isMultiStint)) rosterPanel.appendChild(el('div', 'team-note', STR[state.lang].stint_note));
   root.appendChild(rosterPanel);
+  const gamesTeamId = t.id;
+  gamesSlot(root, () => loadGameIndex(state.season).then((idx) => (idx ? teamGamesPanel(idx, gamesTeamId) : null)));
 }
 
 /* ---------------- Player ---------------- */
@@ -3325,6 +3580,9 @@ function renderPlayerCard(root) {
   if (isMultiStint(p)) seasonPanel.appendChild(el('div', 'team-note', t('stint_note')));
   root.appendChild(seasonPanel);
 
+  // game-by-game log (lazy: games/<season>/player_logs.json, only seasons with game data)
+  gamesSlot(root, () => playerGameLogPanel(p));
+
   // Rule-based read of this player's season, relative to the active season's
   // qualified pool (Per-36 already lives in the season table above, so the old
   // advanced-metrics grid is gone).
@@ -3371,6 +3629,623 @@ function renderPlayerCard(root) {
   });
   cmpPanel.appendChild(cmpBody);
   root.appendChild(cmpPanel);
+}
+
+/* ---------------- Games: results, box scores, game logs (lazy-loaded) ----------------
+ * Per-game data lives OUTSIDE data.json (produced by scrape_games.py):
+ *   games/seasons.json               which seasons have game data (tiny manifest)
+ *   games/<season>/index.json        schedule + results + quarter lines
+ *   games/<season>/g/<id>.json       one box score
+ *   games/<season>/player_logs.json  columnar player-game rows
+ * Nothing here is requested at boot. Each file is fetched the first time a view
+ * needs it and memoised as a Promise keyed by URL, so a second open of the same
+ * game (or two views asking at once) never re-downloads. Box/log URLs carry
+ * ?v=<index.generated_at>: a regenerated file busts the HTTP cache, an unchanged
+ * one is served from it. Seasons absent from the manifest are never requested. */
+const GAMES = { memo: new Map() };
+function gamesGet(url, opts) {
+  if (!GAMES.memo.has(url)) {
+    GAMES.memo.set(url, fetch(url, opts).then((r) => (r.ok ? r.json() : null)).catch(() => null));
+  }
+  return GAMES.memo.get(url);
+}
+// The manifest is revalidated (304 when unchanged) so a newly added season shows up.
+function gamesSeasons() { return gamesGet('./games/seasons.json', { cache: 'no-cache' }); }
+async function loadGameIndex(season) {
+  const m = await gamesSeasons();
+  const meta = m && m.seasons && m.seasons[season];
+  if (!meta) return null;
+  return gamesGet('./games/' + season + '/index.json?v=' + encodeURIComponent(meta.generated_at));
+}
+async function loadBox(season, id) {
+  const idx = await loadGameIndex(season);
+  if (!idx) return null;
+  return gamesGet('./games/' + season + '/g/' + id + '.json?v=' + encodeURIComponent(idx.generated_at));
+}
+async function loadPlayerLogs(season) {
+  const idx = await loadGameIndex(season);
+  if (!idx) return null;
+  const doc = await gamesGet('./games/' + season + '/player_logs.json?v=' + encodeURIComponent(idx.generated_at));
+  if (doc && !doc._byPlayer) {
+    // columnar rows -> objects, grouped by player once per page load
+    const by = new Map();
+    doc.rows.forEach((r) => {
+      const o = {};
+      doc.cols.forEach((c, i) => { o[c] = r[i]; });
+      if (!by.has(o.player_id)) by.set(o.player_id, []);
+      by.get(o.player_id).push(o);
+    });
+    doc._byPlayer = by;
+  }
+  return doc;
+}
+function gameById(idx, id) {
+  if (!idx._byId) idx._byId = new Map(idx.games.map((g) => [g.id, g]));
+  return idx._byId.get(id) || null;
+}
+
+/* ---- shared formatting ---- */
+const STAGE_ORDER = ['regular', 'playin', 'quarterfinal', 'semifinal', 'final'];
+function stageName(stage) { return STR[state.lang]['stage_' + stage] || stage; }
+function gTeam(id) {
+  return (DATA.teams || []).find((x) => x.id === id)
+    || ((DATA.playoffs && DATA.playoffs.teams) || []).find((x) => x.id === id) || null;
+}
+function gTeamLabel(id) { const tm = gTeam(id); return tm ? teamLabel(tm) : String(id); }
+function gPlayer(id) { return (DATA.players || []).find((x) => x.id === id) || null; }
+function gDateShort(iso) { if (!iso) return '—'; const [, m, d] = iso.split('-'); return Number(d) + '/' + Number(m); }
+function gDateLong(iso) { if (!iso) return ''; const [y, m, d] = iso.split('-'); return d + '/' + m + '/' + y; }
+function gRoundLabel(g) {
+  const S = STR[state.lang];
+  return g.stage === 'regular' ? S.res_round_opt(g.round) : stageName(g.stage) + ' · ' + S.res_game_n(g.round);
+}
+function gOtTag(ot) { return ot ? (ot > 1 ? ot + 'OT' : 'OT') : ''; }
+// Async slot: rendered synchronously as a placeholder, filled when the data
+// arrives -- but only if the user hasn't navigated away (slot still attached).
+function gamesSlot(root, build) {
+  const slot = el('div');
+  root.appendChild(slot);
+  Promise.resolve().then(build).then((node) => {
+    if (!slot.isConnected) return;
+    if (node) slot.replaceWith(node); else slot.remove();
+  }).catch(() => { if (slot.isConnected) slot.remove(); });
+  return slot;
+}
+
+/* ---- League tab: results by round / playoff stage ---- */
+function resultsPanel(idx) {
+  const S = STR[state.lang];
+  const games = idx.games.filter((g) => g.status === 'final' || g.status === 'scheduled');
+  const keyOf = (g) => (g.stage === 'regular' ? 'regular:' + g.round : g.stage);
+  const keys = [];
+  STAGE_ORDER.forEach((st) => {
+    const inStage = games.filter((g) => g.stage === st);
+    if (st === 'regular') [...new Set(inStage.map((g) => g.round))].sort((a, b) => a - b).forEach((r) => keys.push('regular:' + r));
+    else if (inStage.length) keys.push(st);
+  });
+  if (!keys.length) return null;
+  const playoffKeys = keys.filter((k) => !k.startsWith('regular:'));
+  if (!keys.includes(state.resKey)) {
+    state.resKey = (state.competition === 'playoffs' && playoffKeys.length)
+      ? playoffKeys[playoffKeys.length - 1]
+      : keys.filter((k) => k.startsWith('regular:')).pop() || keys[0];
+  }
+
+  const panel = el('div', 'panel games-results');
+  panel.style.marginTop = '24px';
+  const head = el('div', 'panel-head');
+  head.appendChild(el('div', 'panel-kicker', S.res_kicker));
+  head.appendChild(el('div', 'panel-title sm', S.res_title));
+  panel.appendChild(head);
+
+  const ctl = el('div', 'stat-mode-row');
+  ctl.style.paddingTop = '16px';
+  const sel = document.createElement('select');
+  sel.className = 'gm-select';
+  sel.id = 'res-round';
+  ctl.appendChild(Object.assign(el('label', null, S.res_round_label), { htmlFor: 'res-round' }));
+  keys.forEach((k) => {
+    const label = k.startsWith('regular:') ? S.res_round_opt(Number(k.split(':')[1])) : stageName(k);
+    sel.appendChild(new Option(label, k, false, k === state.resKey));
+  });
+  ctl.appendChild(sel);
+  panel.appendChild(ctl);
+
+  const list = el('div', 'gm-list');
+  const fill = () => {
+    list.innerHTML = '';
+    const rows = games.filter((g) => keyOf(g) === state.resKey)
+      .sort((a, b) => (a.date || '').localeCompare(b.date || '') || (a.time || '').localeCompare(b.time || '') || a.id - b.id);
+    if (!rows.length) { list.appendChild(el('div', 'empty-state', S.res_empty)); return; }
+    rows.forEach((g) => list.appendChild(resultRow(g)));
+  };
+  sel.addEventListener('change', (e) => { state.resKey = e.target.value; fill(); });
+  fill();
+  panel.appendChild(list);
+  panel.appendChild(el('div', 'team-note', S.res_hint));
+  return panel;
+}
+
+function resultRow(g) {
+  const S = STR[state.lang];
+  const row = el('button', 'gm-row');
+  row.type = 'button';
+  row.dataset.gameId = String(g.id);
+  const played = g.home.pts != null && g.away.pts != null;
+  const homeWin = played && g.home.pts > g.away.pts;
+  const awayWin = played && g.away.pts > g.home.pts;
+  const date = el('span', 'gm-date', gDateShort(g.date));
+  if (g.stage !== 'regular') date.appendChild(el('small', null, S.res_game_n(g.round)));
+  row.appendChild(date);
+  row.appendChild(el('span', 'gm-team home' + (homeWin ? ' win' : ''), gTeamLabel(g.home.team_id)));
+  const sc = el('span', 'gm-score');
+  if (played) {
+    sc.appendChild(el('b', homeWin ? 'win' : null, String(g.home.pts)));
+    sc.appendChild(document.createTextNode('–'));
+    sc.appendChild(el('b', awayWin ? 'win' : null, String(g.away.pts)));
+    if (g.ot) sc.appendChild(el('sup', null, gOtTag(g.ot)));
+  } else sc.appendChild(document.createTextNode(g.time || '—'));
+  row.appendChild(sc);
+  row.appendChild(el('span', 'gm-team' + (awayWin ? ' win' : ''), gTeamLabel(g.away.team_id)));
+  bindGameRow(row, g);
+  return row;
+}
+
+function bindGameRow(row, g) {
+  const S = STR[state.lang];
+  if (g.box) {
+    row.addEventListener('click', () => bxOpen(state.season, g.id));
+  } else {
+    row.setAttribute('aria-disabled', 'true');
+    row.title = S.res_no_box;
+  }
+}
+
+/* "Show all N / Show fewer" toggle for a long list: rows past `show` start hidden. */
+function showMoreToggle(rowEls, show, total) {
+  const S = STR[state.lang];
+  rowEls.forEach((r, i) => { r.hidden = i >= show; });
+  const more = el('button', 'gm-more', S.tg_show_all(total));
+  more.type = 'button';
+  more.setAttribute('aria-expanded', 'false');
+  more.addEventListener('click', () => {
+    const open = more.getAttribute('aria-expanded') !== 'true';
+    rowEls.forEach((r, i) => { if (i >= show) r.hidden = !open; });
+    more.setAttribute('aria-expanded', open ? 'true' : 'false');
+    more.textContent = open ? S.tg_show_less : S.tg_show_all(total);
+  });
+  return more;
+}
+
+/* ---- Team tab: the club's own games + form strip ---- */
+function teamGamesPanel(idx, teamId) {
+  const S = STR[state.lang];
+  const mine = idx.games
+    .filter((g) => g.status === 'final' && (g.home.team_id === teamId || g.away.team_id === teamId))
+    .filter((g) => (state.competition === 'playoffs' ? g.stage !== 'regular' : g.stage === 'regular'))
+    .sort((a, b) => (a.date || '').localeCompare(b.date || '') || a.id - b.id);
+  if (!mine.length) return null;
+
+  const panel = el('div', 'panel team-games');
+  panel.style.marginTop = '24px';
+  const head = el('div', 'panel-head');
+  head.appendChild(el('div', 'panel-kicker', S.tg_kicker));
+  head.appendChild(el('div', 'panel-title sm', S.tg_title));
+  panel.appendChild(head);
+
+  const persp = (g) => {
+    const home = g.home.team_id === teamId;
+    const us = home ? g.home : g.away, them = home ? g.away : g.home;
+    return { home, us, them, win: us.pts > them.pts };
+  };
+  const form = el('div', 'gm-form');
+  form.appendChild(el('span', 'lbl', S.tg_form));
+  mine.slice(-10).forEach((g) => {
+    const v = persp(g);
+    const b = el('span', 'gm-wl' + (v.win ? ' w' : ''), v.win ? S.wl_w : S.wl_l);
+    b.title = gDateShort(g.date) + ' · ' + gTeamLabel(v.them.team_id) + ' ' + v.us.pts + '–' + v.them.pts;
+    form.appendChild(b);
+  });
+  panel.appendChild(form);
+
+  const list = el('div', 'gm-list');
+  [...mine].reverse().forEach((g) => {
+    const v = persp(g);
+    const row = el('button', 'gm-row gm-tg');
+    row.type = 'button';
+    row.dataset.gameId = String(g.id);
+    const date = el('span', 'gm-date', gDateShort(g.date));
+    date.appendChild(el('small', null, g.stage === 'regular' ? S.res_round_opt(g.round) : stageName(g.stage)));
+    row.appendChild(date);
+    row.appendChild(el('span', 'gm-wl' + (v.win ? ' w' : ''), v.win ? S.wl_w : S.wl_l));
+    const opp = el('span', 'gm-opp');
+    opp.appendChild(el('small', null, v.home ? S.tg_vs : S.tg_at));
+    opp.appendChild(document.createTextNode(gTeamLabel(v.them.team_id)));
+    row.appendChild(opp);
+    const sc = el('span', 'gm-score');
+    sc.appendChild(el('b', v.win ? 'win' : null, String(v.us.pts)));
+    sc.appendChild(document.createTextNode('–'));
+    sc.appendChild(el('b', v.win ? null : 'win', String(v.them.pts)));
+    if (g.ot) sc.appendChild(el('sup', null, gOtTag(g.ot)));
+    row.appendChild(sc);
+    bindGameRow(row, g);
+    list.appendChild(row);
+  });
+  panel.appendChild(list);
+  if (mine.length > 8) panel.appendChild(showMoreToggle([...list.children], 8, mine.length));
+  panel.appendChild(el('div', 'team-note', S.res_hint));
+  return panel;
+}
+
+/* ---- Box-score modal ---- */
+const BX = {
+  overlay: document.getElementById('bx-overlay'),
+  body: document.getElementById('bx-body'),
+  title: document.getElementById('bx-title'),
+  open: false, season: null, gameId: null, lastFocus: null,
+};
+function bxOpen(season, id) {
+  const S = STR[state.lang];
+  BX.season = season; BX.gameId = id;
+  BX.lastFocus = document.activeElement;
+  if (!BX.open) {
+    BX.open = true;
+    BX.overlay.hidden = false;
+    document.documentElement.style.overflow = 'hidden';
+  }
+  BX.title.textContent = S.bx_title;
+  document.getElementById('bx-close').setAttribute('aria-label', S.bx_close);
+  BX.body.innerHTML = '';
+  BX.body.appendChild(el('div', 'gm-loading', S.res_loading));
+  requestAnimationFrame(() => document.getElementById('bx-close').focus());
+  Promise.all([loadBox(season, id), loadGameIndex(season)]).then(([doc, idx]) => {
+    if (!BX.open || BX.gameId !== id) return;
+    BX.body.innerHTML = '';
+    if (!doc) { BX.body.appendChild(el('div', 'gm-loading', S.bx_error)); return; }
+    bxRender(doc, idx ? gameById(idx, id) : null);
+  });
+}
+function bxClose() {
+  if (!BX.open) return;
+  BX.open = false;
+  BX.overlay.hidden = true;
+  BX.gameId = null;
+  document.documentElement.style.overflow = '';
+  if (BX.lastFocus && BX.lastFocus.isConnected) BX.lastFocus.focus({ preventScroll: true });
+}
+function bxRender(doc, g) {
+  const S = STR[state.lang];
+  const [home, away] = doc.teams;
+  const body = BX.body;
+  BX.title.textContent = gTeamLabel(home.team_id) + ' – ' + gTeamLabel(away.team_id);
+
+  const meta = [gRoundLabel(doc), gDateLong(doc.date) + (doc.time ? ' · ' + doc.time : ''), doc.venue].filter(Boolean).join('  ·  ');
+  body.appendChild(el('div', 'bx-meta', meta));
+
+  const board = el('div', 'bx-board');
+  const hw = home.pts > away.pts;
+  board.appendChild(el('div', 'tm home' + (hw ? ' win' : ''), gTeamLabel(home.team_id)));
+  const sc = el('div', 'sc');
+  sc.appendChild(el('span', hw ? 'win' : null, String(home.pts)));
+  sc.appendChild(el('i', null, '–'));
+  sc.appendChild(el('span', hw ? null : 'win', String(away.pts)));
+  board.appendChild(sc);
+  board.appendChild(el('div', 'tm' + (hw ? '' : ' win'), gTeamLabel(away.team_id)));
+  body.appendChild(board);
+
+  // quarter line (4 periods + any OT)
+  const periods = Math.max(home.q.length, away.q.length);
+  if (periods) {
+    const qs = el('div', 'bx-scroll');
+    const tb = el('table', 'bx-q');
+    const hr = el('tr');
+    hr.appendChild(el('th', null, ''));
+    for (let i = 0; i < periods; i++) hr.appendChild(el('th', null, i < 4 ? String(i + 1) : 'OT' + (periods > 5 ? i - 3 : '')));
+    hr.appendChild(el('th', null, S.bx_total));
+    tb.appendChild(hr);
+    [home, away].forEach((tm) => {
+      const r = el('tr');
+      r.appendChild(el('td', null, gTeamLabel(tm.team_id)));
+      for (let i = 0; i < periods; i++) r.appendChild(el('td', null, tm.q[i] != null ? String(tm.q[i]) : '—'));
+      r.appendChild(el('td', 'tot', String(tm.pts)));
+      tb.appendChild(r);
+    });
+    qs.appendChild(tb);
+    body.appendChild(qs);
+  }
+  if (doc.flags && doc.flags.length) body.appendChild(el('div', 'bx-note', S.bx_flag_note));
+
+  [home, away].forEach((tm) => body.appendChild(bxTeamTable(tm)));
+
+  if (home.more && away.more) {
+    const more = el('div', 'bx-more');
+    Object.keys(S.bx_more).forEach((k) => {
+      const box = el('div');
+      box.appendChild(el('div', 'k', S.bx_more[k]));
+      box.appendChild(el('div', 'v', (home.more[k] ?? '—') + '  ·  ' + (away.more[k] ?? '—')));
+      more.appendChild(box);
+    });
+    body.appendChild(more);
+  }
+  const foot = [];
+  if (doc.referees && doc.referees.length) foot.push(S.bx_referees + ': ' + doc.referees.join(', '));
+  if (doc.attendance) foot.push(S.bx_att + ': ' + Number(doc.attendance).toLocaleString(state.lang === 'he' ? 'he-IL' : 'en-US'));
+  foot.push(S.bx_starters);
+  body.appendChild(el('div', 'bx-foot', foot.join('  ·  ')));
+}
+function bxTeamTable(tm) {
+  const S = STR[state.lang];
+  const wrap = el('div');
+  const h = el('div', 'bx-team-head');
+  h.appendChild(el('b', null, gTeamLabel(tm.team_id)));
+  if (tm.coach) h.appendChild(el('span', null, S.bx_coach(tm.coach)));
+  wrap.appendChild(h);
+
+  const COLS = ['MIN', 'PTS', '2PT', '3PT', 'FT', 'OR', 'DR', 'REB', 'AST', 'STL', 'TOV', 'BLK', 'PF', 'FD', '+/-', 'PIR'];
+  const scroll = el('div', 'bx-scroll');
+  const tb = el('table', 'bx-table');
+  const hr = el('tr');
+  hr.appendChild(el('th', 'nm', S.bx_player));
+  COLS.forEach((c) => hr.appendChild(el('th', null, c)));
+  tb.appendChild(hr);
+  const ma = (x) => x[0] + '/' + x[1];
+  const cells = (o) => [
+    o.min, o.pts, ma(o.fg2), ma(o.fg3), ma(o.ft), o.oreb, o.dreb, o.oreb + o.dreb,
+    o.ast, o.stl, o.tov, o.blk, o.pf, o.fd, o.pm, o.pir,
+  ];
+  tm.players.forEach((p) => {
+    const r = el('tr');
+    const nm = el('td', 'nm');
+    nm.appendChild(el('span', 'jr', p.jersey != null ? String(p.jersey) : ''));
+    const known = gPlayer(p.id);
+    const label = known ? playerName(known) : p.name;
+    if (known) {
+      const b = el('button', null, label);
+      b.type = 'button';
+      b.addEventListener('click', () => { bxClose(); goPlayer(p.id); });
+      nm.appendChild(b);
+    } else nm.appendChild(document.createTextNode(label));
+    if (p.starter) nm.appendChild(el('span', 'st', '●'));
+    nm.title = label;
+    r.appendChild(nm);
+    const dnp = p.min === 0;
+    cells(p).forEach((v, i) => {
+      let cls = dnp ? 'dim' : null;
+      if (i === 1 && !dnp) cls = 'pts';
+      if (i === 14 && !dnp && v !== 0) cls = v > 0 ? 'pos' : 'neg';
+      r.appendChild(el('td', cls, i === 14 && v > 0 ? '+' + v : String(v)));
+    });
+    tb.appendChild(r);
+  });
+  // The site's "Team" row: team rebounds / turnovers and, rarely, points the
+  // statisticians didn't credit to a player. Shown when non-empty; always in the total.
+  const TR = tm.team_row || {};
+  const trv = (k) => (Array.isArray(TR[k]) ? TR[k] : (TR[k] || 0));
+  const hasTeamRow = ['pts', 'oreb', 'dreb', 'ast', 'stl', 'tov', 'blk', 'pf'].some((k) => trv(k));
+  if (hasTeamRow) {
+    const r = el('tr');
+    r.appendChild(el('td', 'nm dim', S.bx_team));
+    const ma0 = (k) => { const v = TR[k] || [0, 0]; return v[0] + '/' + v[1]; };
+    ['', trv('pts'), ma0('fg2'), ma0('fg3'), ma0('ft'), trv('oreb'), trv('dreb'), trv('oreb') + trv('dreb'),
+      trv('ast'), trv('stl'), trv('tov'), trv('blk'), trv('pf'), '', '', ''].forEach((v) => r.appendChild(el('td', 'dim', String(v))));
+    tb.appendChild(r);
+  }
+  const sum = (k) => tm.players.reduce((a, p) => a + p[k], 0) + (Array.isArray(TR[k]) ? 0 : (TR[k] || 0));
+  const sumMA = (k) => [0, 1].map((i) => tm.players.reduce((a, p) => a + p[k][i], 0) + ((TR[k] || [0, 0])[i] || 0));
+  const tot = {
+    min: tm.players.reduce((a, p) => a + p.min, 0), pts: tm.pts, fg2: sumMA('fg2'), fg3: sumMA('fg3'), ft: sumMA('ft'),
+    oreb: sum('oreb'), dreb: sum('dreb'),
+    ast: sum('ast'), stl: sum('stl'), tov: sum('tov'), blk: sum('blk'), pf: sum('pf'), fd: tm.players.reduce((a, p) => a + p.fd, 0),
+    pm: '', pir: tm.players.reduce((a, p) => a + p.pir, 0),
+  };
+  const tr = el('tr', 'tot');
+  tr.appendChild(el('td', 'nm', S.bx_total));
+  cells(tot).forEach((v) => tr.appendChild(el('td', null, String(v))));
+  tb.appendChild(tr);
+  scroll.appendChild(tb);
+  wrap.appendChild(scroll);
+  return wrap;
+}
+document.getElementById('bx-close').addEventListener('click', bxClose);
+BX.overlay.addEventListener('mousedown', (e) => { if (e.target === BX.overlay) bxClose(); });
+document.addEventListener('keydown', (e) => {
+  if (BX.open && e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); bxClose(); }
+}, true);
+
+/* ---- Player card: game log (chart + table + box-score-only stats) ---- */
+function playerGameLogPanel(p) {
+  const season = state.season;
+  return Promise.all([loadPlayerLogs(season), loadGameIndex(season)]).then(([logs, idx]) => {
+    if (!logs || !idx || season !== state.season) return null;
+    const playoffs = state.competition === 'playoffs';
+    const rows = (logs._byPlayer.get(p.id) || [])
+      .map((r) => ({ ...r, g: gameById(idx, r.game_id) }))
+      .filter((r) => r.g && (playoffs ? r.g.stage !== 'regular' : r.g.stage === 'regular'))
+      .sort((a, b) => (a.g.date || '').localeCompare(b.g.date || '') || a.game_id - b.game_id);
+    if (!rows.length) return null;
+    return buildGameLog(p, rows);
+  });
+}
+
+function buildGameLog(p, rows) {
+  const S = STR[state.lang];
+  const n = rows.length;
+  const avg = (k) => rows.reduce((a, r) => a + r[k], 0) / n;
+  const starts = rows.filter((r) => r.starter).length;
+
+  const panel = el('div', 'panel game-log');
+  panel.style.marginTop = '24px';
+  const head = el('div', 'panel-head');
+  head.appendChild(el('div', 'panel-kicker', S.glg_kicker));
+  head.appendChild(el('div', 'panel-title sm', S.glg_title));
+  panel.appendChild(head);
+
+  // box-score-only numbers: steals / blocks / +/- / fouls drawn don't exist in the season totals
+  const tiles = el('div', 'glg-tiles');
+  tiles.setAttribute('aria-label', S.glg_new);
+  const pm = avg('pm');
+  [
+    [String(n), S.glg_tile_starts(starts, n), false],
+    [fmt(avg('stl')), S.lbl_stl, false],
+    [fmt(avg('blk')), S.lbl_blk, false],
+    [(pm > 0 ? '+' : '') + fmt(pm), S.lbl_pm, true],
+    [fmt(avg('fd')), S.lbl_fd, false],
+  ].forEach(([v, lbl, hi]) => {
+    const box = el('div');
+    box.appendChild(el('div', 'num' + (hi ? ' hi' : ''), v));
+    box.appendChild(el('div', 'lbl', lbl));
+    tiles.appendChild(box);
+  });
+  panel.appendChild(tiles);
+
+  panel.appendChild(gameLogChart(rows));
+  const legend = el('div', 'glg-legend');
+  [['rgba(var(--accent-rgb), .75)', S.glg_chart_bar], ['#ffffff', S.glg_chart_avg], ['rgba(255,255,255,.35)', S.glg_chart_mean]]
+    .forEach(([c, txt]) => {
+      const s = el('span');
+      const i = document.createElement('i');
+      i.style.background = c;
+      s.appendChild(i);
+      s.appendChild(document.createTextNode(txt));
+      legend.appendChild(s);
+    });
+  panel.appendChild(legend);
+
+  const wrap = el('div', 'table-wrap');
+  const headRow = el('div', 'grid-head glg-cols');
+  [[S.col_date, false], [S.col_opp, false], [S.col_result, false],
+   ['MIN', true], ['PTS', true], ['REB', true], ['AST', true], ['STL', true], ['BLK', true], ['TOV', true], ['+/-', true], ['PIR', true]]
+    .forEach(([lbl, right]) => headRow.appendChild(el('span', right ? 'cell-right' : null, lbl)));
+  wrap.appendChild(headRow);
+  [...rows].reverse().forEach((r) => {
+    const g = r.g;
+    const home = r.home === 1;
+    const us = home ? g.home : g.away, them = home ? g.away : g.home;
+    const win = us.pts > them.pts;
+    const row = el('button', 'grid-row glg-cols');
+    row.type = 'button';
+    row.dataset.gameId = String(g.id);
+    row.appendChild(el('span', 'stat-soft sm', gDateShort(g.date)));
+    const opp = el('span', 'gm-opp');
+    opp.appendChild(el('small', null, home ? S.tg_vs : S.tg_at));
+    opp.appendChild(document.createTextNode(gTeamLabel(r.opp_id)));
+    row.appendChild(opp);
+    const res = el('span', 'glg-res');
+    res.appendChild(el('span', win ? 'w' : 'l', (win ? S.wl_w : S.wl_l) + ' '));
+    res.appendChild(document.createTextNode(us.pts + '–' + them.pts + (g.ot ? ' ' + gOtTag(g.ot) : '')));
+    row.appendChild(res);
+    [r.min, r.pts, r.oreb + r.dreb, r.ast, r.stl, r.blk, r.tov].forEach((v, i) =>
+      row.appendChild(el('span', (i === 1 ? 'stat-strong' : 'stat-soft') + ' sm cell-right', String(v))));
+    row.appendChild(el('span', 'stat-soft sm cell-right glg-pm', (r.pm > 0 ? '+' : '') + r.pm));
+    row.appendChild(el('span', 'pir-cell sm cell-right', String(r.pir)));
+    bindGameRow(row, g);
+    wrap.appendChild(row);
+  });
+  panel.appendChild(wrap);
+  if (rows.length > 10) panel.appendChild(showMoreToggle([...wrap.querySelectorAll('.grid-row')], 10, rows.length));
+  panel.appendChild(el('div', 'team-note', S.res_hint));
+  return panel;
+}
+
+// PIR per game (bars) + 5-game trailing average (line) + season mean (dashed).
+// Time runs left -> right in both languages (direction: ltr on the svg).
+function gameLogChart(rows) {
+  const box = el('div', 'glg-chart');
+  box._rows = rows;
+  requestAnimationFrame(() => drawGameLogChart(box));
+  return box;
+}
+function drawGameLogChart(box) {
+  if (!box.isConnected) return;
+  const rows = box._rows;
+  const S = STR[state.lang];
+  const cs = getComputedStyle(box);
+  const W = Math.max(260, Math.round(box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)));
+  const H = W < 520 ? 180 : 230;
+  const padL = 30, padR = 8, padT = 12, padB = 24;
+  const vals = rows.map((r) => r.pir);
+  const lo = Math.min(0, ...vals), hi = Math.max(10, ...vals);
+  const span = hi - lo || 1;
+  const y = (v) => padT + (hi - v) / span * (H - padT - padB);
+  const slot = (W - padL - padR) / rows.length;
+  const bw = Math.max(2, Math.min(18, slot * 0.66));
+  const x = (i) => padL + slot * i + slot / 2;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs) => { const e = document.createElementNS(NS, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); return e; };
+  const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: 'img', 'aria-label': S.glg_chart_bar + ' · ' + S.glg_chart_avg });
+
+  // gridlines
+  const step = span > 40 ? 20 : span > 20 ? 10 : 5;
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) {
+    svg.appendChild(mk('line', { x1: padL, x2: W - padR, y1: y(v), y2: y(v), stroke: v === 0 ? 'rgba(255,255,255,.28)' : 'rgba(255,255,255,.07)', 'stroke-width': 1 }));
+    const tl = mk('text', { x: padL - 6, y: y(v) + 3.5, 'text-anchor': 'end', fill: 'rgba(255,255,255,.45)', 'font-size': 10, 'font-family': 'Archivo, system-ui, sans-serif' });
+    tl.textContent = String(v);
+    svg.appendChild(tl);
+  }
+  // bars
+  rows.forEach((r, i) => {
+    const g = r.g;
+    const home = r.home === 1;
+    const us = home ? g.home : g.away, them = home ? g.away : g.home;
+    const grp = mk('g', { class: 'bar', tabindex: g.box ? 0 : -1 });
+    const top = Math.min(y(r.pir), y(0)), h = Math.max(1.5, Math.abs(y(r.pir) - y(0)));
+    grp.appendChild(mk('rect', {
+      x: x(i) - bw / 2, y: top, width: bw, height: h, rx: Math.min(2, bw / 3),
+      style: 'fill:' + (r.pir >= 0 ? 'rgb(var(--accent-rgb))' : 'rgb(96,122,158)'), 'fill-opacity': 0.72,
+    }));
+    const tt = mk('title', {});
+    tt.textContent = `${gDateShort(g.date)} · ${home ? S.tg_vs : S.tg_at} ${gTeamLabel(r.opp_id)} · ${us.pts}–${them.pts} · PIR ${r.pir} · PTS ${r.pts}`;
+    grp.appendChild(tt);
+    if (g.box) {
+      grp.addEventListener('click', () => bxOpen(state.season, g.id));
+      grp.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); bxOpen(state.season, g.id); } });
+    }
+    svg.appendChild(grp);
+  });
+  // season mean
+  const mean = vals.reduce((a, v) => a + v, 0) / vals.length;
+  svg.appendChild(mk('line', { x1: padL, x2: W - padR, y1: y(mean), y2: y(mean), stroke: 'rgba(255,255,255,.35)', 'stroke-dasharray': '4 4', 'stroke-width': 1 }));
+  // 5-game trailing average
+  if (rows.length >= 3) {
+    const pts = vals.map((_, i) => {
+      const w = vals.slice(Math.max(0, i - 4), i + 1);
+      return x(i).toFixed(1) + ',' + y(w.reduce((a, v) => a + v, 0) / w.length).toFixed(1);
+    });
+    svg.appendChild(mk('polyline', { points: pts.join(' '), fill: 'none', stroke: '#fff', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', 'pointer-events': 'none' }));
+  }
+  // first / last date
+  [[0, 'start'], [rows.length - 1, 'end']].forEach(([i, anchor]) => {
+    if (rows.length < 2 && anchor === 'end') return;
+    const tx = mk('text', { x: anchor === 'start' ? padL : W - padR, y: H - 7, 'text-anchor': anchor, fill: 'rgba(255,255,255,.45)', 'font-size': 10, 'font-family': 'Archivo, system-ui, sans-serif' });
+    tx.textContent = gDateShort(rows[i].g.date);
+    svg.appendChild(tx);
+  });
+  box.innerHTML = '';
+  box.appendChild(svg);
+}
+let _glgResizeT = null;
+window.addEventListener('resize', () => {
+  clearTimeout(_glgResizeT);
+  _glgResizeT = setTimeout(() => document.querySelectorAll('.glg-chart').forEach((b) => { if (b._rows) drawGameLogChart(b); }), 120);
+});
+
+/* ---- Upgrade notice: one flag turns it on/off; dismissal is remembered per id ---- */
+const UPGRADE_NOTICE = { enabled: true, id: 'games-2025-26' };
+function renderUpgradeNotice() {
+  const host = document.getElementById('upgrade-banner');
+  if (!host) return;
+  const dismissed = lsGet('sls-notice-dismissed', '') === UPGRADE_NOTICE.id;
+  host.innerHTML = '';
+  if (!UPGRADE_NOTICE.enabled || dismissed) { host.hidden = true; return; }
+  host.hidden = false;
+  host.appendChild(el('span', 'upg-dot'));
+  host.appendChild(el('span', 'upg-text', t('upg_notice')));
+  const x = el('button', 'upg-close', '✕');
+  x.type = 'button';
+  x.setAttribute('aria-label', t('upg_close'));
+  x.title = t('upg_close');
+  x.addEventListener('click', () => { lsSet('sls-notice-dismissed', UPGRADE_NOTICE.id); renderUpgradeNotice(); });
+  host.appendChild(x);
 }
 
 /* ---------------- Analytics ---------------- */
