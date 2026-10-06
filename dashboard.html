@@ -941,8 +941,9 @@
       display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
     }
     nav.tabs button {
-      padding: 8px 4px; font-size: 10.5px; min-height: 44px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      padding: 6px 4px; font-size: 10.5px; min-height: 44px;
+      /* two short lines rather than "מדדים מ…" in a fifth-width cell */
+      white-space: normal; line-height: 1.15; overflow: hidden;
     }
     .lang-switch button { padding: 9px 12px; min-height: 40px; }
 
@@ -1025,8 +1026,8 @@
     display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
   }
   html[data-mobile] nav.tabs button {
-    padding: 8px 4px; font-size: 10.5px; min-height: 44px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    padding: 6px 4px; font-size: 10.5px; min-height: 44px;
+    white-space: normal; line-height: 1.15; overflow: hidden;
   }
   html[data-mobile] .lang-switch button { padding: 9px 12px; min-height: 40px; }
   html[data-mobile] .view { padding: 24px 16px 40px; }
@@ -1542,9 +1543,9 @@ const STR = {
     tab_league: 'ליגה',
     tab_team: 'קבוצה',
     tab_player: 'שחקן',
-    tab_analytics: 'ניתוח',
-    an_eyebrow: 'ליגת העל בכדורסל · ניתוח מתקדם',
-    an_title: 'ניתוחים מתקדמים',
+    tab_analytics: 'מדדים מתקדמים',
+    an_eyebrow: 'ליגת העל בכדורסל',
+    an_title: 'מדדים מתקדמים',
     an_grp: { players: 'שחקנים', teams: 'קבוצות', more: 'השוואות ומגמות' },
     an_topic: {
       scatter: ['כמות מול יעילות', 'מי קולע הרבה, ומי קולע ביעילות?'],
@@ -1916,9 +1917,9 @@ const STR = {
     tab_league: 'League',
     tab_team: 'Team',
     tab_player: 'Player',
-    tab_analytics: 'Analytics',
-    an_eyebrow: 'Israeli Basketball Super League · advanced',
-    an_title: 'Advanced Analytics',
+    tab_analytics: 'Advanced',
+    an_eyebrow: 'Israeli Basketball Super League',
+    an_title: 'Advanced Stats',
     an_grp: { players: 'Players', teams: 'Teams', more: 'Comparisons & trends' },
     an_topic: {
       scatter: ['Volume vs efficiency', 'Who scores a lot, and who scores efficiently?'],
