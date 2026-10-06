@@ -501,7 +501,15 @@
   .sort-head.cell-right { text-align: right; }
   /* headers that carry a hover explanation */
   .has-tip { text-decoration: underline dotted rgba(255,255,255,.28); text-underline-offset: 4px; }
-  span.has-tip, th.has-tip { cursor: help; }
+  span.has-tip, th.has-tip, div.has-tip { cursor: help; }
+  .hover-tip {
+    position: fixed; z-index: 300; max-width: 260px; pointer-events: none; opacity: 0; transform: translateY(-2px);
+    transition: opacity .12s ease, transform .12s ease;
+    background: #1b222c; color: var(--ink); border: 1px solid var(--hair-strong); border-radius: 6px;
+    padding: 8px 11px; font: 500 12px/1.45 var(--font-body); letter-spacing: 0; text-transform: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,.45); white-space: normal; text-align: start;
+  }
+  .hover-tip.on { opacity: 1; transform: none; }
   .sort-head:hover, .sort-head:focus-visible { color: var(--ink-2); outline: none; }
   .sort-head.active { color: var(--ink); }
 
@@ -2346,9 +2354,48 @@ function statTip(code) { const tip = STAT_TIPS[code]; return tip ? tip[state.lan
 function tipHead(tag, cls, label, code) {
   const e = el(tag, cls, label);
   const tip = statTip(code);
-  if (tip) { e.title = tip; e.classList.add('has-tip'); }
+  if (tip) { e.dataset.tip = tip; e.classList.add('has-tip'); }
   return e;
 }
+/* One floating bubble for every [data-tip] element. The native `title`
+ * tooltip only shows after ~1s of a perfectly still mouse (and never on
+ * touch), so hovering a header looked like "just a question-mark cursor".
+ * This shows at once on hover / keyboard focus, and on tap for touch. It is
+ * fixed-positioned on <body> so a table's overflow-x scroller can't clip it. */
+const HoverTip = (() => {
+  let bubble = null, owner = null;
+  const ensure = () => {
+    if (!bubble) { bubble = el('div', 'hover-tip'); bubble.setAttribute('role', 'tooltip'); document.body.appendChild(bubble); }
+    return bubble;
+  };
+  function show(target) {
+    const b = ensure();
+    owner = target;
+    b.textContent = target.dataset.tip;
+    b.dir = document.documentElement.dir;
+    b.classList.add('on');
+    const r = target.getBoundingClientRect(), bw = b.offsetWidth, bh = b.offsetHeight, pad = 8;
+    let x = r.left + r.width / 2 - bw / 2;
+    x = Math.max(pad, Math.min(x, window.innerWidth - bw - pad));
+    let y = r.bottom + 8;
+    if (y + bh > window.innerHeight - pad) y = r.top - bh - 8;  // flip above near the bottom edge
+    b.style.left = x + 'px';
+    b.style.top = Math.max(pad, y) + 'px';
+  }
+  function hide() { if (bubble) bubble.classList.remove('on'); owner = null; }
+  const tipOf = (e) => (e.target && e.target.closest ? e.target.closest('[data-tip]') : null);
+  document.addEventListener('mouseover', (e) => { const t = tipOf(e); if (t && t !== owner) show(t); else if (!t && owner) hide(); });
+  document.addEventListener('focusin', (e) => { const t = tipOf(e); if (t) show(t); });
+  document.addEventListener('focusout', hide);
+  // touch: a tap toggles the bubble (a sortable header still sorts on that tap)
+  document.addEventListener('pointerup', (e) => {
+    if (e.pointerType !== 'touch') return;
+    const t = tipOf(e);
+    if (t && t !== owner) show(t); else hide();
+  });
+  window.addEventListener('scroll', hide, { passive: true, capture: true });
+  return { hide };
+})();
 function statAbbr(code) {
   const he = STAT_ABBR_HE[String(code).toUpperCase()];
   if (state.lang === 'he' && he) return he;
@@ -3248,7 +3295,7 @@ function buildSortableHead(columns, colsClass, keyField, dirField, onSort) {
     const btn = el('button', 'sort-head' + (col.right ? ' cell-right' : '') + (active ? ' active' : ''), label);
     btn.type = 'button';
     const tip = statTip(COL_TIP[col.key]);
-    if (tip) { btn.title = tip; btn.classList.add('has-tip'); }
+    if (tip) { btn.dataset.tip = tip; btn.classList.add('has-tip'); }
     if (col.accent) btn.style.color = 'var(--accent)';
     btn.addEventListener('click', () => onSort(col.key));
     head.appendChild(btn);
@@ -3509,7 +3556,7 @@ function renderTeam(root) {
     box.appendChild(num);
     // these are per-game averages -- say so, a bare "99.4 points" reads like a total
     const lb = el('div', 'lbl', lbl + STR[state.lang].per_g_sfx);
-    if (key === 'avg_pir') lb.title = STR[state.lang].pir_hint;
+    if (key === 'avg_pir') { lb.dataset.tip = STR[state.lang].pir_hint; lb.classList.add('has-tip'); }
     box.appendChild(lb);
     quad.appendChild(box);
   });
@@ -3839,7 +3886,7 @@ function renderPlayerCard(root) {
   badge.appendChild(el('div', 'lbl', pirRank !== null
     ? STR[state.lang].player_rank_badge(nQual, qualFloors().gp)
     : STR[state.lang].player_rank_unq(qualFloors().gp)));
-  badge.title = STR[state.lang].pir_hint;
+  badge.dataset.tip = STR[state.lang].pir_hint;
   inner.appendChild(badge);
   hero.appendChild(inner);
   card.appendChild(hero);
@@ -3851,7 +3898,7 @@ function renderPlayerCard(root) {
     const box = el('div');
     box.appendChild(el('div', 'num' + (hi ? ' hi' : ''), fmt(p[key])));
     const lb = el('div', 'lbl', lbl + STR[state.lang].per_g_sfx);
-    if (key === 'avg_pir') lb.title = STR[state.lang].pir_hint;
+    if (key === 'avg_pir') { lb.dataset.tip = STR[state.lang].pir_hint; lb.classList.add('has-tip'); }
     box.appendChild(lb);
     quad.appendChild(box);
   });
@@ -6726,6 +6773,7 @@ function buildTeamRadar(selectedTeams, allTeams) {
 
 /* ---------------- router ---------------- */
 function render() {
+  HoverTip.hide();  // its anchor element is about to be rebuilt
   const refocus = searchFocus;
   searchFocus = null;
   syncTabs();
