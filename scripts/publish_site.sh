@@ -15,6 +15,9 @@
 #   games/<season>/g/<id>.json                      30 days (a finished game doesn't change)
 # Nothing is deleted from the bucket (insights.json etc. are written elsewhere).
 set -euo pipefail
+# Git Bash on Windows rewrites "/dashboard.html"-style args into Windows paths,
+# which CloudFront rejects as invalid invalidation paths. No-op elsewhere.
+export MSYS_NO_PATHCONV=1
 cd "$(dirname "$0")/.."
 
 : "${SITE_BUCKET:?set SITE_BUCKET}"
