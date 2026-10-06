@@ -299,6 +299,7 @@
   .lc-rn { font: 500 12.5px/1.3 var(--font-body); color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .12s ease; }
   .lc-rv { font: 600 12.5px/1 var(--font-body); color: var(--ink); font-variant-numeric: tabular-nums; }
 
+  .leaders-foot { font: 400 11.5px/1.5 var(--font-body); color: var(--ink-4); margin-top: 12px; }
   .dq-card { padding: 24px 28px 28px; }
   .dq-head { display: flex; align-items: center; gap: 9px; margin-bottom: 16px; }
   .dq-head .flag-dot { width: 6px; height: 6px; }
@@ -336,9 +337,14 @@
   .pos-cell { font: 500 11px/1 var(--font-body); color: var(--ink-3); }
   .row-flag { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: none; }
 
-  .league-cols { grid-template-columns: 48px 1fr repeat(6, 94px); }
-  .roster-cols { grid-template-columns: 48px 1fr 46px 64px 70px 60px repeat(3, 72px) 78px; }
-  .players-cols { grid-template-columns: minmax(150px, 1.6fr) minmax(96px, 1fr) 50px 46px 48px 60px repeat(4, 60px) repeat(3, 54px); }
+  .league-cols { grid-template-columns: 48px 1fr repeat(7, 88px); }
+  .standings-cols { grid-template-columns: 44px minmax(140px, 1fr) repeat(3, 50px) 66px repeat(3, 66px) repeat(2, 62px) 124px; }
+  .diff-cell.pos { color: #3fc28a; } .diff-cell.neg { color: #e5735d; }
+  .st-form { display: flex; gap: 3px; justify-content: flex-end; }
+  html[dir="rtl"] .st-form { justify-content: flex-start; }  /* right edge in both directions, under its header */
+  .st-form .gm-wl { width: 18px; height: 18px; font-size: 10px; }
+  .roster-cols { grid-template-columns: 48px 1fr 46px 64px 70px 60px repeat(5, 66px) 78px; }
+  .players-cols { grid-template-columns: minmax(150px, 1.6fr) minmax(96px, 1fr) 50px 46px 48px 60px repeat(6, 56px) repeat(3, 54px); }
 
   .team-note {
     padding: 14px 28px; border-top: 1px solid var(--hair); font: 400 12px/1.6 var(--font-body); color: var(--ink-3);
@@ -355,6 +361,22 @@
     width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
   }
   html[data-mobile] .insights-list { padding: 18px 16px 20px; }
+  .insights-list.in-sig { border-top: 1px solid var(--hair); }
+
+  /* ---------- Player card: sticky section jump-nav ---------- */
+  .pc-nav {
+    position: sticky; top: 64px; z-index: 15; display: flex; gap: 6px; flex-wrap: wrap;
+    margin-top: 18px; padding: 10px 0; background: var(--bg); border-bottom: 1px solid var(--hair);
+  }
+  .pc-nav button {
+    border: 1px solid var(--hair-strong); background: transparent; color: var(--ink-2); cursor: pointer;
+    font: 600 12px/1 var(--font-body); padding: 8px 14px; border-radius: 999px;
+  }
+  .pc-nav button:hover, .pc-nav button:focus-visible { color: var(--ink); border-color: var(--accent); outline: none; }
+  .pc-sec { scroll-margin-top: 130px; }
+  @media (max-width: 640px) { .pc-nav { top: 0; } .pc-sec { scroll-margin-top: 64px; } }
+  html[data-mobile] .pc-nav { top: 0; }
+  html[data-mobile] .pc-sec { scroll-margin-top: 64px; }
 
   /* ---------- Player signature card ---------- */
   .sig-body { padding: 18px 28px 22px; display: flex; flex-direction: column; gap: 14px; }
@@ -418,7 +440,7 @@
   .player-lower { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 28px 40px 34px; border-top: 1px solid var(--hair); }
   @media (max-width: 780px) { .player-lower { grid-template-columns: 1fr; } }
   .section-lbl { font: 600 10px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
-  .bar-line { display: grid; grid-template-columns: 40px 1fr auto 52px; align-items: center; gap: 12px; }
+  .bar-line { display: grid; grid-template-columns: 52px 1fr auto 52px; align-items: center; gap: 12px; }
   .bar-line .k { font: 500 12px/1 var(--font-body); color: var(--ink-2); }
   .bar-line .tr { height: 6px; background: var(--track); display: block; }
   .bar-line .fl { display: block; height: 100%; background: var(--accent); }
@@ -465,6 +487,7 @@
     padding: 8px 13px; font: 600 10px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase;
     transition: color .12s ease, border-color .12s ease;
   }
+  .league-toolbar { justify-content: flex-end; }
   .export-btn:hover, .export-btn:focus-visible { color: var(--accent); border-color: var(--accent-ring); outline: none; }
 
   .sort-head {
@@ -472,6 +495,13 @@
     font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit;
     text-align: inherit; white-space: nowrap;
   }
+  /* `.sort-head` is declared after `.cell-right`, so its `inherit` used to win
+     and numeric headers sat at the start edge while their values sat at the
+     right -- invisible in RTL (start == right), ~60px off in English. */
+  .sort-head.cell-right { text-align: right; }
+  /* headers that carry a hover explanation */
+  .has-tip { text-decoration: underline dotted rgba(255,255,255,.28); text-underline-offset: 4px; }
+  span.has-tip, th.has-tip { cursor: help; }
   .sort-head:hover, .sort-head:focus-visible { color: var(--ink-2); outline: none; }
   .sort-head.active { color: var(--ink); }
 
@@ -486,11 +516,12 @@
   .limited-sample .ls-sub { margin-top: 5px; font: 500 11.5px/1.55 var(--font-body); color: var(--ink-4); }
 
   .cmp-panel { padding: 22px 28px 26px; }
-  .cmp-row { display: grid; grid-template-columns: 96px 1fr 1fr 44px; align-items: center; gap: 12px; padding: 9px 0; }
+  .cmp-row { display: grid; grid-template-columns: 96px 1fr 44px 1fr 44px; align-items: center; gap: 12px; padding: 9px 0; }
   .cmp-row .k { font: 500 12px/1 var(--font-body); color: var(--ink-2); }
   .cmp-row .tr { height: 8px; background: var(--track); display: block; }
   .cmp-row .fl { display: block; height: 100%; }
   .cmp-row .v { text-align: right; font: 600 13px/1 var(--font-body); }
+  .cmp-row .v.muted { color: var(--ink-3); font-weight: 500; }
   .cmp-legend { display: flex; gap: 18px; margin-top: 4px; margin-bottom: 16px; flex-wrap: wrap; }
   .cmp-legend span { display: flex; align-items: center; gap: 6px; font: 500 11px/1 var(--font-body); color: var(--ink-3); }
   .cmp-legend i { width: 9px; height: 9px; display: block; border-radius: 2px; flex: none; }
@@ -546,6 +577,11 @@
     unicode-bidi: isolate;
     direction: ltr;
   }
+  /* ...but the LTR direction also flips what `text-align: start` means, so in
+     RTL a left-aligned (non .cell-right) grid cell -- rank, jersey, team, season
+     -- slid to the far edge of its column and butted into the next one. Pin
+     those cells to the RTL start edge so they line up under their header. */
+  html[dir="rtl"] .grid-row > :not(.cell-right) { text-align: right; }
 
   /* ---------- Roster Per Mode toggle ---------- */
   .stat-mode-row { display: flex; align-items: center; gap: 10px; padding: 0 28px 14px; flex-wrap: wrap; }
@@ -555,6 +591,9 @@
   /* ---------- Player: stats-by-season table ---------- */
   .player-season-cols { grid-template-columns: 92px minmax(92px, 148px) 40px repeat(6, 54px) repeat(3, 78px) repeat(5, 54px); }
   .grid-row.static { cursor: default; }
+  .grid-row.low-sample { opacity: .5; }
+  .grid-row.is-current { background: rgba(255,255,255,.03); }
+  .grid-row.low-sample:hover, .grid-row.low-sample:focus-visible { opacity: .85; }
   .grid-row.static:hover, .grid-row.static:focus-visible { background: transparent; }
 
   /* ---------- Analytics: players / teams toggle ---------- */
@@ -562,7 +601,42 @@
   .an-toggle label { font: 600 10px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
 
   /* ---------- Analytics: rebuilt sections (scatter / h2h / trends) ---------- */
-  .an-section-nav { margin: 0 0 24px; }
+  /* ---------- Analytics: sticky topic list + view ---------- */
+  .an-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 28px; align-items: start; margin-top: 22px; }
+  .an-side {
+    position: sticky; top: 84px; display: flex; flex-direction: column; gap: 2px;
+    padding: 8px; background: var(--panel); border: 1px solid var(--hair); border-radius: 10px;
+  }
+  .an-side-lbl { font: 600 9.5px/1 var(--font-body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-4); padding: 14px 10px 6px; }
+  .an-side-lbl:first-child { padding-top: 6px; }
+  .an-item {
+    text-align: start; border: 0; border-inline-start: 3px solid transparent; border-radius: 6px; background: transparent;
+    color: var(--ink-2); font: 600 13px/1.2 var(--font-body); padding: 9px 11px; cursor: pointer; white-space: nowrap;
+  }
+  .an-item:hover, .an-item:focus-visible { background: rgba(255,255,255,.045); color: var(--ink); outline: none; }
+  .an-item[aria-current="true"] { background: rgba(216, 73, 46, .14); border-inline-start-color: var(--accent); color: var(--ink); }
+  .an-main { min-width: 0; }
+  .an-topic-head { margin-bottom: 16px; }
+  .an-topic-t { font: 400 26px/1.15 var(--font-display); }
+  .an-topic-q { font: 400 13.5px/1.5 var(--font-body); color: var(--ink-3); margin-top: 6px; }
+  @media (max-width: 900px) {
+    .an-layout { grid-template-columns: 1fr; gap: 16px; }
+    .an-side {
+      position: sticky; top: 0; z-index: 12; flex-direction: row; align-items: center; overflow-x: auto; gap: 6px;
+      border-radius: 0; border-width: 0 0 1px; background: var(--bg); padding: 10px 0; scrollbar-width: none;
+    }
+    .an-side::-webkit-scrollbar { display: none; }
+    .an-side-lbl { flex: none; padding: 0 4px 0 8px; }
+    .an-side-lbl:first-child { padding: 0 4px 0 0; }
+    .an-item { flex: none; border: 1px solid var(--hair-strong); border-radius: 999px; padding: 8px 13px; }
+    .an-item[aria-current="true"] { border-color: var(--accent); }
+    .an-topic-t { font-size: 22px; }
+  }
+  html[data-mobile] .an-layout { grid-template-columns: 1fr; gap: 16px; }
+  html[data-mobile] .an-side { position: sticky; top: 0; z-index: 12; flex-direction: row; align-items: center; overflow-x: auto; gap: 6px; border-radius: 0; border-width: 0 0 1px; background: var(--bg); padding: 10px 0; }
+  html[data-mobile] .an-side-lbl { flex: none; padding: 0 4px 0 8px; }
+  html[data-mobile] .an-item { flex: none; border: 1px solid var(--hair-strong); border-radius: 999px; padding: 8px 13px; }
+  html[data-mobile] .an-item[aria-current="true"] { border-color: var(--accent); }
   .sc-filters { display: flex; flex-wrap: wrap; gap: 16px; padding: 20px 28px 4px; }
   .sc-field { display: flex; align-items: center; gap: 8px; }
   .sc-field label { font: 600 9.5px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
@@ -590,6 +664,7 @@
     box-shadow: 0 8px 24px rgba(0,0,0,.4);
   }
   .tr-legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 16px 28px 0; }
+  .tr-scale-note { font: 400 11px/1.5 var(--font-body); color: var(--ink-4); margin: 2px 0 14px; }
   .tr-legend span { display: flex; align-items: center; gap: 7px; font: 500 11px/1.3 var(--font-body); color: var(--ink-3); unicode-bidi: isolate; }
   .tr-legend i { width: 12px; height: 3px; border-radius: 2px; display: block; flex: none; }
   /* ---------- Decade Trends ---------- */
@@ -637,6 +712,7 @@
   .ff-head .ff-cell { font: 600 9.5px/1.3 var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); display: block; }
   .ff-team { font: 600 12px/1.2 var(--font-body); color: var(--ink-2); background: none; border: 0; text-align: start; cursor: pointer; padding: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ff-team:hover { color: var(--accent); }
+  .ff-med { font: 500 10px/1.2 var(--font-body); color: var(--ink-3); margin-top: 3px; }
   .ff-cell { display: flex; align-items: center; gap: 8px; }
   .ff-track { position: relative; flex: 1; height: 12px; background: var(--track); border-radius: 2px; }
   .ff-mid { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--ink-3); }
@@ -650,6 +726,7 @@
   .ppr-track { position: relative; height: 12px; background: var(--track); border-radius: 2px; }
   .ppr-mid { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--ink-3); }
   .ppr-fill { position: absolute; top: 0; height: 100%; border-radius: 2px; }
+  .ppr-val.glass-pair { white-space: nowrap; direction: inherit; unicode-bidi: normal; }
   .ppr-val { font: 600 12px/1 var(--font-body); font-variant-numeric: tabular-nums; text-align: end; color: #00E5FF; unicode-bidi: isolate; direction: ltr; }
   .ppr-val.neg { color: #FF5722; }
   /* Shot diet 100% stacked */
@@ -708,7 +785,10 @@
   }
   .players-filters select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   .players-filters .lang-switch { margin-inline-start: auto; }
-  .players-cols .ellip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .players-cols .ellip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; padding-inline-end: 8px; }
+  /* the team name is text, not a number: undo the stat-cell LTR isolation so a
+     truncated Hebrew name ellipsizes at its end instead of losing its start */
+  .players-cols .ellip.stat-soft { direction: inherit; unicode-bidi: normal; }
   .stint-star { color: var(--accent); font-weight: 700; margin-inline-start: 3px; }
   /* mid-season transfer: the player's row is a full-season aggregate that
      spans more than one club */
@@ -898,7 +978,7 @@
     .quad4 > div:nth-child(-n+2) { border-bottom: 1px solid var(--hair); }
     .quad4 .num { font-size: 34px; }
 
-    .cmp-row { grid-template-columns: 72px 1fr 1fr 32px; gap: 8px; }
+    .cmp-row { grid-template-columns: 64px 1fr 32px 1fr 32px; gap: 8px; }
 
     /* the name column's `1fr` track collapses toward zero width once the
        fixed stat columns alone already exceed the viewport (grid gives `fr`
@@ -909,8 +989,9 @@
        structure hit a reproducible Chromium offset bug under real scroll
        -- confirmed via getBoundingClientRect at multiple insets -- so it
        was dropped rather than shipped broken). */
-    .league-cols { grid-template-columns: 44px minmax(120px, 1fr) repeat(6, 84px); }
-    .roster-cols { grid-template-columns: 44px minmax(120px, 1fr) 44px 60px 66px 56px repeat(3, 68px) 72px; }
+    .league-cols { grid-template-columns: 44px minmax(120px, 1fr) repeat(7, 78px); }
+    .standings-cols { grid-template-columns: 40px minmax(120px, 1fr) repeat(3, 44px) 58px repeat(3, 60px) repeat(2, 56px) 118px; }
+    .roster-cols { grid-template-columns: 44px minmax(120px, 1fr) 44px 60px 66px 56px repeat(5, 60px) 72px; }
 
     /* league-leader cards: collapse to a single clean column so the 21 cards
        never force horizontal overflow on a phone */
@@ -971,9 +1052,10 @@
   html[data-mobile] .quad4 > div:nth-child(2n) { border-inline-end: 0; border-bottom: 1px solid var(--hair); }
   html[data-mobile] .quad4 > div:nth-child(-n+2) { border-bottom: 1px solid var(--hair); }
   html[data-mobile] .quad4 .num { font-size: 34px; }
-  html[data-mobile] .cmp-row { grid-template-columns: 72px 1fr 1fr 32px; gap: 8px; }
-  html[data-mobile] .league-cols { grid-template-columns: 44px minmax(120px, 1fr) repeat(6, 84px); }
-  html[data-mobile] .roster-cols { grid-template-columns: 44px minmax(120px, 1fr) 44px 60px 66px 56px repeat(3, 68px) 72px; }
+  html[data-mobile] .cmp-row { grid-template-columns: 64px 1fr 32px 1fr 32px; gap: 8px; }
+  html[data-mobile] .league-cols { grid-template-columns: 44px minmax(120px, 1fr) repeat(7, 78px); }
+  html[data-mobile] .standings-cols { grid-template-columns: 40px minmax(120px, 1fr) repeat(3, 44px) 58px repeat(3, 60px) repeat(2, 56px) 118px; }
+  html[data-mobile] .roster-cols { grid-template-columns: 44px minmax(120px, 1fr) 44px 60px 66px 56px repeat(5, 60px) 72px; }
   html[data-mobile] .leaders-grid { grid-template-columns: 1fr; gap: 12px; }
 
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -1455,7 +1537,7 @@ function posLabel(code) { return posGroups(code).join('/') || '—'; }
 const STR = {
   he: {
     brand: 'פלוס מינוס IL',
-    tagline: 'PlusMinus.IL · אנליטיקס כדורסל ישראלי',
+    tagline: 'PlusMinus.IL · ניתוח מתקדם לכדורסל הישראלי',
     tab_overview: 'עמוד הבית',
     tab_league: 'ליגה',
     tab_team: 'קבוצה',
@@ -1463,97 +1545,113 @@ const STR = {
     tab_analytics: 'ניתוח',
     an_eyebrow: 'ליגת העל בכדורסל · ניתוח מתקדם',
     an_title: 'ניתוחים מתקדמים',
-    an_sub: 'כלים להשוואת שחקנים ולאיתור מגמות בכל הליגה.',
+    an_grp: { players: 'שחקנים', teams: 'קבוצות', more: 'השוואות ומגמות' },
+    an_topic: {
+      scatter: ['כמות מול יעילות', 'מי קולע הרבה, ומי קולע ביעילות?'],
+      load: ['מעורבות התקפית', 'כמה מההתקפה עוברת דרך השחקן, ובאיזו יעילות?'],
+      ppr: ['יצירת משחק', 'מי יוצר לחברים בלי לאבד כדורים?'],
+      glass: ['ריבאונד', 'מי שולט בלוחות ביחס לעמדה שלו?'],
+      court: ['פרופיל זריקות', 'מאיפה השחקן זורק, ומאיפה הוא מדויק?'],
+      fourfactors: ['ארבעת הגורמים', 'קליעה, איבודים, ריבאונד ועונשין: איפה כל קבוצה מנצחת?'],
+      shotdiet: ['תמהיל זריקות', 'מי חי מהשלשה ומי תוקף את הסל?'],
+      h2h: ['השוואה ראש בראש', 'שני שחקנים או שתי קבוצות, זה מול זה.'],
+      trends: ['מגמות לאורך העשור', 'איך השתנתה הליגה מאז 2016?'],
+    },
     an_view_label: 'תצוגה',
     an_view_players: 'שחקנים',
     an_view_teams: 'קבוצות',
-    an_sec_scatter: 'פיזור: נפח מול יעילות',
+    an_sec_scatter: 'פיזור: כמות מול יעילות',
     an_sec_h2h: 'השוואה ישירה',
     an_sec_trends: 'מגמות רב-עונתיות',
-    sc_title: 'נקודות למשחק מול אחוז קליעה אמיתי',
+    sc_title: 'נקודות למשחק מול אחוז קליעה אמיתי (TS%‎)',
     sc_x: 'נק׳ למשחק',
     sc_y: 'TS%',
     sc_all_teams: 'כל הקבוצות',
     sc_all_pos: 'כל העמדות',
-    sc_min_gp_lbl: 'מינ׳ משחקים',
-    sc_min_gp: (n) => n + '+ משחקים',
+    sc_min_gp_lbl: 'מינימום משחקים',
+    sc_min_gp: (n) => 'לפחות ' + n + ' משחקים',
     sc_empty: 'אין מספיק נתונים לתצוגה.',
-    sc_q_elite: 'נפח ויעילות עלית',
-    sc_q_spec: 'מומחה יעילות',
-    sc_q_ineff: 'נפח גבוה, יעילות נמוכה',
-    sc_q_limited: 'תפקיד מוגבל',
+    sc_q_elite: 'קולעים הרבה וביעילות',
+    sc_q_spec: 'מעט זריקות, יעילות גבוהה',
+    sc_q_ineff: 'קולעים הרבה, ביעילות נמוכה',
+    sc_q_limited: 'תפקיד משני',
     h2h_title: 'השוואת שני שחקנים או שתי קבוצות',
     h2h_empty: 'בחרו שני פריטים שונים להשוואה.',
     tr_title: 'מדדי ליגה לאורך 10 עונות',
-    tr_3par: '3PA למשחק',
-    tr_pace: 'נק׳ ממוצע לקבוצה',
+    tr_range: (a, b) => '(טווח: ' + a + ' עד ' + b + ')',  // 'a–b' bidi-flips in RTL
+    tr_scale_note: 'כל קו מוצג בסולם משלו כדי להשוות כיוון של מגמות, לא גדלים. שינוי קטן נשאר קטן בגרף; הטווח האמיתי של כל מדד מופיע במקרא.',
+    tr_3par: 'זריקות לשלוש למשחק',
+    tr_pace: 'נקודות למשחק (ממוצע קבוצתי)',
     tr_ft: 'אחוז עונשין',
     dc_head: 'מגמות עשור',
     dc_sub: 'עשר עונות של ליגת העל, 2016/17 עד 2025/26 — כיצד השתנו הקצב, הזריקה מחוץ לקשת, תמהיל השחקנים הישראלים והפער בין ראש הטבלה לתחתיתה.',
     dc_chip_all: 'כל העונות',
     dc_axis_l: 'ציר שמאל',
     dc_axis_r: 'ציר ימין',
-    dc_m_pace: 'קצב (מהלכים ל-40)',
-    dc_m_3par: 'נתח ניסיונות שלשה',
-    dc_m_ts: 'TS% ליגתי',
-    dc_m_efg: 'eFG% ליגתי',
+    dc_m_pace: 'קצב (התקפות ל-40 דקות)',
+    dc_m_3par: 'שיעור הזריקות לשלוש',
+    dc_m_ts: 'TS% בליגה',
+    dc_m_efg: 'eFG% בליגה',
     dc_m_ft: 'אחוז עונשין',
-    dc_m_isr_min: 'דקות ישראלים %',
-    dc_m_for_min: 'דקות זרים %',
-    dc_m_isr_pts: 'נקודות ישראלים %',
+    dc_m_isr_min: '% דקות לישראלים',
+    dc_m_for_min: '% דקות לזרים',
+    dc_m_isr_pts: '% נקודות של ישראלים',
     dc_m_gap: 'פער PIR/משחק (3 עליונות − 3 תחתונות)',
     dc_a_title: 'מהפכת השלשות והקצב',
-    dc_a_take: 'הקצב (מספר המהלכים ל-40 דקות) והנתח של ניסיונות השלשה מכלל הזריקה עלו יחד — הליגה עברה מכדורסל חצי-מגרש איטי למשחק מהיר שנשען על השלשה, בעקבות המגמה באירופה וב-NBA.',
+    dc_a_take: 'נתח הזריקות לשלוש מכלל הזריקות עלה כמעט ברציפות לאורך העשור, בדומה למגמה באירופה וב-NBA. הקצב (מספר ההתקפות ל-40 דקות), לעומת זאת, נע בטווח צר — הליגה זורקת יותר מבחוץ, אבל לא משחקת מהר יותר באופן מובהק.',
     dc_b_title: 'השפעת שחקנים ישראלים מול זרים',
     dc_b_take: 'חלקם של השחקנים הישראלים בדקות המשחק ובנקודות נשחק לאורך העשור עם הרחבת מכסת הזרים ותקנת השחקן המקומי — הפער בין נתח הדקות לנתח הנקודות מלמד על תלות הליגה בקלעים זרים.',
     dc_c_title: 'התפתחות יעילות הזריקה',
-    dc_c_take: 'אחוז הקליעה האמיתי (TS%) ואחוז הקליעה האפקטיבי (eFG%) עלו ככל שבחירת הזריקות השתפרה — יותר שלשות וקליעות מתחת לסל, פחות זריקות ביניים. אחוז העונשין נשאר יציב יחסית.',
+    dc_c_take: 'למרות המעבר לשלשות, היעילות הכוללת כמעט לא השתנתה: אחוז הקליעה האמיתי (TS%‎) ואחוז הקליעה המשוקלל (eFG%‎) נעים בטווח של כשלוש נקודות אחוז בכל העשור, ואחוז העונשין יציב. הקפיצות בגרף הן תנודות של עונה בודדת, לא מגמה.',
     dc_d_title: 'מדד השוויוניות',
     dc_d_take: 'הפער ב-PIR הממוצע למשחק בין שלוש הקבוצות המובילות לשלוש התחתונות מודד את השוויוניות בליגה. פער מתרחב מעיד על ריכוז כוח בצמרת; פער מצטמצם — על ליגה תחרותית יותר. (בהיעדר נתוני יריב בנתוני הסיכום העונתי, PIR משמש כאן כמדד דו-כיווני חלופי לדירוג נטו.)',
     an_sec_advanced: 'מדדים מתקדמים',
     small_sample_note: 'מדגם קטן — פחות מ-50 דקות בעונה; מדדים ל-36 דקות אינם יציבים.',
-    adv_load_tab: 'עומס התקפי מול TS',
+    adv_load_tab: 'מעורבות התקפית מול יעילות',
     adv_ff_tab: 'ארבעת הגורמים',
-    adv_ppr_tab: 'יחס יצירה טהור',
+    adv_ppr_tab: 'מדד יצירת משחק',
     adv_diet_tab: 'התפלגות זריקות',
     adv_glass_tab: 'שליטה בריבאונד',
-    adv_load_title: 'עומס התקפי מול אחוז קליעה אמיתי',
+    adv_load_title: 'מעורבות התקפית מול יעילות קליעה (TS%‎)',
     adv_load_sub: 'גודל הבועה = נק׳ למשחק · צבע = יחס אסיסטים/איבודים',
-    adv_load_x: 'עומס התקפי משוער %',
-    adv_load_q_engine: 'מנוע התקפי ראשי',
-    adv_load_q_finisher: 'סוגר עלית',
-    adv_load_q_ineff: 'נפח גבוה, לא יעיל',
-    adv_load_q_limited: 'תפקיד מוגבל',
-    adv_load_leg_hi: 'יחס אס/איב גבוה',
-    adv_load_leg_lo: 'יחס אס/איב נמוך',
+    adv_load_x: 'מעורבות התקפית משוערת (%)',
+    adv_load_q_engine: 'מוביל ההתקפה',
+    adv_load_q_finisher: 'מסיים יעיל',
+    adv_load_q_ineff: 'מעורב הרבה, לא יעיל',
+    adv_load_q_limited: 'תפקיד משני',
+    adv_load_leg_hi: 'יחס אסיסטים/איבודים גבוה',
+    adv_load_leg_lo: 'יחס אסיסטים/איבודים נמוך',
     adv_load_leg_size: 'גודל = נק׳ למשחק',
     adv_ff_title: 'ארבעת הגורמים של דין אוליבר (קבוצות)',
-    adv_ff_sub: 'כל עמודה מול חציון הליגה (µ). ירוק = טוב מהחציון, כתום = מתחת.',
-    adv_ppr_title: 'יחס יצירה טהור (PPR)',
-    adv_ppr_sub: '100 · ((2/3)·אסיסטים − איבודים) ÷ דקות. חיובי בתכלת, שלילי בכתום.',
-    adv_diet_title: 'התפלגות זריקות וריווח מגרש',
+    adv_ff_sub: 'כל מדד מוצג מול חציון הליגה. ירוק = טוב מהחציון, כתום = פחות טוב.',
+    adv_ppr_title: 'מדד יצירת משחק (PPR)',
+    adv_ppr_sub: 'שני שלישים מהאסיסטים פחות האיבודים, לכל 100 דקות משחק. ערך חיובי בתכלת, שלילי בכתום.',
+    adv_diet_title: 'תמהיל הזריקות',
     adv_diet_sub: 'חלוקת הניסיונות בין זריקות שתיים, שלוש ועונשין (100%).',
     adv_diet_2p: 'שתיים', adv_diet_3p: 'שלוש', adv_diet_ftl: 'עונשין',
-    adv_diet_spacer: 'מרווח מגרש', adv_diet_rim: 'תוקף סל', adv_diet_balanced: 'מאוזן',
+    adv_diet_spacer: 'קלע מבחוץ', adv_diet_rim: 'תוקף את הסל', adv_diet_balanced: 'מאוזן',
     adv_glass_title: 'מדד שליטה בריבאונד',
-    adv_glass_sub: 'אחוז ריבאונד התקפי/הגנתי מתוך ההזדמנויות במגרש, מול ממוצע העמדה.',
-    adv_glass_orb: 'ORB% — ריבאונד התקפי',
-    adv_glass_drb: 'DRB% — ריבאונד הגנתי',
+    adv_glass_sub: 'איזה חלק מהריבאונדים הזמינים השחקן לוקח, בהתקפה ובהגנה, מול הממוצע בעמדה שלו.',
+    adv_glass_orb: 'ריבאונד התקפי (ORB%\u200E)',
+    glass_pair: (o, d) => 'התקפה ' + o + '% · הגנה ' + d + '%',
+    adv_glass_drb: 'ריבאונד הגנתי (DRB%\u200E)',
     adv_glass_posavg: 'ממוצע עמדה',
-    adv_glass_top: 'מובילי הריבאונד (ORB%+DRB%)',
+    adv_glass_top: 'מובילי הריבאונד (ORB%+DRB%‎)',
     adv_court_tab: 'פרופיל זריקות',
-    adv_court_title: 'פרופיל זריקות ומפת חום — חצי מגרש',
-    adv_court_sub: 'נפח, קליעות/ניסיונות ואחוז קליעה לכל אזור. הצבע משווה את אחוז הקליעה לחציון.',
+    adv_court_title: 'פרופיל זריקות לפי אזור',
+    adv_court_sub: 'כמות זריקות, קליעות מתוך ניסיונות ואחוז קליעה בכל אזור. הצבע משווה את אחוז הקליעה לחציון.',
     court_base_label: 'השוואה מול',
     court_base_pos: 'עמדה',
     court_base_league: 'ליגה',
     court_zone_paint: 'צבע · שתיים',
-    court_zone_arc: 'פרימטר · שלוש',
+    court_zone_arc: 'מחוץ לקשת · שלוש',
     court_zone_ft: 'קו העונשין',
-    court_vol: 'נפח',
+    court_vol: 'כמות',
+    court_ma: 'קליעות/ניסיונות',
+    court_pct: 'אחוז',
     court_vs: 'מול החציון',
     court_no_sample: 'אין ניסיונות',
-    court_hot: 'יעילות עלית',
+    court_hot: 'הרבה מעל הממוצע',
     court_avg: 'סביב הממוצע',
     court_cold: 'מתחת לממוצע',
     pl_shot_kicker: 'התפלגות זריקות',
@@ -1564,7 +1662,7 @@ const STR = {
     court_dist_title: 'התפלגות זריקות לפי אזור (אחוז מהניסיונות)',
     court_dist_note: 'אין נתוני מיקום ברמת זריקה בודדת — החלוקה לפי אזור בלבד.',
     pl_radar_kicker: 'פרופיל כישורים',
-    pl_radar_title: 'ראדאר כישורים — אחוזונים',
+    pl_radar_title: 'מפת כישורים באחוזונים',
     pl_radar_sub: 'כל ציר = דירוג באחוזונים מול שחקנים באותה עמדה (או הליגה כשהמדגם קטן). 100 = הטוב בליגה.',
     pl_radar_cmp: 'השוואה מול',
     pl_radar_cmp_none: '— ללא —',
@@ -1573,7 +1671,8 @@ const STR = {
     pl_radar_raw_col: 'נתוני עונה גולמיים',
     pl_ff_kicker: 'ארבעת הגורמים',
     pl_ff_title: 'ארבעת הגורמים — מול חציון העמדה',
-    pl_ff_sub: 'eFG%, אחוז איבודים, ריבאונד התקפי ל-36 ד׳ ויחס זריקות עונשין. הפס מציג את הפער מהחציון.',
+    pl_ff_sub: 'אחוז קליעה משוקלל (eFG%‎), אחוז איבודים, ריבאונד התקפי ל-36 דקות ויחס זריקות עונשין. הפס מציג את הפער מהחציון.',
+    ff_median: (v) => 'חציון ' + v,
     sig_kicker: 'קווים לדמותו',
     sig_title: 'הפרופיל בקצרה',
     sig_strengths: 'חוזקות',
@@ -1588,19 +1687,21 @@ const STR = {
     axis_playmaking: 'יצירת משחק',
     axis_security: 'שמירה על הכדור',
     axis_rebounding: 'ריבאונד',
-    axis_perimeter: 'קליעה מחוץ לקשת',
-    axis_inside: 'סיומת בצבע',
-    axis_impact: 'השפעה',
+    axis_perimeter: 'קליעה לשלוש',
+    axis_inside: 'סיום מתחת לסל',
+    axis_impact: 'השפעה כוללת',
+    axis_defense: 'הגנה',
     sig_arch_label: 'סוג שחקן',
-    arch_spacer: 'קלע ומרווח מגרש',
+    arch_spacer: 'קלע מבחוץ',
     arch_general: 'מנהל משחק',
-    arch_anchor: 'עוגן בצבע',
-    arch_scorer: 'סקורר מוביל',
-    arch_glassguard: 'שואב ריבאונד',
-    arch_connector: 'שחקן דו-כיווני ומחבר',
+    arch_anchor: 'שחקן פנים דומיננטי',
+    arch_scorer: 'קלע מוביל',
+    arch_glassguard: 'גארד ריבאונדר',
+    arch_connector: 'שחקן משלים ורב-גוני',
+    arch_defender: 'מגן מוביל',
     arch_limited: 'מדגם מוגבל',
-    pct_notice: 'מדגם דקות נמוך לחישוב אחוזונים',
-    pct_notice_sub: 'נדרשים לפחות 5 משחקים ו-40 דקות כדי לדרג אחוזונים, ראדאר וארכיטיפ.',
+    pct_notice: 'אין מספיק משחקים לדירוג באחוזונים',
+    pct_notice_sub: (g, m) => 'כדי לדרג שחקן באחוזונים, במפת הכישורים ובסוג השחקן נדרשים לפחות ' + g + ' משחקים ו-' + m + ' דקות בעונה.',
     an_cmp_kicker: 'השוואת שחקנים',
     an_cmp_title: 'בחרו עד 4 שחקנים להשוואה',
     an_cmp_none: '— ללא —',
@@ -1612,7 +1713,7 @@ const STR = {
     comp_regular: 'עונה סדירה',
     comp_playoffs_na: 'אין נתוני פלייאוף לעונה זו',
     comp_playoffs: 'פלייאוף',
-    playoffs_note: (n) => 'מוצגים נתוני שלב הפלייאוף בלבד — ' + n + ' מתוך 13 הקבוצות העפילו.',
+    playoffs_note: (n, total) => 'מוצגים נתוני הפלייאוף בלבד: ' + n + ' מתוך ' + total + ' הקבוצות העפילו.',
     ov_eyebrow: 'ליגת העל בכדורסל',
     ov_title: 'עונת',
     ov_teams_tracked: 'קבוצות',
@@ -1623,27 +1724,38 @@ const STR = {
     ov_leaders_kicker: 'מובילי הליגה · PIR',
     home_players_title: 'מובילי הליגה · שחקנים',
     home_teams_title: 'מובילי הליגה · קבוצות',
-    home_min_note: (n) => 'שחקנים עם ' + n + ' משחקים ומעלה בלבד',
+    home_min_note: (n, m) => 'שחקנים עם ' + n + ' משחקים ומעלה. במדדי האחוזים נדרש גם מינימום ניסיונות: ' + m.fga + ' מהשדה, ' + m.fg3a + ' לשלוש, ' + m.fta + ' מהעונשין.',
     lead_minutes: 'דקות למשחק',
-    lead_ts: 'אחוז קליעה אמיתי',
-    lead_efg: 'אחוז קליעה אפקטיבי',
+    lead_ts: 'אחוז קליעה אמיתי (TS%‎)',
+    lead_efg: 'אחוז קליעה משוקלל (eFG%‎)',
     lead_fg: 'אחוז קליעה מהשדה',
     lead_fg3: 'אחוז שלוש',
     lead_ft: 'אחוז עונשין',
     lead_asttov: 'יחס אסיסטים/איבודים',
     lead_oreb: 'ריבאונד התקפי',
     lead_dreb: 'ריבאונד הגנתי',
+    lead_steals: 'חטיפות למשחק',
+    lead_blocks: 'חסימות למשחק',
+    lead_pm: '+/- למשחק',
+    lead_diff: 'הפרש נקודות למשחק',
+    lead_pa: 'ההגנה הטובה · נק׳ חובה למשחק',
     lead_fg3m: 'שלשות למשחק',
-    lead_few_tov: 'מיעוט איבודים',
+    lead_few_tov: 'שמירה על הכדור · איבודים למשחק',
     ov_dq_label: 'איכות נתונים',
     ov_dq_title: (n) => n + ' ' + heCount(n, 'רשומה דורשת בדיקה', 'רשומות דורשות בדיקה'),
     ov_dq_body: '3PM/3PA עולים על FGM/FGA ב-{n} רשומות שחקן-עונה — מצב שאינו אפשרי ברישום סטטיסטי תקין. eFG% ו-TS% אינם אמינים ברשומות אלו עד שעמודות המקור יתוקנו.',
     ov_dq_link: '← בדיקת שחקנים מסומנים',
     ov_transfers_title: 'מעברים באמצע העונה',
     ov_transfers_desc: (n) => n + ' ' + heCount(n, 'שחקן החליף קבוצה', 'שחקנים החליפו קבוצה') + ' במהלך העונה — כל תקופה מוצגת בנפרד, עם חלוקת המשחקים בפועל בין הקבוצות.',
-    league_eyebrow: 'סך העונה ÷ משחקים',
+    league_eyebrow: 'ממוצעים למשחק',
     league_title: 'טבלת הליגה',
-    league_sub: (n) => 'כל ' + n + ' הקבוצות, ממוצע למשחק. PIR הוא מדד הביצועים האירופי הסטנדרטי.',
+    standings_kicker: 'מאזן ותוצאות',
+    standings_title: 'טבלת הדירוג',
+    standings_uneven: 'מספר המשחקים שונה בין הקבוצות; המיקום הוא לפי הטבלה הרשמית של המנהלת.',
+    team_stats_title: 'סטטיסטיקה קבוצתית',
+    col_w: 'נ׳', col_l: 'ה׳', col_wpct: '% נצ׳', col_pf: 'זכות', col_pa: 'חובה', col_diff: 'הפרש',
+    col_home: 'בית', col_away: 'חוץ', col_last5: '5 אחרונים',
+    league_sub: (n) => 'כל ' + n + ' הקבוצות: מאזן, נקודות זכות וחובה בממוצע למשחק, וסטטיסטיקה קבוצתית. לחצו על קבוצה לעמוד שלה.',
     col_hash: '#',
     col_season: 'עונה',
     col_team: 'קבוצה',
@@ -1661,27 +1773,27 @@ const STR = {
     gl_formula_label: 'נוסחה',
     gl_footer_note: 'מילון מונחים ומתודולוגיה',
     // ---- games: results / box score / game log ----
-    upg_notice: 'האתר עובר שדרוג: נתוני Box Scores ו-Game Logs של עונת 2025-26 מתווספים בהדרגה',
+    upg_notice: 'האתר בשדרוג: סטטיסטיקה מלאה לכל משחק ויומני משחקים לשחקנים מתווספים בהדרגה',
     upg_close: 'סגירת ההודעה',
     res_kicker: 'משחקים',
-    res_title: 'תוצאות ו-Box Score',
+    res_title: 'תוצאות וסטטיסטיקת משחק',
     res_round_label: 'מחזור / שלב',
     res_round_opt: (n) => 'מחזור ' + n,
     res_game_n: (n) => 'משחק ' + n,
     res_loading: 'טוען משחקים…',
-    res_hint: 'לחצו על משחק כדי לפתוח את ה-Box Score המלא.',
-    res_no_box: 'לא פורסם Box Score למשחק זה',
+    res_hint: 'לחצו על משחק כדי לראות את הסטטיסטיקה המלאה שלו.',
+    res_no_box: 'לא פורסמה סטטיסטיקה למשחק זה',
     res_empty: 'אין משחקים להצגה',
     stage_regular: 'עונה סדירה', stage_playin: 'פליי-אין', stage_quarterfinal: 'רבע גמר',
     stage_semifinal: 'חצי גמר', stage_final: 'גמר',
     tg_kicker: 'יומן הקבוצה',
     tg_title: 'משחקי הקבוצה',
-    tg_form: 'כושר · 10 אחרונים',
+    tg_form: 'כושר · 10 המשחקים האחרונים',
     tg_show_all: (n) => 'הצג את כל ' + n + ' המשחקים',
     tg_show_less: 'הצג פחות',
     tg_vs: 'נגד', tg_at: '@',
     wl_w: 'נ', wl_l: 'ה',
-    bx_title: 'Box Score',
+    bx_title: 'סטטיסטיקת משחק',
     bx_close: 'סגירה',
     bx_player: 'שחקן',
     bx_team: 'קבוצה',
@@ -1691,18 +1803,18 @@ const STR = {
     bx_referees: 'שופטים',
     bx_att: 'קהל',
     bx_flag_note: 'הערה: בנתוני המקור של משחק זה יש אי-התאמה קטנה (למשל עבירה או ריבאונד שנרשמו רק בשורת הסיכום).',
-    bx_more: { pts_off_tov: 'נק׳ מאיבודים', pts_paint: 'נק׳ בצבע', second_chance: 'הזדמנות שנייה', time_leading: 'זמן בהובלה' },
-    bx_error: 'לא ניתן לטעון את ה-Box Score',
+    bx_more: { pts_off_tov: 'נק׳ מאיבודי היריבה', pts_paint: 'נק׳ בצבע', second_chance: 'נק׳ מהזדמנות שנייה', time_leading: 'זמן בהובלה' },
+    bx_error: 'לא ניתן לטעון את סטטיסטיקת המשחק',
     bx_more_title: 'נתונים נוספים',
     ser_hint: 'לחצו כדי לראות את משחקי הסדרה',
     glg_kicker: 'יומן משחקים',
     glg_title: 'משחק אחר משחק',
-    glg_new: 'מדדים חדשים מה-Box Score',
+    glg_new: 'מדדים נוספים מסטטיסטיקת המשחקים',
     glg_chart_bar: 'PIR במשחק',
-    glg_chart_avg: 'ממוצע נע · 5 משחקים',
+    glg_chart_avg: 'ממוצע 5 המשחקים האחרונים',
     glg_chart_mean: 'ממוצע עונתי',
-    glg_tile_starts: (s, g) => 'פתח ' + s + ' מתוך ' + g,
-    lbl_stl: 'חטיפות למשחק', lbl_blk: 'חסימות למשחק', lbl_pm: '+/- למשחק', lbl_fd: 'עבירות שספג למשחק', lbl_gp_starts: 'משחקים',
+    glg_tile_starts: (s, g) => 'משחקים · ' + s + ' בחמישייה הפותחת',
+    lbl_stl: 'חטיפות למשחק', lbl_blk: 'חסימות למשחק', lbl_pm: '+/- למשחק', lbl_fd: 'עבירות שנעשו עליו למשחק', lbl_gp_starts: 'משחקים',
     col_date: 'תאריך', col_opp: 'יריבה', col_result: 'תוצאה',
     sl_placeholder: 'חיפוש שחקנים וקבוצות…',
     sl_grp_players: 'שחקנים',
@@ -1713,13 +1825,17 @@ const STR = {
     stat_mode_totals: 'סה״כ',
     stat_mode_per_game: 'ממוצע למשחק',
     stat_mode_per_36: 'ל-36 דק׳',
-    btn_export: 'ייצוא נתונים',
+    btn_export: 'ייצוא ל-CSV',
     no_results: 'לא נמצאו תוצאות',
     no_players_match: 'לא נמצאו שחקנים התואמים את הסינון',
     players_eyebrow: 'ליגת העל בכדורסל · שחקנים',
     players_title: 'שחקני הליגה',
-    players_sub: (n) => n + ' רשומות שחקנים · לחצו על שורה לצפייה בכרטיס המלא',
+    players_sub: (n) => n + ' שחקנים העונה · לחצו על שורה לכרטיס השחקן',
     players_all: 'כל השחקנים',
+    players_qual: (g) => 'לפחות ' + g + ' משחקים',
+    players_all_gp: 'כולם',
+    players_more: (n, left) => 'הצג עוד ' + n + ' (נותרו ' + left + ')',
+    low_sample_note: (g) => 'שורות מעומעמות: שחקנים עם פחות מ-' + g + ' משחקים. המדגם קטן, והממוצעים שלהם עלולים להטעות.',
     filter_pos_all: 'כל העמדות',
     filter_team_all: 'כל הקבוצות',
     stint_note: 'עבר קבוצה באמצע העונה — הנתונים כאן מתייחסים לתקופה בקבוצה זו בלבד.',
@@ -1727,7 +1843,7 @@ const STR = {
     mt_badge_short: '2 קבוצות',
     team_picker_label: 'קבוצה',
     team_picker_opt: (t) => '#' + t.rank + ' ' + teamLabel(t) + ' (' + t.player_count + ' ' + heCount(t.player_count, 'שחקן', 'שחקנים') + ')',
-    team_eyebrow: (rank, total) => 'ליגת העל · מקום ' + rank + ' מתוך ' + total + ' בהתקפה',
+    team_eyebrow: (rank, total) => 'ליגת העל · מקום ' + rank + ' מתוך ' + total + ' בטבלה',
     lbl_points: 'נקודות',
     lbl_assists: 'אסיסטים',
     lbl_rebounds: 'ריבאונדים',
@@ -1736,12 +1852,17 @@ const STR = {
     lbl_team_pir: 'PIR קבוצתי',
     lbl_pir: 'PIR',
     roster_title: 'סגל',
-    roster_sub: (n) => n + ' ' + heCount(n, 'שחקן בסגל', 'שחקנים בסגל') + ' · ממוצע למשחק, לחצו על שורה לפרטים',
+    roster_sub: (n) => n + ' ' + heCount(n, 'שחקן בסגל', 'שחקנים בסגל') + ' · לחצו על שורה לכרטיס השחקן',
     roster_flag_note: (n) => '● מסמן ' + n + ' ' + heCount(n, 'שחקן בסגל זה ש-3PM/3PA שלו עולים', 'שחקנים בסגל זה ש-3PM/3PA שלהם עולים') + ' על FGM/FGA במקור — פתחו את עמוד השחקן להערה על אחוזי הקליעה.',
     player_picker_viewing: 'צפייה ב־',
-    player_eyebrow: (teamLbl, posName, jersey) => teamLbl + ' · ' + jerseyLabel(jersey),
-    player_rank_badge: (total) => 'מתוך ' + total + ' · דירוג PIR בליגה',
+    player_eyebrow: (teamLbl, posName, jersey) => teamLbl + (hasJersey(jersey) ? ' · ' + jerseyLabel(jersey) : ''),
+    player_rank_badge: (total, g) => 'מקום ב-PIR למשחק · מתוך ' + total + ' שחקנים עם ' + g + ' משחקים ומעלה',
+    player_rank_unq: (g) => 'לא מדורג ב-PIR · פחות מ-' + g + ' משחקים',
+    per_g_sfx: ' למשחק',
+    pir_hint: 'PIR (מדד תרומה): נקודות + ריבאונדים + אסיסטים + חטיפות + חסימות + עבירות שנגרמו, פחות זריקות מוחטאות, איבודים ועבירות.',
     pl_season_kicker: 'פילוח · לפי עונה',
+    pc_nav_aria: 'מקטעי כרטיס השחקן',
+    pc_sec_summary: 'סיכום', pc_sec_skills: 'כישורים', pc_sec_shooting: 'זריקות', pc_sec_games: 'משחקים', pc_sec_seasons: 'לפי עונה',
     pl_season_title: 'סטטיסטיקה לפי עונה',
     pl_calc_label: 'אופן חישוב',
     pl_frame_label: 'שלב',
@@ -1749,40 +1870,40 @@ const STR = {
     section_shooting: 'קליעה',
     flag_banner: (efg, ts, fg3) => 'eFG% ' + efg + ' / TS% ' + ts + ' אינם אמינים לגבי שחקן זה — 3PM/3PA במקור (' + fg3 + '% בתיעוד) עולים על סך FGM/FGA של שחקן-עונה זה, ולכן מדדי הקליעה המשולבים יוצאים גבוהים מ-100%. FG%/3P%/FT% שלמעלה אינם מושפעים.',
     section_bio: 'פרטים אישיים',
-    section_usage: 'עומס משחק',
+    section_usage: 'זמן משחק',
     bio_age: 'גיל',
     bio_height: 'גובה',
     bio_nationality: 'אזרחות',
     bio_games: 'משחקים',
-    bio_minutes: 'דקות',
+    bio_minutes: 'דקות למשחק',
     bio_on_team: 'ותק בקבוצה',
     yr: (n) => n + ' ' + heCount(n, 'שנה', 'שנים'),
     ins: {
       kicker: 'ניתוח אוטומטי', title: 'תובנות מפתח',
-      p_scoreElite: (v, q) => `הבקעה מובילה — ${v} נק׳ למשחק, אחוזון ${q} בליגה.`,
-      p_scoreHigh: (v, q) => `נפח התקפי גבוה — ${v} נק׳ למשחק (אחוזון ${q}).`,
+      p_scoreElite: (v, q) => `מהקלעים המובילים בליגה — ${v} נק׳ למשחק, אחוזון ${q} בליגה.`,
+      p_scoreHigh: (v, q) => `קלע מרכזי — ${v} נק׳ למשחק (אחוזון ${q}).`,
       p_scoreLow: (v) => `תפקיד התקפי משני — ${v} נק׳ למשחק.`,
-      p_tsElite: (v, q) => `יעילות קליעה עלית — TS% ${v}, אחוזון ${q}.`,
+      p_tsElite: (v, q) => `יעילות קליעה גבוהה במיוחד — TS% ${v}, אחוזון ${q}.`,
       p_tsLow: (v, q) => `יעילות קליעה נמוכה — TS% ${v} (אחוזון ${q}).`,
       p_badSplit: 'נתוני השלוש במקור חורגים מזריקות השדה — eFG%/TS% אינם אמינים לשחקן זה.',
       p_playmaker: (r, a) => `יצירת משחק אמינה — יחס אסיסטים/איבודים ${r} עם ${a} אסיסטים למשחק.`,
       p_tovProne: (r) => `שמירה על הכדור בעייתית — יחס אסיסטים/איבודים ${r}.`,
       p_rebStrong: (v, pos, q) => `שליטה בריבאונד לעמדת ${pos} — ${v} ריבאונדים למשחק, אחוזון ${q} בעמדה.`,
       p_rebWeak: (v, pos) => `ריבאונד מועט לעמדת ${pos} — ${v} למשחק.`,
-      p_three: (v, q) => `איום מעבר לקשת — ${v}% מהשלוש (אחוזון ${q}).`,
-      p_pirTop: (rk, v) => `השפעה כוללת עלית — PIR ${v} למשחק, מקום ${rk} בליגה.`,
+      p_three: (v, q) => `קלע שלשות מסוכן — ${v}% מהשלוש (אחוזון ${q}).`,
+      p_pirTop: (rk, v) => `מהשחקנים המשפיעים בליגה — PIR ${v} למשחק, מקום ${rk} בליגה.`,
       p_balanced: 'פרופיל מאוזן — בלי חוזקה או חולשה בולטת בעונה זו.',
       t_rankTop: (v) => `מובילת הטבלה — מקום 1, PIR ${v} למשחק.`,
       t_rankHigh: (rk) => `בצמרת — מקום ${rk} בטבלת הליגה.`,
       t_rankLow: (rk, n) => `בתחתית — מקום ${rk} מתוך ${n}.`,
       t_offElite: (v, q) => `אחת ההתקפות הטובות בליגה — ${v} נק׳ למשחק (אחוזון ${q}).`,
       t_offLow: (v, q) => `התקפה חלשה — ${v} נק׳ למשחק (אחוזון ${q}).`,
-      t_ballMove: (v, q) => `מסירת כדור מצוינת — ${v} אסיסטים למשחק (אחוזון ${q}).`,
+      t_ballMove: (v, q) => `משחק מסירות מצוין — ${v} אסיסטים למשחק (אחוזון ${q}).`,
       t_tovLow: (v) => `שמירה על הכדור — ${v} איבודים למשחק בלבד, מהנמוכים בליגה.`,
       t_reb: (v, q) => `שליטה בריבאונד — ${v} ריבאונדים למשחק (אחוזון ${q}).`,
-      t_three: (v, q) => `סכנה מעבר לקשת — ${v}% מהשלוש (אחוזון ${q}).`,
-      t_blocks: (v, q) => `הגנת סל — ${v} חסימות למשחק (אחוזון ${q}).`,
-      t_balanced: 'פרופיל מאוזן — בלי בלט מיוחד בקצוות.',
+      t_three: (v, q) => `קליעה מצוינת לשלוש — ${v}% מהשלוש (אחוזון ${q}).`,
+      t_blocks: (v, q) => `הגנה על הטבעת — ${v} חסימות למשחק (אחוזון ${q}).`,
+      t_balanced: 'פרופיל מאוזן — בלי חוזקה או חולשה בולטת.',
     },
     cmp_kicker: 'נתוני עונה',
     cmp_title: (posName) => 'השוואה לממוצע עמדת ' + posName,
@@ -1798,7 +1919,18 @@ const STR = {
     tab_analytics: 'Analytics',
     an_eyebrow: 'Israeli Basketball Super League · advanced',
     an_title: 'Advanced Analytics',
-    an_sub: 'Tools for comparing players and spotting league-wide trends.',
+    an_grp: { players: 'Players', teams: 'Teams', more: 'Comparisons & trends' },
+    an_topic: {
+      scatter: ['Volume vs efficiency', 'Who scores a lot, and who scores efficiently?'],
+      load: ['Offensive load', 'How much of the offense runs through a player, and how efficiently?'],
+      ppr: ['Playmaking', 'Who creates for teammates without turning it over?'],
+      glass: ['Rebounding', 'Who owns the glass relative to his position?'],
+      court: ['Shot profile', 'Where does a player shoot from, and where is he accurate?'],
+      fourfactors: ['Four Factors', 'Shooting, turnovers, rebounding, free throws: where does each team win?'],
+      shotdiet: ['Shot mix', 'Who lives on threes, and who attacks the rim?'],
+      h2h: ['Head to head', 'Two players or two teams, side by side.'],
+      trends: ['Decade trends', 'How has the league changed since 2016?'],
+    },
     an_view_label: 'View',
     an_view_players: 'Players',
     an_view_teams: 'Teams',
@@ -1820,6 +1952,8 @@ const STR = {
     h2h_title: 'Compare any two players or two teams',
     h2h_empty: 'Pick two different items to compare.',
     tr_title: 'League metrics across 10 seasons',
+    tr_range: (a, b) => '(range ' + a + '–' + b + ')',
+    tr_scale_note: 'Each line has its own scale, to compare the direction of trends rather than sizes. Small moves stay small on the chart; each metric’s real range is in the legend.',
     tr_3par: '3PA per game',
     tr_pace: 'Avg points per team',
     tr_ft: 'Free-throw %',
@@ -1838,11 +1972,11 @@ const STR = {
     dc_m_isr_pts: 'Israeli scoring %',
     dc_m_gap: 'PIR/g gap (top 3 − bottom 3)',
     dc_a_title: 'The 3PT & Pace Revolution',
-    dc_a_take: 'Pace (possessions per 40) and three-point attempt rate (3PAr) climbed together — the league moved from slow half-court basketball to a faster, three-happy game, tracking the same shift across Europe and the NBA.',
+    dc_a_take: 'The share of shots taken from three climbed almost every season, tracking the shift across Europe and the NBA. Pace (possessions per 40) stayed in a narrow band, though: the league shoots more threes, but it is not clearly playing faster.',
     dc_b_title: 'Domestic vs Foreign Impact',
     dc_b_take: 'The Israeli share of minutes and of scoring has drifted as the import quota widened and the local-player rule evolved — the gap between minutes share and scoring share is a read on how much the league leans on foreign scorers.',
     dc_c_title: 'Shooting Efficiency Evolution',
-    dc_c_take: 'League-wide TS% and eFG% rose as shot selection improved — more threes and layups, fewer long twos. Free-throw percentage stayed comparatively flat.',
+    dc_c_take: 'Despite the move to threes, overall efficiency barely changed: league TS% and eFG% stay within about three percentage points across the decade, and free-throw percentage is flat. The spikes are single-season swings, not a trend.',
     dc_d_title: 'Parity & Spread Index',
     dc_d_take: 'The gap in average PIR per game between the top-3 and bottom-3 clubs measures league parity. A widening gap means power concentrating at the top; a narrowing one, a more competitive league. (With no opponent data in the season-totals feed, PIR stands in here as a two-way proxy for net rating.)',
     an_sec_advanced: 'Advanced metrics',
@@ -1863,7 +1997,8 @@ const STR = {
     adv_load_leg_lo: 'Low AST/TOV',
     adv_load_leg_size: 'Size = points/game',
     adv_ff_title: "Dean Oliver's Four Factors (teams)",
-    adv_ff_sub: 'Each column vs the league median (µ). Green = better than median, orange = below.',
+    adv_ff_sub: 'Each column vs the league median. Green = better than median, orange = below.',
+    ff_median: (v) => 'median ' + v,
     adv_ppr_title: 'Pure Playmaking Ratio (PPR)',
     adv_ppr_sub: '100 · ((2/3)·AST − TOV) ÷ MIN. Positive in cyan, negative in orange.',
     adv_diet_title: 'Shot diet & spacing profile',
@@ -1872,7 +2007,8 @@ const STR = {
     adv_diet_spacer: 'Perimeter spacer', adv_diet_rim: 'Rim attacker', adv_diet_balanced: 'Balanced',
     adv_glass_title: 'Glass Dominance Index',
     adv_glass_sub: 'Offensive / defensive rebound rate vs available on-court chances, against the positional average.',
-    adv_glass_orb: 'ORB% — offensive rebound rate',
+    adv_glass_orb: 'ORB% — offensive rebound',
+    glass_pair: (o, d) => 'ORB ' + o + '% · DRB ' + d + '%',
     adv_glass_drb: 'DRB% — defensive rebound rate',
     adv_glass_posavg: 'Position avg',
     adv_glass_top: 'Glass leaders (ORB%+DRB%)',
@@ -1886,6 +2022,8 @@ const STR = {
     court_zone_arc: 'Perimeter · 3PT',
     court_zone_ft: 'Free-throw line',
     court_vol: 'Vol',
+    court_ma: 'M/A',
+    court_pct: 'FG%',
     court_vs: 'vs median',
     court_no_sample: 'No attempts',
     court_hot: 'Elite efficiency',
@@ -1926,6 +2064,7 @@ const STR = {
     axis_perimeter: 'Perimeter',
     axis_inside: 'Inside finish',
     axis_impact: 'Impact',
+    axis_defense: 'Defense',
     sig_arch_label: 'ARCHETYPE',
     arch_spacer: 'Floor spacer · shot maker',
     arch_general: 'Floor general',
@@ -1933,9 +2072,10 @@ const STR = {
     arch_scorer: 'Go-to scorer',
     arch_glassguard: 'Glass-crashing guard',
     arch_connector: 'Two-way connector',
+    arch_defender: 'Defensive stopper',
     arch_limited: 'Limited Sample',
     pct_notice: 'Insufficient minutes for percentile rating',
-    pct_notice_sub: 'At least 5 games and 40 minutes are needed to rate percentiles, radar and archetype.',
+    pct_notice_sub: (g, m) => 'At least ' + g + ' games and ' + m + ' minutes this season are needed to rate percentiles, the skill radar and the archetype.',
     an_cmp_kicker: 'Player comparison',
     an_cmp_title: 'Pick up to 4 players to compare',
     an_cmp_none: '— none —',
@@ -1947,7 +2087,7 @@ const STR = {
     comp_regular: 'Regular season',
     comp_playoffs_na: 'No playoff data for this season',
     comp_playoffs: 'Playoffs',
-    playoffs_note: (n) => 'Showing playoffs-only data — ' + n + ' of 13 teams qualified.',
+    playoffs_note: (n, total) => 'Showing playoffs-only data — ' + n + ' of ' + total + ' teams qualified.',
     ov_eyebrow: 'Israeli Basketball Super League',
     ov_title: 'Season',
     ov_teams_tracked: 'Teams tracked',
@@ -1958,7 +2098,7 @@ const STR = {
     ov_leaders_kicker: 'League leaders · PIR',
     home_players_title: 'League leaders | Players',
     home_teams_title: 'League leaders | Teams',
-    home_min_note: (n) => n + '+ games played only',
+    home_min_note: (n, m) => n + '+ games played. Shooting-rate leaders also need a minimum of ' + m.fga + ' FGA, ' + m.fg3a + ' 3PA and ' + m.fta + ' FTA.',
     lead_minutes: 'Minutes per game',
     lead_ts: 'True shooting %',
     lead_efg: 'Effective FG %',
@@ -1968,17 +2108,28 @@ const STR = {
     lead_asttov: 'Assist / turnover',
     lead_oreb: 'Offensive rebounds',
     lead_dreb: 'Defensive rebounds',
+    lead_steals: 'Steals per game',
+    lead_blocks: 'Blocks per game',
+    lead_pm: '+/- per game',
+    lead_diff: 'Point differential',
+    lead_pa: 'Best defense · points allowed',
     lead_fg3m: '3-pointers per game',
-    lead_few_tov: 'Fewest turnovers',
+    lead_few_tov: 'Ball security · turnovers',
     ov_dq_label: 'Data quality',
     ov_dq_title: (n) => n + ' rows need review',
     ov_dq_body: '3PM/3PA exceed FGM/FGA on {n} player-season records — impossible in a real box score. eFG% and TS% are unreliable for those rows until the source columns are corrected.',
     ov_dq_link: 'Review flagged players →',
     ov_transfers_title: 'Mid-season moves',
     ov_transfers_desc: (n) => n + ' players changed teams during the season — each stint is shown separately, with the real games-played split between clubs.',
-    league_eyebrow: 'Season totals ÷ games played',
+    league_eyebrow: 'Per-game averages',
     league_title: 'League table',
-    league_sub: (n) => 'All ' + n + ' teams, per-game averages. PIR is the standard European performance index rating.',
+    standings_kicker: 'Record & results',
+    standings_title: 'Standings',
+    standings_uneven: 'Teams have played different numbers of games; order follows the official league table.',
+    team_stats_title: 'Team stats',
+    col_w: 'W', col_l: 'L', col_wpct: 'W%', col_pf: 'PF', col_pa: 'PA', col_diff: 'DIFF',
+    col_home: 'Home', col_away: 'Away', col_last5: 'Last 5',
+    league_sub: (n) => 'All ' + n + ' teams: record, points for and against per game, and team stats. Click a team for its page.',
     col_hash: '#',
     col_season: 'Season',
     col_team: 'Team',
@@ -2036,7 +2187,7 @@ const STR = {
     glg_chart_bar: 'PIR per game',
     glg_chart_avg: '5-game rolling avg',
     glg_chart_mean: 'Season average',
-    glg_tile_starts: (s, g) => s + ' starts of ' + g,
+    glg_tile_starts: (s, g) => 'games · ' + s + ' starts',
     lbl_stl: 'Steals / game', lbl_blk: 'Blocks / game', lbl_pm: '+/- per game', lbl_fd: 'Fouls drawn / game', lbl_gp_starts: 'Games',
     col_date: 'Date', col_opp: 'Opponent', col_result: 'Result',
     sl_placeholder: 'Search players and teams…',
@@ -2053,8 +2204,12 @@ const STR = {
     no_players_match: 'No players match the current filters',
     players_eyebrow: 'Israeli Basketball Super League · players',
     players_title: 'League players',
-    players_sub: (n) => n + ' player rows · click a row for the full card',
+    players_sub: (n) => n + ' players this season · click a row for the player card',
     players_all: 'All players',
+    players_qual: (g) => g + '+ games',
+    players_all_gp: 'All',
+    players_more: (n, left) => 'Show ' + n + ' more (' + left + ' left)',
+    low_sample_note: (g) => 'Dimmed rows: fewer than ' + g + ' games played. Small sample, so their averages can mislead.',
     filter_pos_all: 'All positions',
     filter_team_all: 'All teams',
     stint_note: 'Changed teams mid-season — these numbers cover only the stint with this club.',
@@ -2062,7 +2217,7 @@ const STR = {
     mt_badge_short: '2 teams',
     team_picker_label: 'Team',
     team_picker_opt: (t) => '#' + t.rank + ' ' + teamLabel(t) + ' (' + t.player_count + ' players)',
-    team_eyebrow: (rank, total) => 'Super League · rank ' + rank + ' of ' + total + ' in offense',
+    team_eyebrow: (rank, total) => 'Super League · ' + rank + ' of ' + total + ' in the standings',
     lbl_points: 'Points',
     lbl_assists: 'Assists',
     lbl_rebounds: 'Rebounds',
@@ -2071,12 +2226,17 @@ const STR = {
     lbl_team_pir: 'Team PIR',
     lbl_pir: 'PIR',
     roster_title: 'Roster',
-    roster_sub: (n) => n + ' players profiled · per-game averages, click a row for detail',
+    roster_sub: (n) => n + ' players on the roster · click a row for the player card',
     roster_flag_note: (n) => '● marks ' + n + ' player' + (n === 1 ? '' : 's') + ' on this roster whose source 3PM/3PA exceed their FGM/FGA — open their player page for the shooting-percentage caveat.',
     player_picker_viewing: 'Viewing',
-    player_eyebrow: (teamLbl, posName, jersey) => teamLbl + ' · ' + jerseyLabel(jersey),
-    player_rank_badge: (total) => 'of ' + total + ' · league PIR rank',
+    player_eyebrow: (teamLbl, posName, jersey) => teamLbl + (hasJersey(jersey) ? ' · ' + jerseyLabel(jersey) : ''),
+    player_rank_badge: (total, g) => 'PIR/game rank · of ' + total + ' players with ' + g + '+ games',
+    player_rank_unq: (g) => 'Not ranked on PIR · under ' + g + ' games',
+    per_g_sfx: ' / game',
+    pir_hint: 'PIR (Performance Index Rating): points + rebounds + assists + steals + blocks + fouls drawn, minus missed shots, turnovers and fouls committed.',
     pl_season_kicker: 'Splits · by season',
+    pc_nav_aria: 'Player card sections',
+    pc_sec_summary: 'Summary', pc_sec_skills: 'Skills', pc_sec_shooting: 'Shooting', pc_sec_games: 'Games', pc_sec_seasons: 'By season',
     pl_season_title: 'Stats by season',
     pl_calc_label: 'Calculation',
     pl_frame_label: 'Split',
@@ -2089,7 +2249,7 @@ const STR = {
     bio_height: 'Height',
     bio_nationality: 'Nationality',
     bio_games: 'Games',
-    bio_minutes: 'Minutes',
+    bio_minutes: 'Minutes / game',
     bio_on_team: 'On team',
     yr: (n) => n + ' yr',
     ins: {
@@ -2127,6 +2287,74 @@ const STR = {
 
 function heCount(n, singular, plural) { return n === 1 ? singular : plural; }
 function t(key) { return STR[state.lang][key]; }
+/* Box-score column abbreviations. English keeps the standard codes; Hebrew
+ * uses the abbreviations Israeli sports sites print (נק׳, ריב׳, אס׳ ...) so a
+ * Hebrew page doesn't carry English table headers. PIR / TS% / eFG% / +/- have
+ * no Hebrew convention and stay as-is. Unknown codes pass through. */
+const STAT_ABBR_HE = {
+  GP: 'מש׳', MIN: 'דק׳', PTS: 'נק׳', REB: 'ריב׳', AST: 'אס׳', STL: 'חט׳', BLK: 'חס׳',
+  TOV: 'איב׳', PF: 'עב׳', FD: 'עב׳ נגדו', OR: 'ריב׳ התק׳', DR: 'ריב׳ הגנ׳',
+  FG: 'שדה', '2PT': 'שתיים', '3PT': 'שלוש', FT: 'עונשין',
+  'FG%': 'שדה %', '3P%': 'שלוש %', 'FT%': 'עונשין %',
+};
+/* Hover explanations for table headers (title tooltip + dotted underline).
+ * Keyed by the same codes statAbbr() takes. */
+const STAT_TIPS = {
+  GP: { he: 'משחקים ששיחק', en: 'Games played' },
+  MIN: { he: 'דקות משחק (סה״כ או ממוצע, לפי התצוגה)', en: 'Minutes played (total or average, per the view)' },
+  PTS: { he: 'נקודות', en: 'Points' },
+  REB: { he: 'ריבאונדים (התקפה + הגנה)', en: 'Rebounds (offensive + defensive)' },
+  OR: { he: 'ריבאונד התקפי', en: 'Offensive rebounds' },
+  DR: { he: 'ריבאונד הגנתי', en: 'Defensive rebounds' },
+  AST: { he: 'אסיסטים: מסירות שהובילו ישירות לסל', en: 'Assists: passes that led directly to a basket' },
+  STL: { he: 'חטיפות (מסטטיסטיקת המשחקים)', en: 'Steals (from the game box scores)' },
+  BLK: { he: 'חסימות', en: 'Blocks' },
+  TOV: { he: 'איבודי כדור. פחות זה טוב', en: 'Turnovers. Lower is better' },
+  PF: { he: 'עבירות אישיות', en: 'Personal fouls' },
+  FD: { he: 'עבירות שנעשו על השחקן', en: 'Fouls drawn' },
+  PIR: { he: 'PIR (מדד תרומה): נקודות + ריבאונדים + אסיסטים + חטיפות + חסימות + עבירות שנגרמו, פחות החטאות, איבודים ועבירות', en: 'PIR (Performance Index Rating): points + rebounds + assists + steals + blocks + fouls drawn, minus misses, turnovers and fouls' },
+  '+/-': { he: 'הפרש הנקודות של הקבוצה כשהשחקן על המגרש', en: 'Team point differential while the player is on the floor' },
+  FG: { he: 'קליעות מהשדה / ניסיונות', en: 'Field goals made / attempted' },
+  '2PT': { he: 'קליעות לשתיים / ניסיונות', en: 'Two-pointers made / attempted' },
+  '3PT': { he: 'קליעות לשלוש / ניסיונות', en: 'Three-pointers made / attempted' },
+  FT: { he: 'זריקות עונשין שנקלעו / ניסיונות', en: 'Free throws made / attempted' },
+  'FG%': { he: 'אחוז קליעה מהשדה (שתיים ושלוש יחד)', en: 'Field-goal percentage (twos and threes)' },
+  '3P%': { he: 'אחוז קליעה לשלוש', en: 'Three-point percentage' },
+  'FT%': { he: 'אחוז קליעה מהעונשין', en: 'Free-throw percentage' },
+  'TS%': { he: 'אחוז קליעה אמיתי: יעילות קליעה שמשקללת שתיים, שלוש ועונשין למספר אחד', en: 'True shooting: scoring efficiency folding twos, threes and free throws into one number' },
+  'eFG%': { he: 'אחוז קליעה משוקלל: שלשה נספרת כקליעה וחצי, כי היא שווה נקודה נוספת', en: 'Effective FG%: a made three counts as 1.5 makes, since it is worth an extra point' },
+  W: { he: 'ניצחונות', en: 'Wins' },
+  L: { he: 'הפסדים', en: 'Losses' },
+  'W%': { he: 'אחוז ניצחונות', en: 'Win percentage' },
+  PTSF: { he: 'נקודות זכות: ממוצע הנקודות שהקבוצה קולעת למשחק', en: 'Points for: average points scored per game' },
+  PTSA: { he: 'נקודות חובה: ממוצע הנקודות שהקבוצה סופגת למשחק', en: 'Points against: average points allowed per game' },
+  DIFF: { he: 'הפרש נקודות ממוצע למשחק (זכות פחות חובה). המדד הטוב ביותר לחוזק קבוצה', en: 'Average point differential per game (for minus against), the best single read of team strength' },
+  HOME: { he: 'מאזן במשחקי בית (ניצחונות-הפסדים)', en: 'Home record (wins-losses)' },
+  AWAY: { he: 'מאזן במשחקי חוץ (ניצחונות-הפסדים)', en: 'Away record (wins-losses)' },
+  LAST5: { he: '5 המשחקים האחרונים, מהישן לחדש', en: 'Last five games, oldest to newest' },
+};
+/* sortable-table column key -> STAT_TIPS code */
+const COL_TIP = {
+  avg_points: 'PTS', pts: 'PTS', avg_assists: 'AST', ast: 'AST', avg_rebounds: 'REB', reb: 'REB',
+  avg_steals: 'STL', stl: 'STL', avg_blocks: 'BLK', blk: 'BLK', avg_turnovers: 'TOV', avg_pir: 'PIR', pir: 'PIR',
+  gp: 'GP', min: 'MIN', fg_pct: 'FG%', fg3_pct: '3P%', ts_pct: 'TS%',
+  w: 'W', l: 'L', pct: 'W%', pf: 'PTSF', pa: 'PTSA', diff: 'DIFF', home: 'HOME', away: 'AWAY', last5: 'LAST5',
+};
+function statTip(code) { const tip = STAT_TIPS[code]; return tip ? tip[state.lang] : ''; }
+/* header cell with a hover explanation when one exists */
+function tipHead(tag, cls, label, code) {
+  const e = el(tag, cls, label);
+  const tip = statTip(code);
+  if (tip) { e.title = tip; e.classList.add('has-tip'); }
+  return e;
+}
+function statAbbr(code) {
+  const he = STAT_ABBR_HE[String(code).toUpperCase()];
+  if (state.lang === 'he' && he) return he;
+  if (/^[A-Za-z]+$/.test(code)) return code.toUpperCase();  // 'Pts' -> 'PTS'
+  // 'eFG%' / 'TS%' kept, plus an LRM so RTL doesn't render them "%TS"
+  return state.lang === 'he' && /%$/.test(code) ? code + '‎' : code;
+}
 
 function teamLabel(team) { return (state.lang === 'he' && team.label_he) ? team.label_he : team.label; }
 function teamName(team) { return (state.lang === 'he' && team.name_he) ? team.name_he : team.name; }
@@ -2154,8 +2382,11 @@ function playerHay(p) {
    often carry it as null, and the bundled workbook uses 0 as an "unknown"
    sentinel -- treat null / undefined / NaN / 0 identically so the UI shows a
    clean standardized "#--" badge and never "#null" / "#NaN" / "#0". */
-function hasJersey(j) { return j !== null && j !== undefined && j !== 0 && !(typeof j === 'number' && Number.isNaN(j)); }
-function jerseyLabel(j) { return hasJersey(j) ? '#' + j : '#--'; }
+// 0 is a real shirt number (it reaches data.json only from the box scores --
+// the season-totals 0 sentinel is nulled by scrape_player_details.py)
+function hasJersey(j) { return j !== null && j !== undefined && j !== '' && !(typeof j === 'number' && Number.isNaN(j)); }
+// no shirt number in the source for ~25% of rows: show nothing, not a cryptic "#--"
+function jerseyLabel(j) { return hasJersey(j) ? '#' + j : ''; }
 function teamHay(tm) { return [tm.label, tm.label_he, tm.name, tm.name_he, tm.city, tm.city_he].filter(Boolean).join(' '); }
 function positionFull(pos) {
   const g = posGroups(pos);
@@ -2332,7 +2563,7 @@ const state = {
   // once ./data.json has loaded.
   tab: lsGet('sls-tab', 'overview'), teamId: null, playerId: null, season: null,
   lang: savedLang, competition: savedCompetition,
-  leagueSortKey: null, leagueSortDir: null, leagueQuery: '',
+  leagueSortKey: null, leagueSortDir: null, leagueQuery: '', standSortKey: null, standSortDir: null,
   rosterSortKey: null, rosterSortDir: null, rosterQuery: '',
   cmpPlayerIds: [null, null, null, null],
   radarTeamIds: [null, null],
@@ -2340,15 +2571,17 @@ const state = {
   playerCalcMode: 'per_game',
   playerFramework: 'regular_season',
   analyticsView: lsGet('sls-anview', 'players'),
-  anSection: lsGet('sls-ansection', 'scatter'),
-  anAdv: lsGet('sls-anadv', 'load'),
+  // single analytics topic; falls back to the old two-level keys a returning
+  // visitor may still have saved
+  anView: lsGet('sls-anview', '') || (lsGet('sls-ansection', 'scatter') === 'advanced'
+    ? lsGet('sls-anadv', 'load') : lsGet('sls-ansection', 'scatter')),
   dcSeason: null,
   scTeam: '', scPos: '', scMinGp: 5,
   courtPid: null, courtBase: lsGet('sls-courtbase', 'position'), glassPid: null,
   playerView: 'list',
   playerCmpId: null,
   playersQuery: '', playersPos: '', playersTeam: '',
-  playersSortKey: 'pts', playersSortDir: 'desc',
+  playersSortKey: 'pts', playersSortDir: 'desc', playersQualOnly: true, playersLimit: 50, playersSig: '',
 };
 
 /* ---------------- utilities ---------------- */
@@ -2372,9 +2605,36 @@ function isSmallSample(p) { return totalMin(p) < SMALL_SAMPLE_MIN; }
  * strengths/weaknesses, archetype). Below this the pool-relative rates
  * distort -- a 3-minute cameo shooting 1/1 would rank 100th percentile --
  * so those views show a "limited sample" notice instead. */
-const QUAL_MIN_GP = 5, QUAL_MIN_MIN = 40, QUAL_MIN_MPG = 6.0;
+/* The floors scale with the active season's length: a flat "5 games / 40
+ * minutes" let a 6-game import rank 2nd in the league on PIR with 99th-
+ * percentile skills. Regular season (~32 games): 8 games and 160 minutes;
+ * a short playoff run: 3 games and 50 minutes. */
+const QUAL_GP_SHARE = 0.25, QUAL_MIN_PER_TEAM_GAME = 5;
+const _qualCache = new WeakMap();
+function qualFloors(players) {
+  const pool = players || activePlayersRaw();
+  let f = _qualCache.get(pool);
+  if (!f) {
+    const maxGp = Math.max(1, ...pool.map((p) => num0(p.gp)));
+    f = {
+      maxGp,
+      gp: Math.max(3, Math.ceil(QUAL_GP_SHARE * maxGp)),
+      min: Math.max(40, QUAL_MIN_PER_TEAM_GAME * maxGp),
+    };
+    _qualCache.set(pool, f);
+  }
+  return f;
+}
 function qualifiesForPercentiles(p) {
-  return num0(p.gp) >= QUAL_MIN_GP && (totalMin(p) >= QUAL_MIN_MIN || num0(p.avg_minutes) >= QUAL_MIN_MPG);
+  const f = qualFloors();
+  return num0(p.gp) >= f.gp && totalMin(p) >= f.min;
+}
+/* League PIR rank among qualified players only (the exported pir_rank_league
+ * ranks everyone, so a 2-game cameo could sit at #1). null when unqualified. */
+function qualifiedPirRank(p) {
+  if (!qualifiesForPercentiles(p)) return null;
+  const q = activePlayersRaw().filter(qualifiesForPercentiles);
+  return 1 + q.filter((x) => x.id !== p.id && num0(x.avg_pir) > num0(p.avg_pir)).length;
 }
 /* Pool of players eligible to define percentile distributions for the active
  * season/competition -- qualified players only. Falls back to the looser
@@ -2388,12 +2648,12 @@ function limitedSampleNotice() {
   const S = STR[state.lang];
   const box = el('div', 'empty-state limited-sample');
   box.appendChild(el('div', 'ls-title', S.pct_notice));
-  box.appendChild(el('div', 'ls-sub', S.pct_notice_sub));
+  box.appendChild(el('div', 'ls-sub', S.pct_notice_sub(qualFloors().gp, qualFloors().min)));
   return box;
 }
 /* Playoff series are short (2-8 games) -- drop the qualifying-GP floor so
  * percentile pools don't collapse to a handful of players. */
-function qualGpFloor() { return state.competition === 'playoffs' ? 2 : 3; }
+function qualGpFloor() { return state.competition === 'playoffs' ? 2 : qualFloors().gp; }
 function analysisPool(players) { return players.filter((p) => p.gp >= qualGpFloor()); }
 /* Tooltip placement that flips inward near any container edge and clamps so a
  * chart tooltip is never clipped by the panel. */
@@ -2444,6 +2704,18 @@ function percentileBg(value, pool, invert) {
  * for whichever mode is active. `base` is the metric's own name without a
  * prefix (e.g. 'points'); callers pass the matching totals/per_36 field
  * names since they don't share one naming convention in the embedded data. */
+/* Steals / blocks / fouls drawn / +/- come from the box scores (folded into
+ * data.json by scripts/merge_game_totals.py as season totals plus lg_gp /
+ * lg_min, the games and minutes those box scores cover). Averages divide by
+ * lg_gp, not gp: a game with no published box score has no steals to count.
+ * null when the player has no box-score rows (a few 2016-19 cameos). */
+function logAvg(p, k) { return Number.isFinite(p[k]) && p.lg_gp ? p[k] / p.lg_gp : null; }
+function logPer36(p, k) { return Number.isFinite(p[k]) && p.lg_min ? (p[k] * 36) / p.lg_min : null; }
+function logStat(p, k) {
+  if (!Number.isFinite(p[k])) return null;
+  if (state.statMode === 'totals') return p[k];
+  return state.statMode === 'per_36' ? logPer36(p, k) : logAvg(p, k);
+}
 function statValue(player, totalsField, avgField, per36Field) {
   if (state.statMode === 'totals') return player[totalsField];
   if (state.statMode === 'per_36') return player[per36Field];
@@ -2465,7 +2737,7 @@ function _pctl(value, pool, invert) {
 
 function playerInsights(p) {
   const I = STR[state.lang].ins;
-  if (!qualifiesForPercentiles(p)) return [STR[state.lang].pct_notice, STR[state.lang].pct_notice_sub];
+  if (!qualifiesForPercentiles(p)) return [STR[state.lang].pct_notice, STR[state.lang].pct_notice_sub(qualFloors().gp, qualFloors().min)];
   const all = activePlayersRaw();
   const qual = percentilePool();
   const pos = qual.filter((x) => x.position === p.position);
@@ -2501,8 +2773,9 @@ function playerInsights(p) {
     if (t3Q >= 75) out.push([5, I.p_three(fmt(p.fg3_pct), t3Q)]);
   }
 
-  if (p.pir_rank_league && p.pir_rank_league <= Math.max(3, Math.round(qual.length * 0.08)))
-    out.push([10, I.p_pirTop(p.pir_rank_league, fmt(p.avg_pir))]);
+  const pirRank = qualifiedPirRank(p);
+  if (pirRank && pirRank <= Math.max(3, Math.round(qual.length * 0.08)))
+    out.push([10, I.p_pirTop(pirRank, fmt(p.avg_pir))]);
 
   return _pick(out, I.p_balanced);
 }
@@ -2562,7 +2835,7 @@ function insightsCard(lines) {
    clear it on navigation so a stale query doesn't silently filter the next
    team's roster (or the league) down to "no results". */
 function resetRosterUI() { state.rosterQuery = ''; state.rosterSortKey = null; state.rosterSortDir = null; }
-function resetLeagueUI() { state.leagueQuery = ''; state.leagueSortKey = null; state.leagueSortDir = null; }
+function resetLeagueUI() { state.leagueQuery = ''; state.leagueSortKey = null; state.leagueSortDir = null; state.standSortKey = null; state.standSortDir = null; }
 function resetPlayersUI() {
   state.playersQuery = ''; state.playersPos = ''; state.playersTeam = '';
   state.playersSortKey = 'pts'; state.playersSortDir = 'desc';
@@ -2769,15 +3042,15 @@ function renderOverview(root) {
   hero.appendChild(heroLeft);
 
   if (state.competition === 'playoffs') {
-    const note = el('div', null, t('playoffs_note')(teams.length));
+    const note = el('div', null, t('playoffs_note')(teams.length, DATA.teams.length));
     note.style.cssText = 'font:600 12px/1.5 var(--font-body);color:var(--accent);margin-top:14px';
     heroLeft.appendChild(note);
   }
 
+  // Team / player head-counts used to sit here; they read as context-free
+  // numbers, so only the actionable data-quality flag count remains.
   const statRow = el('div', 'stat-row');
   [
-    { num: String(teams.length), lbl: t('ov_teams_tracked') },
-    { num: String(activePlayersRaw().length), lbl: t('ov_players_profiled') },
     activeBadSplitCount() > 0 ? { num: String(activeBadSplitCount()), lbl: t('ov_flags_to_review'), hi: true } : null,
   ].filter(Boolean).forEach((s) => {
     const box = el('div');
@@ -2790,8 +3063,21 @@ function renderOverview(root) {
   hero.appendChild(statRow);
   root.appendChild(hero);
 
-  const minGP = Math.max(3, Math.round(0.4 * Math.max(...activePlayersRaw().map((pl) => pl.gp))));
+  const maxGP = Math.max(...activePlayersRaw().map((pl) => pl.gp));
+  const minGP = Math.max(3, Math.round(0.4 * maxGP));
   const qualified = activePlayersRaw().filter((pl) => pl.gp >= minGP);
+  /* Shooting-rate leaders also need volume, scaled to the season length
+     (~32 games: 96 FGA, 48 3PA, 48 FTA) -- otherwise a 2-for-2 from three or a
+     centre's handful of dunks tops the board at 100% / 84%. */
+  const minAtt = { fga: Math.round(3 * maxGP), fg3a: Math.round(1.5 * maxGP), fta: Math.round(1.5 * maxGP) };
+  const volumeOk = {
+    ts_pct: (pl) => num0(pl.fga) >= minAtt.fga && !pl.bad_split,
+    efg_pct: (pl) => num0(pl.fga) >= minAtt.fga && !pl.bad_split,
+    fg_pct: (pl) => num0(pl.fga) >= minAtt.fga,
+    fg3_pct: (pl) => num0(pl.fg3a) >= minAtt.fg3a,
+    ft_pct: (pl) => num0(pl.fta) >= minAtt.fta,
+    ast_to_tov: (pl) => num0(pl.avg_assists) >= 2,
+  };
 
   /* ---- player leaders ---- */
   const pSec = el('div');
@@ -2799,28 +3085,37 @@ function renderOverview(root) {
   const pHead = el('div', 'panel-head');
   pHead.style.cssText = 'padding:0 0 18px;border:0';
   pHead.appendChild(el('div', 'panel-title', t('home_players_title')));
-  const pNote = el('div', null, t('home_min_note')(minGP));
-  pNote.style.cssText = 'font:400 12px/1.5 var(--font-body);color:var(--ink-3);margin-top:8px';
-  pHead.appendChild(pNote);
+  // the qualifying rules are a footnote under the cards, not a line the eye
+  // hits before the leaders themselves
+  const pNote = el('div', 'leaders-foot', t('home_min_note')(minGP, minAtt));
   pSec.appendChild(pHead);
   const pGrid = el('div', 'leaders-grid');
   const pName = (pl) => playerName(pl);
   const pMeta = (pl) => teamLabel(getTeam(pl.team_id)) + ' · ' + positionFull(pl.position);
   const pGo = (pl) => goPlayer(pl.id);
+  // field: a data.json key or a getter. eFG% was dropped (with FG% and TS%
+  // beside it, the same bigs led all three cards) and minutes too (playing
+  // time, not a skill) -- 12 cards fill the 4-wide grid.
+  const boxOk = (pl) => num0(pl.lg_gp) >= minGP;  // box-score stats need enough box scores
   [
     ['lbl_points', 'avg_points', 1], ['lbl_rebounds', 'avg_rebounds', 1], ['lbl_assists', 'avg_assists', 1],
-    ['lbl_pir', 'avg_pir', 1], ['lead_minutes', 'avg_minutes', 1], ['lead_ts', 'ts_pct', 1],
-    ['lead_efg', 'efg_pct', 1], ['lead_fg', 'fg_pct', 1], ['lead_fg3', 'fg3_pct', 1],
-    ['lead_ft', 'ft_pct', 1], ['lead_asttov', 'ast_to_tov', 2],
-  ].forEach(([labelKey, field, dec]) => {
+    ['lbl_pir', 'avg_pir', 1], ['lead_steals', (pl) => logAvg(pl, 'stl'), 1, boxOk],
+    ['lead_blocks', (pl) => logAvg(pl, 'blk'), 1, boxOk], ['lead_pm', (pl) => logAvg(pl, 'pm'), 1, boxOk],
+    ['lead_ts', 'ts_pct', 1], ['lead_fg', 'fg_pct', 1],
+    ['lead_fg3', 'fg3_pct', 1], ['lead_ft', 'ft_pct', 1], ['lead_asttov', 'ast_to_tov', 2],
+  ].forEach(([labelKey, field, dec, ok]) => {
+    const get = typeof field === 'function' ? field : (pl) => pl[field];
     const seen = new Set();
-    const rows = [...qualified]
-      .sort((a, b) => b[field] - a[field])
+    const rows = qualified.filter(ok || volumeOk[field] || (() => true))
+      .filter((pl) => Number.isFinite(get(pl)))
+      .sort((a, b) => get(b) - get(a))
       .filter((pl) => (seen.has(pl.name) ? false : seen.add(pl.name)))  // one row per player (trade = 2 rows)
       .slice(0, 5);
-    if (rows.length) pGrid.appendChild(leaderCard(t(labelKey), rows, (pl) => fmt(pl[field], dec), pName, pMeta, pGo));
+    const show = (pl) => (labelKey === 'lead_pm' ? signed(get(pl), dec) : fmt(get(pl), dec));
+    if (rows.length) pGrid.appendChild(leaderCard(t(labelKey), rows, show, pName, pMeta, pGo));
   });
   pSec.appendChild(pGrid);
+  pSec.appendChild(pNote);
   root.appendChild(pSec);
 
   /* ---- team leaders (same categories, one row per team) ---- */
@@ -2837,12 +3132,15 @@ function renderOverview(root) {
   [
     ['lbl_points', 'avg_points', 1, false], ['lbl_assists', 'avg_assists', 1, false],
     ['lbl_rebounds', 'avg_rebounds', 1, false], ['lead_oreb', 'avg_oreb', 1, false],
-    ['lead_dreb', 'avg_dreb', 1, false], ['lbl_blocks', 'avg_blocks', 1, false],
+    ['lead_steals', 'avg_steals', 1, false], ['lbl_blocks', 'avg_blocks', 1, false],
+    ['lead_diff', 'avg_diff', 1, false], ['lead_pa', 'avg_pts_against', 1, true],
     ['lead_few_tov', 'avg_turnovers', 1, true], ['lbl_pir', 'avg_pir', 1, false],
     ['lead_fg3m', 'avg_fg3m', 1, false], ['lead_fg3', 'fg3_pct', 1, false],
   ].forEach(([labelKey, field, dec, asc]) => {
-    const rows = [...teams].sort((a, b) => (asc ? a[field] - b[field] : b[field] - a[field])).slice(0, 5);
-    tGrid.appendChild(leaderCard(t(labelKey), rows, (tm) => fmt(tm[field], dec), tName, tMeta, tGo));
+    const rows = teams.filter((tm) => Number.isFinite(tm[field]))
+      .sort((a, b) => (asc ? a[field] - b[field] : b[field] - a[field])).slice(0, 5);
+    const show = (tm) => (field === 'avg_diff' ? signed(tm[field], dec) : fmt(tm[field], dec));
+    if (rows.length) tGrid.appendChild(leaderCard(t(labelKey), rows, show, tName, tMeta, tGo));
   });
   tSec.appendChild(tGrid);
   root.appendChild(tSec);
@@ -2874,12 +3172,13 @@ function renderOverview(root) {
 const LEAGUE_COLUMNS = [
   { key: 'rank', label: () => t('col_hash'), right: false, get: (row) => row.rank },
   { key: 'name', label: () => t('col_team'), right: false, text: true, get: (row) => teamLabel(row) },
-  { key: 'avg_points', label: () => 'Pts', right: true, get: (row) => row.avg_points },
-  { key: 'avg_assists', label: () => 'Ast', right: true, get: (row) => row.avg_assists },
-  { key: 'avg_rebounds', label: () => 'Reb', right: true, get: (row) => row.avg_rebounds },
-  { key: 'avg_blocks', label: () => 'Blk', right: true, get: (row) => row.avg_blocks },
-  { key: 'avg_turnovers', label: () => 'Tov', right: true, get: (row) => row.avg_turnovers },
-  { key: 'avg_pir', label: () => 'PIR', right: true, accent: true, get: (row) => row.avg_pir },
+  { key: 'avg_points', label: () => statAbbr('Pts'), right: true, get: (row) => row.avg_points },
+  { key: 'avg_assists', label: () => statAbbr('Ast'), right: true, get: (row) => row.avg_assists },
+  { key: 'avg_rebounds', label: () => statAbbr('Reb'), right: true, get: (row) => row.avg_rebounds },
+  { key: 'avg_steals', label: () => statAbbr('STL'), right: true, get: (row) => row.avg_steals },
+  { key: 'avg_blocks', label: () => statAbbr('Blk'), right: true, get: (row) => row.avg_blocks },
+  { key: 'avg_turnovers', label: () => statAbbr('Tov'), right: true, get: (row) => row.avg_turnovers },
+  { key: 'avg_pir', label: () => statAbbr('PIR'), right: true, accent: true, get: (row) => row.avg_pir },
 ];
 const modeSuffix = () => (state.statMode === 'per_36' ? '/36' : '');
 const ROSTER_COLUMNS = [
@@ -2888,11 +3187,13 @@ const ROSTER_COLUMNS = [
   { key: 'position', label: () => STR[state.lang].col_pos, right: false, text: true, get: (row) => posLabel(row.position) },
   { key: 'age', label: () => STR[state.lang].col_age, right: true, get: (row) => row.age },
   { key: 'height_m', label: () => STR[state.lang].col_ht, right: true, get: (row) => row.height_m },
-  { key: 'gp', label: () => 'GP', right: true, get: (row) => row.gp },
-  { key: 'avg_points', label: () => 'Pts' + modeSuffix(), right: true, get: (row) => statValue(row, 'pts', 'avg_points', 'per_36_points') },
-  { key: 'avg_assists', label: () => 'Ast' + modeSuffix(), right: true, get: (row) => statValue(row, 'ast', 'avg_assists', 'per_36_assists') },
-  { key: 'avg_rebounds', label: () => 'Reb' + modeSuffix(), right: true, get: (row) => statValue(row, 'reb', 'avg_rebounds', 'per_36_rebounds') },
-  { key: 'avg_pir', label: () => 'PIR' + modeSuffix(), right: true, accent: true, get: (row) => statValue(row, 'pir', 'avg_pir', 'per_36_pir') },
+  { key: 'gp', label: () => statAbbr('GP'), right: true, get: (row) => row.gp },
+  { key: 'avg_points', label: () => statAbbr('Pts') + modeSuffix(), right: true, get: (row) => statValue(row, 'pts', 'avg_points', 'per_36_points') },
+  { key: 'avg_assists', label: () => statAbbr('Ast') + modeSuffix(), right: true, get: (row) => statValue(row, 'ast', 'avg_assists', 'per_36_assists') },
+  { key: 'avg_rebounds', label: () => statAbbr('Reb') + modeSuffix(), right: true, get: (row) => statValue(row, 'reb', 'avg_rebounds', 'per_36_rebounds') },
+  { key: 'stl', label: () => statAbbr('STL') + modeSuffix(), right: true, get: (row) => logStat(row, 'stl') },
+  { key: 'blk', label: () => statAbbr('BLK') + modeSuffix(), right: true, get: (row) => logStat(row, 'blk') },
+  { key: 'avg_pir', label: () => statAbbr('PIR') + modeSuffix(), right: true, accent: true, get: (row) => statValue(row, 'pir', 'avg_pir', 'per_36_pir') },
 ];
 
 /* Columns for the league-wide all-players table (Player tab default view).
@@ -2903,15 +3204,17 @@ const PLAYERS_COLUMNS = [
   { key: 'team', label: () => t('col_team'), text: true, get: (r) => teamLabel(getTeam(r.team_id)) },
   { key: 'position', label: () => t('col_pos'), text: true, get: (r) => posLabel(r.position) },
   { key: 'age', label: () => t('col_age'), right: true, get: (r) => r.age },
-  { key: 'gp', label: () => 'GP', right: true, get: (r) => r.gp },
-  { key: 'min', label: () => 'MIN', right: true, get: (r) => (state.statMode === 'totals' ? r.avg_minutes * r.gp : r.avg_minutes) },
-  { key: 'pts', label: () => 'PTS' + modeSuffix(), right: true, get: (r) => statValue(r, 'pts', 'avg_points', 'per_36_points') },
-  { key: 'reb', label: () => 'REB' + modeSuffix(), right: true, get: (r) => statValue(r, 'reb', 'avg_rebounds', 'per_36_rebounds') },
-  { key: 'ast', label: () => 'AST' + modeSuffix(), right: true, get: (r) => statValue(r, 'ast', 'avg_assists', 'per_36_assists') },
-  { key: 'pir', label: () => 'PIR' + modeSuffix(), right: true, accent: true, get: (r) => statValue(r, 'pir', 'avg_pir', 'per_36_pir') },
-  { key: 'fg_pct', label: () => 'FG%', right: true, get: (r) => r.fg_pct },
-  { key: 'fg3_pct', label: () => '3P%', right: true, get: (r) => r.fg3_pct },
-  { key: 'ts_pct', label: () => 'TS%', right: true, get: (r) => r.ts_pct },
+  { key: 'gp', label: () => statAbbr('GP'), right: true, get: (r) => r.gp },
+  { key: 'min', label: () => statAbbr('MIN'), right: true, get: (r) => (state.statMode === 'totals' ? r.avg_minutes * r.gp : r.avg_minutes) },
+  { key: 'pts', label: () => statAbbr('PTS') + modeSuffix(), right: true, get: (r) => statValue(r, 'pts', 'avg_points', 'per_36_points') },
+  { key: 'reb', label: () => statAbbr('REB') + modeSuffix(), right: true, get: (r) => statValue(r, 'reb', 'avg_rebounds', 'per_36_rebounds') },
+  { key: 'ast', label: () => statAbbr('AST') + modeSuffix(), right: true, get: (r) => statValue(r, 'ast', 'avg_assists', 'per_36_assists') },
+  { key: 'stl', label: () => statAbbr('STL') + modeSuffix(), right: true, get: (r) => logStat(r, 'stl') },
+  { key: 'blk', label: () => statAbbr('BLK') + modeSuffix(), right: true, get: (r) => logStat(r, 'blk') },
+  { key: 'pir', label: () => statAbbr('PIR') + modeSuffix(), right: true, accent: true, get: (r) => statValue(r, 'pir', 'avg_pir', 'per_36_pir') },
+  { key: 'fg_pct', label: () => statAbbr('FG%'), right: true, get: (r) => r.fg_pct },
+  { key: 'fg3_pct', label: () => statAbbr('3P%'), right: true, get: (r) => r.fg3_pct },
+  { key: 'ts_pct', label: () => statAbbr('TS%'), right: true, get: (r) => r.ts_pct },
 ];
 
 function sortRows(rows, columns, sortKey, sortDir) {
@@ -2943,6 +3246,8 @@ function buildSortableHead(columns, colsClass, keyField, dirField, onSort) {
     const label = col.label() + (active ? (state[dirField] === 'asc' ? ' ▲' : ' ▼') : '');
     const btn = el('button', 'sort-head' + (col.right ? ' cell-right' : '') + (active ? ' active' : ''), label);
     btn.type = 'button';
+    const tip = statTip(COL_TIP[col.key]);
+    if (tip) { btn.title = tip; btn.classList.add('has-tip'); }
     if (col.accent) btn.style.color = 'var(--accent)';
     btn.addEventListener('click', () => onSort(col.key));
     head.appendChild(btn);
@@ -3016,12 +3321,34 @@ function buildStatCell(cls, value, pool, invert) {
 }
 
 /* ---------------- League ---------------- */
+/* Standings come from games/ results folded into data.json by
+   scripts/merge_game_totals.py (w/l, points for/against, home/away, last5).
+   Teams with no league games in the active competition (e.g. a relegation
+   pool that isn't on the league boards) render dashes and sort last. */
+const hasRecord = (tm) => Number.isFinite(tm.w) && tm.w + tm.l > 0;
+const winPct = (tm) => (hasRecord(tm) ? (100 * tm.w) / (tm.w + tm.l) : null);
+const STANDINGS_COLUMNS = [
+  { key: 'rank', label: () => t('col_hash'), get: (r) => r.rank },
+  { key: 'name', label: () => t('col_team'), text: true, get: (r) => teamLabel(r) },
+  { key: 'gp', label: () => statAbbr('GP'), right: true, get: (r) => (hasRecord(r) ? r.w + r.l : null) },
+  { key: 'w', label: () => t('col_w'), right: true, get: (r) => (hasRecord(r) ? r.w : null) },
+  { key: 'l', label: () => t('col_l'), right: true, get: (r) => (hasRecord(r) ? r.l : null) },
+  { key: 'pct', label: () => t('col_wpct'), right: true, accent: true, get: (r) => winPct(r) },
+  { key: 'pf', label: () => t('col_pf'), right: true, get: (r) => (hasRecord(r) ? r.avg_points : null) },
+  { key: 'pa', label: () => t('col_pa'), right: true, get: (r) => (hasRecord(r) ? r.avg_pts_against : null) },
+  { key: 'diff', label: () => t('col_diff'), right: true, get: (r) => (hasRecord(r) ? r.avg_diff : null) },
+  { key: 'home', label: () => t('col_home'), right: true, get: (r) => (hasRecord(r) ? r.home_w - r.home_l : null) },
+  { key: 'away', label: () => t('col_away'), right: true, get: (r) => (hasRecord(r) ? r.away_w - r.away_l : null) },
+  { key: 'last5', label: () => t('col_last5'), right: true, get: (r) => (hasRecord(r) ? (r.last5.match(/W/g) || []).length : null) },
+];
+function signed(v, dec) { return (v > 0 ? '+' : '') + fmt(v, dec); }
+
 function renderLeague(root) {
   const teams = activeTeams();
-  root.appendChild(el('div', 'eyebrow', t('league_eyebrow')));
+  root.appendChild(el('div', 'eyebrow', t('ov_eyebrow')));
   root.appendChild(el('div', 'display-xl', t('league_title')));
   const sub = el('div', null, t('league_sub')(teams.length));
-  sub.style.cssText = 'font:400 13px/1.5 var(--font-body);color:var(--ink-3);margin:8px 0 30px;max-width:560px';
+  sub.style.cssText = 'font:400 13px/1.5 var(--font-body);color:var(--ink-3);margin:8px 0 30px;max-width:620px';
   root.appendChild(sub);
 
   // percentile pools: always the full active team set, never the
@@ -3030,47 +3357,102 @@ function renderLeague(root) {
     avg_points: teams.map((tm) => tm.avg_points),
     avg_assists: teams.map((tm) => tm.avg_assists),
     avg_rebounds: teams.map((tm) => tm.avg_rebounds),
+    avg_steals: teams.filter((tm) => Number.isFinite(tm.avg_steals)).map((tm) => tm.avg_steals),
     avg_blocks: teams.map((tm) => tm.avg_blocks),
     avg_turnovers: teams.map((tm) => tm.avg_turnovers),
     avg_pir: teams.map((tm) => tm.avg_pir),
   };
 
-  const filtered = filterRows(teams, state.leagueQuery, teamHay);
+  const filtered = teams;
+  const standSorted = state.standSortKey
+    ? sortRows(filtered, STANDINGS_COLUMNS, state.standSortKey, state.standSortDir)
+    : [...filtered].sort((a, b) => hasRecord(b) - hasRecord(a) || a.rank - b.rank);
   const sorted = state.leagueSortKey
     ? sortRows(filtered, LEAGUE_COLUMNS, state.leagueSortKey, state.leagueSortDir)
-    : filtered;
+    : [...filtered].sort((a, b) => a.rank - b.rank);
 
-  const exportLeague = () => downloadCSV('league_stats.csv',
-    ['#', t('col_team'), 'PTS', 'AST', 'REB', 'BLK', 'TOV', 'PIR'],
-    sorted.map((tm) => [tm.rank, teamLabel(tm),
+  const rec = (tm, v) => (hasRecord(tm) ? v : '');
+  const exportLeague = () => downloadCSV('league_standings_stats.csv',
+    ['#', t('col_team'), 'W', 'L', 'W%', 'PF', 'PA', 'DIFF', 'PTS', 'AST', 'REB', 'STL', 'BLK', 'TOV', 'PIR'],
+    standSorted.map((tm) => [tm.rank, teamLabel(tm),
+      rec(tm, tm.w), rec(tm, tm.l), rec(tm, fmt(winPct(tm))),
+      rec(tm, fmt(tm.avg_points)), rec(tm, fmt(tm.avg_pts_against)), rec(tm, fmt(tm.avg_diff)),
       fmt(tm.avg_points), fmt(tm.avg_assists), fmt(tm.avg_rebounds),
+      Number.isFinite(tm.avg_steals) ? fmt(tm.avg_steals) : '',
       fmt(tm.avg_blocks), fmt(tm.avg_turnovers), fmt(tm.avg_pir)]));
 
-  root.appendChild(buildSearchToolbar(state.leagueQuery, t('search_teams'), (v) => {
-    state.leagueQuery = v; render();
-  }, exportLeague));
+  // 12-14 teams: no search box, just the CSV export
+  const toolbar = el('div', 'table-toolbar league-toolbar');
+  const exp = el('button', 'export-btn', t('btn_export'));
+  exp.type = 'button';
+  exp.addEventListener('click', exportLeague);
+  toolbar.appendChild(exp);
+  root.appendChild(toolbar);
+  const dash = () => el('span', 'stat-soft cell-right', '—');
 
+  /* ---- 1. standings ---- */
+  const stPanel = el('div', 'panel');
+  const sh = el('div', 'panel-head');
+  sh.appendChild(el('div', 'panel-kicker', t('standings_kicker')));
+  sh.appendChild(el('div', 'panel-title sm', t('standings_title')));
+  stPanel.appendChild(sh);
+  const stWrap = el('div', 'table-wrap');
+  stWrap.appendChild(buildSortableHead(STANDINGS_COLUMNS, 'standings-cols', 'standSortKey', 'standSortDir',
+    (key) => toggleSort('standSortKey', 'standSortDir', STANDINGS_COLUMNS, key)));
+  standSorted.forEach((tm) => {
+    const row = el('button', 'grid-row standings-cols');
+    row.type = 'button';
+    row.addEventListener('click', () => goTeam(tm.id));
+    row.appendChild(el('span', 'rank-num', String(tm.rank)));
+    row.appendChild(el('span', 'team-name-cell', teamLabel(tm)));
+    if (!hasRecord(tm)) {
+      for (let i = 2; i < STANDINGS_COLUMNS.length; i++) row.appendChild(dash());
+      stWrap.appendChild(row);
+      return;
+    }
+    row.appendChild(el('span', 'stat-soft cell-right', String(tm.w + tm.l)));
+    row.appendChild(el('span', 'stat-strong cell-right', String(tm.w)));
+    row.appendChild(el('span', 'stat-soft cell-right', String(tm.l)));
+    row.appendChild(el('span', 'pir-cell cell-right', fmt(winPct(tm))));
+    row.appendChild(el('span', 'stat-soft cell-right', fmt(tm.avg_points)));
+    row.appendChild(el('span', 'stat-soft cell-right', fmt(tm.avg_pts_against)));
+    row.appendChild(el('span', 'stat-strong cell-right diff-cell' + (tm.avg_diff > 0 ? ' pos' : tm.avg_diff < 0 ? ' neg' : ''), signed(tm.avg_diff)));
+    row.appendChild(el('span', 'stat-soft cell-right', tm.home_w + '-' + tm.home_l));
+    row.appendChild(el('span', 'stat-soft cell-right', tm.away_w + '-' + tm.away_l));
+    // oldest -> newest, in reading order (RTL puts the newest at the far end)
+    const form = el('span', 'st-form cell-right');
+    [...tm.last5].forEach((r) => form.appendChild(el('span', 'gm-wl' + (r === 'W' ? ' w' : ''), r === 'W' ? t('wl_w') : t('wl_l'))));
+    row.appendChild(form);
+    stWrap.appendChild(row);
+  });
+  stPanel.appendChild(stWrap);
+  const gps = new Set(teams.filter(hasRecord).map((tm) => tm.w + tm.l));
+  if (gps.size > 1) stPanel.appendChild(el('div', 'team-note', t('standings_uneven')));
+  root.appendChild(stPanel);
+
+  /* ---- 2. team stats per game ---- */
   const panel = el('div', 'panel');
-  if (sorted.length === 0) {
-    panel.appendChild(el('div', 'empty-state', t('no_results')));
-    root.appendChild(panel);
-    return;
-  }
+  panel.style.marginTop = '24px';
+  const ph = el('div', 'panel-head');
+  ph.appendChild(el('div', 'panel-kicker', t('league_eyebrow')));
+  ph.appendChild(el('div', 'panel-title sm', t('team_stats_title')));
+  panel.appendChild(ph);
   const wrap = el('div', 'table-wrap');
   wrap.appendChild(buildSortableHead(LEAGUE_COLUMNS, 'league-cols', 'leagueSortKey', 'leagueSortDir',
     (key) => toggleSort('leagueSortKey', 'leagueSortDir', LEAGUE_COLUMNS, key)));
-  sorted.forEach((t) => {
+  sorted.forEach((tm) => {
     const row = el('button', 'grid-row league-cols');
     row.type = 'button';
-    row.addEventListener('click', () => goTeam(t.id));
-    row.appendChild(el('span', 'rank-num', String(t.rank)));
-    row.appendChild(el('span', 'team-name-cell', teamLabel(t)));
-    row.appendChild(buildStatCell('stat-strong', t.avg_points, pools.avg_points));
-    row.appendChild(buildStatCell('stat-soft', t.avg_assists, pools.avg_assists));
-    row.appendChild(buildStatCell('stat-soft', t.avg_rebounds, pools.avg_rebounds));
-    row.appendChild(buildStatCell('stat-soft', t.avg_blocks, pools.avg_blocks));
-    row.appendChild(buildStatCell('stat-soft', t.avg_turnovers, pools.avg_turnovers, true));
-    row.appendChild(buildStatCell('pir-cell', t.avg_pir, pools.avg_pir));
+    row.addEventListener('click', () => goTeam(tm.id));
+    row.appendChild(el('span', 'rank-num', String(tm.rank)));
+    row.appendChild(el('span', 'team-name-cell', teamLabel(tm)));
+    row.appendChild(buildStatCell('stat-strong', tm.avg_points, pools.avg_points));
+    row.appendChild(buildStatCell('stat-soft', tm.avg_assists, pools.avg_assists));
+    row.appendChild(buildStatCell('stat-soft', tm.avg_rebounds, pools.avg_rebounds));
+    row.appendChild(Number.isFinite(tm.avg_steals) ? buildStatCell('stat-soft', tm.avg_steals, pools.avg_steals) : dash());
+    row.appendChild(buildStatCell('stat-soft', tm.avg_blocks, pools.avg_blocks));
+    row.appendChild(buildStatCell('stat-soft', tm.avg_turnovers, pools.avg_turnovers, true));
+    row.appendChild(buildStatCell('pir-cell', tm.avg_pir, pools.avg_pir));
     wrap.appendChild(row);
   });
   panel.appendChild(wrap);
@@ -3082,7 +3464,11 @@ function renderLeague(root) {
 function renderTeam(root) {
   const teams = activeTeams();
   const t = getTeam(state.teamId);
-  const roster = getTeamRoster(t.id).sort((a, b) => b.avg_pir - a.avg_pir);
+  // default order: rotation players by PIR, then small-sample cameos (a 2-game
+  // 19.5 PIR shouldn't head the roster)
+  const gpFloor = qualFloors().gp;
+  const roster = getTeamRoster(t.id)
+    .sort((a, b) => (b.gp >= gpFloor) - (a.gp >= gpFloor) || b.avg_pir - a.avg_pir);
 
   const picker = el('div', 'player-picker');
   picker.appendChild(el('label', null, STR[state.lang].team_picker_label));
@@ -3120,7 +3506,10 @@ function renderTeam(root) {
     const box = el('div');
     const num = el('div', 'num' + (key === 'avg_pir' ? ' hi' : ''), fmt(t[key]));
     box.appendChild(num);
-    box.appendChild(el('div', 'lbl', lbl));
+    // these are per-game averages -- say so, a bare "99.4 points" reads like a total
+    const lb = el('div', 'lbl', lbl + STR[state.lang].per_g_sfx);
+    if (key === 'avg_pir') lb.title = STR[state.lang].pir_hint;
+    box.appendChild(lb);
     quad.appendChild(box);
   });
   inner.appendChild(quad);
@@ -3183,11 +3572,17 @@ function renderTeam(root) {
   // a team total (those come straight off the official team record, see the
   // team-quad above); it just colours the roster grid.
   // percentile pools: always the full roster, never the search-filtered subset
+  // ...and only from rotation players: a 2-game cameo's 19.5 PIR would
+  // otherwise take the hottest tint and flatten everyone else's scale
+  const rotation = roster.filter((p) => p.gp >= gpFloor);
+  const tintBase = rotation.length >= 4 ? rotation : roster;
   const rosterPools = {
-    avg_points: roster.map((p) => statValue(p, 'pts', 'avg_points', 'per_36_points')),
-    avg_assists: roster.map((p) => statValue(p, 'ast', 'avg_assists', 'per_36_assists')),
-    avg_rebounds: roster.map((p) => statValue(p, 'reb', 'avg_rebounds', 'per_36_rebounds')),
-    avg_pir: roster.map((p) => statValue(p, 'pir', 'avg_pir', 'per_36_pir')),
+    avg_points: tintBase.map((p) => statValue(p, 'pts', 'avg_points', 'per_36_points')),
+    avg_assists: tintBase.map((p) => statValue(p, 'ast', 'avg_assists', 'per_36_assists')),
+    avg_rebounds: tintBase.map((p) => statValue(p, 'reb', 'avg_rebounds', 'per_36_rebounds')),
+    stl: tintBase.map((p) => logStat(p, 'stl')).filter((v) => v !== null),
+    blk: tintBase.map((p) => logStat(p, 'blk')).filter((v) => v !== null),
+    avg_pir: tintBase.map((p) => statValue(p, 'pir', 'avg_pir', 'per_36_pir')),
   };
 
   if (sortedRoster.length === 0) {
@@ -3200,7 +3595,7 @@ function renderTeam(root) {
   wrap.appendChild(buildSortableHead(ROSTER_COLUMNS, 'roster-cols', 'rosterSortKey', 'rosterSortDir',
     (key) => toggleSort('rosterSortKey', 'rosterSortDir', ROSTER_COLUMNS, key)));
   sortedRoster.forEach((p) => {
-    const row = el('button', 'grid-row roster-cols');
+    const row = el('button', 'grid-row roster-cols' + (p.gp < gpFloor ? ' low-sample' : ''));
     row.type = 'button';
     row.addEventListener('click', () => goPlayer(p.id));
     row.appendChild(el('span', 'rank-num sm', jerseyLabel(p.jersey)));
@@ -3217,6 +3612,10 @@ function renderTeam(root) {
     row.appendChild(buildStatCell('stat-strong sm', statValue(p, 'pts', 'avg_points', 'per_36_points'), rosterPools.avg_points));
     row.appendChild(buildStatCell('stat-soft sm', statValue(p, 'ast', 'avg_assists', 'per_36_assists'), rosterPools.avg_assists));
     row.appendChild(buildStatCell('stat-soft sm', statValue(p, 'reb', 'avg_rebounds', 'per_36_rebounds'), rosterPools.avg_rebounds));
+    ['stl', 'blk'].forEach((k) => {
+      const v = logStat(p, k);
+      row.appendChild(v === null ? el('span', 'stat-soft sm cell-right', '—') : buildStatCell('stat-soft sm', v, rosterPools[k]));
+    });
     row.appendChild(buildStatCell('pir-cell sm', statValue(p, 'pir', 'avg_pir', 'per_36_pir'), rosterPools.avg_pir));
     wrap.appendChild(row);
   });
@@ -3228,6 +3627,7 @@ function renderTeam(root) {
     rosterPanel.appendChild(note);
   }
   // NB: `t` is the team object in this function, not the i18n helper -- use STR.
+  if (roster.some((p) => p.gp < gpFloor)) rosterPanel.appendChild(el('div', 'team-note', STR[state.lang].low_sample_note(gpFloor)));
   if (roster.some(isMultiStint)) rosterPanel.appendChild(el('div', 'team-note', STR[state.lang].stint_note));
   root.appendChild(rosterPanel);
   const gamesTeamId = t.id;
@@ -3292,13 +3692,34 @@ function renderPlayerList(root) {
       modeSwitch.appendChild(b);
     });
   filters.appendChild(modeSwitch);
+
+  // Qualified-only by default: sorting by PTS/PIR otherwise puts 1-6 game
+  // cameos at the top. "All players" stays one click away.
+  const qf = qualFloors();
+  const qualSwitch = el('div', 'lang-switch');
+  [[true, t('players_qual')(qf.gp)], [false, t('players_all_gp')]].forEach(([v, lbl]) => {
+    const b = el('button', null, lbl);
+    b.type = 'button';
+    b.setAttribute('aria-pressed', state.playersQualOnly === v ? 'true' : 'false');
+    b.addEventListener('click', () => { state.playersQualOnly = v; render(); });
+    qualSwitch.appendChild(b);
+  });
+  filters.appendChild(qualSwitch);
   root.appendChild(filters);
 
   let rows = activePlayersRaw().slice();
+  if (state.playersQualOnly) rows = rows.filter((p) => p.gp >= qf.gp);
   if (state.playersTeam) rows = rows.filter((p) => p.team_id === state.playersTeam);
   if (state.playersPos) rows = rows.filter((p) => posGroups(p.position).includes(state.playersPos));
   rows = filterRows(rows, state.playersQuery, playerHay);
   rows = sortRows(rows, PLAYERS_COLUMNS, state.playersSortKey, state.playersSortDir);
+  // Page in 50 rows at a time ("All" = ~300 rows / ~17k px otherwise). Any
+  // change to the filters, sort, season or stage starts again from 50.
+  const PAGE = 50;
+  const sig = [state.season, state.competition, state.playersQuery, state.playersPos, state.playersTeam,
+    state.playersQualOnly, state.playersSortKey, state.playersSortDir].join('|');
+  if (sig !== state.playersSig) { state.playersSig = sig; state.playersLimit = PAGE; }
+  const total = rows.length;
 
   const panel = el('div', 'panel');
   if (!rows.length) {
@@ -3310,8 +3731,8 @@ function renderPlayerList(root) {
   wrap.appendChild(buildSortableHead(PLAYERS_COLUMNS, 'players-cols', 'playersSortKey', 'playersSortDir',
     (key) => toggleSort('playersSortKey', 'playersSortDir', PLAYERS_COLUMNS, key)));
   const dec = state.statMode === 'totals' ? 0 : 1;
-  rows.forEach((p) => {
-    const row = el('button', 'grid-row players-cols');
+  rows.slice(0, state.playersLimit).forEach((p) => {
+    const row = el('button', 'grid-row players-cols' + (p.gp < qf.gp ? ' low-sample' : ''));
     row.type = 'button';
     row.addEventListener('click', () => goPlayer(p.id));
     const nameCell = el('span', 'player-name-cell');
@@ -3328,6 +3749,7 @@ function renderPlayerList(root) {
     row.appendChild(el('span', 'stat-strong sm cell-right', fmt(statValue(p, 'pts', 'avg_points', 'per_36_points'), dec)));
     row.appendChild(el('span', 'stat-soft sm cell-right', fmt(statValue(p, 'reb', 'avg_rebounds', 'per_36_rebounds'), dec)));
     row.appendChild(el('span', 'stat-soft sm cell-right', fmt(statValue(p, 'ast', 'avg_assists', 'per_36_assists'), dec)));
+    ['stl', 'blk'].forEach((k) => { const v = logStat(p, k); row.appendChild(el('span', 'stat-soft sm cell-right', v === null ? '—' : fmt(v, dec))); });
     row.appendChild(el('span', 'pir-cell sm cell-right', fmt(statValue(p, 'pir', 'avg_pir', 'per_36_pir'), dec)));
     row.appendChild(el('span', 'stat-soft sm cell-right', fmt(p.fg_pct, 1)));
     row.appendChild(el('span', 'stat-soft sm cell-right', fmt(p.fg3_pct, 1)));
@@ -3335,6 +3757,13 @@ function renderPlayerList(root) {
     wrap.appendChild(row);
   });
   panel.appendChild(wrap);
+  if (total > state.playersLimit) {
+    const more = el('button', 'gm-more', t('players_more')(Math.min(PAGE, total - state.playersLimit), total - state.playersLimit));
+    more.type = 'button';
+    more.addEventListener('click', () => { state.playersLimit += PAGE; render(); });
+    panel.appendChild(more);
+  }
+  if (rows.some((p) => p.gp < qf.gp)) panel.appendChild(el('div', 'team-note', t('low_sample_note')(qf.gp)));
   if (rows.some(isMultiStint)) panel.appendChild(el('div', 'team-note', t('stint_note')));
   root.appendChild(panel);
 }
@@ -3374,7 +3803,7 @@ function renderPlayerCard(root) {
   roster.forEach((rp) => {
     const opt = document.createElement('option');
     opt.value = String(rp.id);
-    opt.textContent = jerseyLabel(rp.jersey) + ' ' + playerName(rp);
+    opt.textContent = (hasJersey(rp.jersey) ? jerseyLabel(rp.jersey) + ' ' : '') + playerName(rp);
     if (rp.id === p.id) opt.selected = true;
     select.appendChild(opt);
   });
@@ -3401,8 +3830,15 @@ function renderPlayerCard(root) {
   if (isMultiStint(p)) left.appendChild(mtBadge(true));
   inner.appendChild(left);
   const badge = el('div', 'rank-badge');
-  badge.appendChild(el('div', 'big', p.pir_rank_league !== null ? String(p.pir_rank_league) : '—'));
-  badge.appendChild(el('div', 'lbl', STR[state.lang].player_rank_badge(players.length)));
+  // rank among qualified players only; an unqualified cameo gets a dash and
+  // the reason instead of a misleading "#2 of 296"
+  const pirRank = qualifiedPirRank(p);
+  const nQual = players.filter(qualifiesForPercentiles).length;
+  badge.appendChild(el('div', 'big', pirRank !== null ? String(pirRank) : '—'));
+  badge.appendChild(el('div', 'lbl', pirRank !== null
+    ? STR[state.lang].player_rank_badge(nQual, qualFloors().gp)
+    : STR[state.lang].player_rank_unq(qualFloors().gp)));
+  badge.title = STR[state.lang].pir_hint;
   inner.appendChild(badge);
   hero.appendChild(inner);
   card.appendChild(hero);
@@ -3413,7 +3849,9 @@ function renderPlayerCard(root) {
   ].forEach(([key, lbl, hi]) => {
     const box = el('div');
     box.appendChild(el('div', 'num' + (hi ? ' hi' : ''), fmt(p[key])));
-    box.appendChild(el('div', 'lbl', lbl));
+    const lb = el('div', 'lbl', lbl + STR[state.lang].per_g_sfx);
+    if (key === 'avg_pir') lb.title = STR[state.lang].pir_hint;
+    box.appendChild(lb);
     quad.appendChild(box);
   });
   card.appendChild(quad);
@@ -3441,7 +3879,7 @@ function renderPlayerCard(root) {
     ['FT', p.ft_pct, p.ftm, p.fta, false],
   ].forEach(([k, v, m, a, accent]) => {
     const line = el('div', 'bar-line');
-    line.appendChild(el('span', 'k', k));
+    line.appendChild(el('span', 'k', statAbbr(k)));
     const track = el('span', 'tr');
     const fill = el('span', 'fl' + (accent ? '' : ' white'));
     fill.style.width = pct(v) + '%';
@@ -3483,30 +3921,63 @@ function renderPlayerCard(root) {
   bio.style.marginTop = '13px';
   [
     bioCell(STR[state.lang].bio_age, p.age !== null ? String(p.age) : '—'),
-    bioCell(STR[state.lang].bio_height, fmt(p.height_m, 2) + 'm'),
+    bioCell(STR[state.lang].bio_height, p.height_m ? fmt(p.height_m, 2) + (state.lang === 'he' ? ' מ׳' : 'm') : '—'),
     bioCell(STR[state.lang].bio_nationality, natVal),
-    bioCell(STR[state.lang].bio_on_team, p.years_on_team !== null ? STR[state.lang].yr(p.years_on_team) : '—'),
-  ].forEach((box) => bio.appendChild(box));
+    // tenure is unknown for most scraped seasons -- drop the cell rather than show a bare dash
+    p.years_on_team != null ? bioCell(STR[state.lang].bio_on_team, STR[state.lang].yr(p.years_on_team)) : null,
+  ].filter(Boolean).forEach((box) => bio.appendChild(box));
   bioCol.appendChild(bio);
   lower.appendChild(bioCol);
   card.appendChild(lower);
   root.appendChild(card);
 
+  /* ---- the rest of the card, grouped into five sections behind a sticky
+     jump-nav (it was nine panels in one long scroll):
+       summary  -- profile in brief (+ the rule-based insights folded in), vs position
+       skills   -- percentile radar, four factors
+       shooting -- zone shot profile
+       games    -- game-by-game log (lazy)
+       seasons  -- stats by season */
+  const SECS = ['summary', 'skills', 'shooting', 'games', 'seasons'];
+  const sec = {};
+  const nav = el('nav', 'pc-nav');
+  nav.setAttribute('aria-label', t('pc_nav_aria'));
+  SECS.forEach((k) => {
+    const b = el('button', null, t('pc_sec_' + k));
+    b.type = 'button';
+    b.addEventListener('click', () => sec[k].scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    nav.appendChild(b);
+  });
+  root.appendChild(nav);
+  SECS.forEach((k) => { sec[k] = el('section', 'pc-sec'); sec[k].id = 'pc-' + k; root.appendChild(sec[k]); });
+
   /* ---- viziball-style skill profile: signature + percentile radar + four factors ---- */
   {
     const sigAxes = playerSkillAxes(p, courtPool('position', p.position));
     const sig = playerSignatureCard(p, sigAxes);
-    if (sig) root.appendChild(sig);
-    root.appendChild(playerSkillRadarPanel(p));
-    if (qualifiesForPercentiles(p) && num0(p.fga) >= 20) root.appendChild(playerFourFactorsPanel(p));
+    const ins = insightsCard(playerInsights(p));
+    if (sig) {
+      // the insights bullets restated the strengths list in their own panel --
+      // they now sit under the archetype/strengths as one "profile in brief"
+      const list = ins.querySelector('.insights-list');
+      if (list && qualifiesForPercentiles(p)) {
+        list.classList.add('in-sig');
+        sig.appendChild(list);
+      }
+      sec.summary.appendChild(sig);
+    } else {
+      sec.summary.appendChild(ins);
+    }
+    sec.skills.appendChild(playerSkillRadarPanel(p));
+    if (qualifiesForPercentiles(p) && num0(p.fga) >= 20) sec.skills.appendChild(playerFourFactorsPanel(p));
   }
 
   /* ---- stats by season (NBA-style splits) ----
      Headline numbers above are the season-total "general" line; this panel
      lets you pick a calculation mode (totals / per game / per 36) and a
      split (regular season / playoffs) and reads it back one row per season.
-     Only 2023-24 exists today -- `seasonRows` is the single place to extend
-     once more seasons are ingested. */
+     Rows come from every ingested season via playerCareerRows (name + age
+     match -- PlayerIds don't carry across seasons). */
   const seasonPanel = el('div', 'panel');
   seasonPanel.style.marginTop = '24px';
   const sh = el('div', 'panel-head');
@@ -3541,10 +4012,9 @@ function renderPlayerCard(root) {
   ctrlRow.appendChild(frameSwitch);
   seasonPanel.appendChild(ctrlRow);
 
-  const fwPlayers = state.playerFramework === 'playoffs' ? DATA.playoffs.players : DATA.players;
-  const fwTeams = state.playerFramework === 'playoffs' ? DATA.playoffs.teams : DATA.teams;
-  const seasonRows = [{ season: DATA.season, row: fwPlayers.find((x) => x.id === p.id) }]
-    .filter((s) => s.row);
+  // every season this player appears in (newest first), each with its own team
+  const fwComp = state.playerFramework === 'playoffs' ? 'playoffs' : 'regular';
+  const seasonRows = playerCareerRows(p, fwComp).reverse();
 
   if (seasonRows.length === 0) {
     seasonPanel.appendChild(el('div', 'empty-state', STR[state.lang].pl_no_frame_data));
@@ -3557,20 +4027,19 @@ function renderPlayerCard(root) {
     }[state.playerCalcMode];
     const heads = [
       [STR[state.lang].col_season, false], [STR[state.lang].col_team, false], [STR[state.lang].col_age, true],
-      ['GP', true], ['MIN', true], ['PTS', true], ['REB', true], ['AST', true], ['PIR', true],
-      ['FG', true], ['3PT', true], ['FT', true],
-      ['FG%', true], ['3P%', true], ['FT%', true], ['eFG%', true], ['TS%', true],
+      ...['GP', 'MIN', 'PTS', 'REB', 'AST', 'PIR', 'FG', '3PT', 'FT', 'FG%', '3P%', 'FT%', 'eFG%', 'TS%']
+        .map((c) => [statAbbr(c), true, c]),
     ];
     const wrap = el('div', 'table-wrap');
     const head = el('div', 'grid-head player-season-cols');
-    heads.forEach(([label, right]) => head.appendChild(el('span', right ? 'cell-right' : null, label)));
+    heads.forEach(([label, right, code]) => head.appendChild(tipHead('span', right ? 'cell-right' : null, label, code)));
     wrap.appendChild(head);
     seasonRows.forEach(({ season, row }) => {
-      const tm = fwTeams.find((x) => x.id === row.team_id);
+      const tm = seasonTeam(season, fwComp, row.team_id);
       const minVal = state.playerCalcMode === 'totals'
         ? String(Math.round(row.avg_minutes * row.gp))
         : fmt(row.avg_minutes, 1);
-      const r = el('div', 'grid-row static player-season-cols');
+      const r = el('div', 'grid-row static player-season-cols' + (season === DATA.season ? ' is-current' : ''));
       r.appendChild(el('span', 'stat-strong sm', season));
       r.appendChild(el('span', 'team-name-cell', tm ? teamLabel(tm) : '—'));
       r.appendChild(el('span', 'stat-soft sm cell-right', row.age !== null ? String(row.age) : '—'));
@@ -3600,24 +4069,28 @@ function renderPlayerCard(root) {
     seasonPanel.appendChild(wrap);
   }
   if (isMultiStint(p)) seasonPanel.appendChild(el('div', 'team-note', t('stint_note')));
-  root.appendChild(seasonPanel);
+  sec.seasons.appendChild(seasonPanel);
 
   // game-by-game log (lazy: games/<season>/player_logs.json, only seasons with game data)
-  gamesSlot(root, () => playerGameLogPanel(p));
-
-  // Rule-based read of this player's season, relative to the active season's
-  // qualified pool (Per-36 already lives in the season table above, so the old
-  // advanced-metrics grid is gone).
-  root.appendChild(insightsCard(playerInsights(p)));
+  gamesSlot(sec.games, () => playerGameLogPanel(p));
 
   const _scp = playerShotCourtPanel(p);
-  if (_scp) root.appendChild(_scp);
+  if (_scp) sec.shooting.appendChild(_scp);
 
   /* vs position average, honest substitute for a fabricated game log --
      may not exist (e.g. no other playoff player shares this exact position
      code), in which case the comparison panel is simply skipped. */
-  const posAvg = activeByPosition().find(x => x.position === p.position);
-  if (!posAvg) return;
+  const posAvgAll = activeByPosition().find(x => x.position === p.position);
+  if (!posAvgAll) return;  // sections above are already in place
+  /* The exported by_position average counts every player at the position,
+     cameos included, which drags it down so every rotation player looked far
+     "above average". Average the qualified players instead (>= 4 of them),
+     falling back to the export for thin positions. */
+  const posPeers = percentilePool().filter((x) => x.position === p.position);
+  const mean = (f) => posPeers.reduce((a, x) => a + num0(x[f]), 0) / posPeers.length;
+  const posAvg = posPeers.length >= 4
+    ? { avg_points: mean('avg_points'), avg_assists: mean('avg_assists'), avg_rebounds: mean('avg_rebounds') }
+    : posAvgAll;
   const cmpPanel = el('div', 'panel');
   cmpPanel.style.marginTop = '24px';
   const ch = el('div', 'panel-head');
@@ -3642,15 +4115,17 @@ function renderPlayerCard(root) {
     const f1 = el('span', 'fl'); f1.style.width = pct((pv / maxv) * 100) + '%'; f1.style.background = 'var(--accent)';
     t1.appendChild(f1);
     row.appendChild(t1);
+    row.appendChild(el('span', 'v', fmt(pv)));
     const t2 = el('span', 'tr');
     const f2 = el('span', 'fl'); f2.style.width = pct((av / maxv) * 100) + '%'; f2.style.background = 'rgba(255,255,255,.3)';
     t2.appendChild(f2);
     row.appendChild(t2);
-    row.appendChild(el('span', 'v', fmt(pv)));
+    // the average's own number, so the grey bar isn't an unlabeled length
+    row.appendChild(el('span', 'v muted', fmt(av)));
     cmpBody.appendChild(row);
   });
   cmpPanel.appendChild(cmpBody);
-  root.appendChild(cmpPanel);
+  sec.summary.appendChild(cmpPanel);
 }
 
 /* ---------------- Games: results, box scores, game logs (lazy-loaded) ----------------
@@ -4127,7 +4602,7 @@ function bxTeamTable(tm) {
   const tb = el('table', 'bx-table');
   const hr = el('tr');
   hr.appendChild(el('th', 'nm', S.bx_player));
-  COLS.forEach((c) => hr.appendChild(el('th', null, c)));
+  COLS.forEach((c) => hr.appendChild(tipHead('th', null, statAbbr(c), c)));
   tb.appendChild(hr);
   const ma = (x) => x[0] + '/' + x[1];
   const cells = (o) => [
@@ -4279,8 +4754,8 @@ function gameLogBody(panel, rows) {
   const wrap = el('div', 'table-wrap');
   const headRow = el('div', 'grid-head glg-cols');
   [[S.col_date, false], [S.col_opp, false], [S.col_result, false],
-   ['MIN', true], ['PTS', true], ['REB', true], ['AST', true], ['STL', true], ['BLK', true], ['TOV', true], ['+/-', true], ['PIR', true]]
-    .forEach(([lbl, right]) => headRow.appendChild(el('span', right ? 'cell-right' : null, lbl)));
+   ...['MIN', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV', '+/-', 'PIR'].map((c) => [statAbbr(c), true, c])]
+    .forEach(([lbl, right, code]) => headRow.appendChild(tipHead('span', right ? 'cell-right' : null, lbl, code)));
   wrap.appendChild(headRow);
   [...rows].reverse().forEach((r) => {
     const g = r.g;
@@ -4418,48 +4893,56 @@ function renderUpgradeNotice() {
 /* ---------------- Analytics ---------------- */
 const CMP_COLORS = ['var(--accent)', '#3987e5', '#199e70', '#c98500'];
 
+/* One topic menu instead of a 4-button bar with six more views hidden behind
+ * "Advanced". Topics are grouped by what they are about (players / teams /
+ * comparisons & trends) and each card states the question it answers. */
+const AN_GROUPS = [
+  { key: 'players', items: [
+    ['scatter', renderScatterSection], ['load', renderLoadTS], ['ppr', renderPPR],
+    ['glass', renderGlass], ['court', renderShotCourt]] },
+  { key: 'teams', items: [['fourfactors', renderFourFactors], ['shotdiet', renderShotDiet]] },
+  { key: 'more', items: [['h2h', renderH2HSection], ['trends', renderTrendsSection]] },
+];
 function renderAnalytics(root) {
   const S = STR[state.lang];
   root.appendChild(el('div', 'eyebrow', t('an_eyebrow')));
   root.appendChild(el('div', 'display-xl', t('an_title')));
-  const sub = el('div', null, t('an_sub'));
-  sub.style.cssText = 'font:400 13px/1.5 var(--font-body);color:var(--ink-3);margin:8px 0 26px;max-width:620px';
-  root.appendChild(sub);
 
-  const nav = el('div', 'lang-switch an-section-nav');
-  [['scatter', S.an_sec_scatter], ['h2h', S.an_sec_h2h], ['trends', S.an_sec_trends], ['advanced', S.an_sec_advanced]].forEach(([id, label]) => {
-    const btn = el('button', null, label);
-    btn.type = 'button';
-    btn.setAttribute('aria-pressed', state.anSection === id ? 'true' : 'false');
-    btn.addEventListener('click', () => { state.anSection = id; lsSet('sls-ansection', id); render(); });
-    nav.appendChild(btn);
-  });
-  root.appendChild(nav);
-
-  if (state.anSection === 'h2h') { renderH2HSection(root); return; }
-  if (state.anSection === 'trends') { renderTrendsSection(root); return; }
-  if (state.anSection === 'advanced') {
-    const adv = [
-      ['load', S.adv_load_tab, renderLoadTS],
-      ['fourfactors', S.adv_ff_tab, renderFourFactors],
-      ['ppr', S.adv_ppr_tab, renderPPR],
-      ['shotdiet', S.adv_diet_tab, renderShotDiet],
-      ['glass', S.adv_glass_tab, renderGlass],
-      ['court', S.adv_court_tab, renderShotCourt],
-    ];
-    const sub2 = el('div', 'lang-switch an-adv-nav');
-    adv.forEach(([id, label]) => {
-      const b = el('button', null, label);
+  /* Layout: a sticky topic list beside the view (desktop) / a sticky, sideways-
+     scrolling chip bar above it (mobile). The card grid it replaces sat on top
+     of every view -- a whole phone screen before any chart, and a scroll back
+     up to switch topics. The topic's question heads the view instead. */
+  const all = AN_GROUPS.flatMap((g) => g.items);
+  const current = all.find(([id]) => id === state.anView) || all[0];
+  const layout = el('div', 'an-layout');
+  const side = el('nav', 'an-side');
+  side.setAttribute('aria-label', t('an_title'));
+  let activeBtn = null;
+  AN_GROUPS.forEach((g) => {
+    side.appendChild(el('div', 'an-side-lbl', S.an_grp[g.key]));
+    g.items.forEach(([id]) => {
+      const b = el('button', 'an-item', S.an_topic[id][0]);
       b.type = 'button';
-      b.setAttribute('aria-pressed', state.anAdv === id ? 'true' : 'false');
-      b.addEventListener('click', () => { state.anAdv = id; lsSet('sls-anadv', id); render(); });
-      sub2.appendChild(b);
+      if (id === current[0]) { b.setAttribute('aria-current', 'true'); activeBtn = b; }
+      b.addEventListener('click', () => { state.anView = id; lsSet('sls-anview', id); render(); });
+      side.appendChild(b);
     });
-    root.appendChild(sub2);
-    (adv.find(([id]) => id === state.anAdv) || adv[0])[2](root);
-    return;
-  }
-  renderScatterSection(root);
+  });
+  layout.appendChild(side);
+  const main = el('div', 'an-main');
+  const head = el('div', 'an-topic-head');
+  head.appendChild(el('div', 'an-topic-t', S.an_topic[current[0]][0]));
+  head.appendChild(el('div', 'an-topic-q', S.an_topic[current[0]][1]));
+  main.appendChild(head);
+  layout.appendChild(main);
+  root.appendChild(layout);
+  current[1](main);
+  // mobile chip bar: keep the active topic in view without moving the page
+  requestAnimationFrame(() => {
+    if (!activeBtn || side.scrollWidth <= side.clientWidth) return;
+    const sr = side.getBoundingClientRect(), br = activeBtn.getBoundingClientRect();
+    side.scrollLeft += (br.left + br.width / 2) - (sr.left + sr.width / 2);
+  });
 }
 
 function wrapField(labelText, ctrl) {
@@ -4525,7 +5008,9 @@ function renderScatterSection(root) {
   fr.appendChild(gpField);
   panel.appendChild(fr);
 
-  const pts = all.filter((p) => p.gp >= minGp && p.ts_pct > 0
+  // >= 20 FGA, same floor as the other shooting views: a 1-for-6 cameo at TS 8%
+  // otherwise stretches the y-axis and buries the real distribution
+  const pts = all.filter((p) => p.gp >= minGp && p.ts_pct > 0 && num0(p.fga) >= 20 && !p.bad_split
     && (!state.scTeam || String(p.team_id) === String(state.scTeam))
     && (!state.scPos || posGroups(p.position).includes(state.scPos)));
 
@@ -4812,6 +5297,23 @@ function decadeSeries() {
   });
 }
 
+/* Y-range for one normalized trend line. Stretching every metric to its own
+ * [min,max] made a 3-point TS% wobble (54.9-57.7 over ten years) or a 1-point
+ * FT% drift fill the whole frame and read like a revolution. The span is
+ * floored at 15% of the metric's mean, so small moves stay visibly small
+ * while real shifts (3PA share, the parity gap) still use the full height. */
+function trendRange(vals) {
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  const mean = vals.reduce((a, v) => a + Math.abs(v), 0) / (vals.length || 1);
+  const span = Math.max(hi - lo, 0.15 * mean, 1e-6);
+  const mid = (lo + hi) / 2;
+  return { lo: mid - span / 2, hi: mid + span / 2, min: lo, max: hi };
+}
+/* legend suffix with the metric's real min-max over the shown seasons */
+function trendRangeText(vals, dec, unit) {
+  const r = trendRange(vals);
+  return '  ' + STR[state.lang].tr_range(fmt(r.min, dec) + (unit || ''), fmt(r.max, dec) + (unit || ''));
+}
 function shortSeason(sk) { return sk.split('-').map((y) => y.slice(2)).join('–'); }
 
 function decadeChips(series, wrapEls) {
@@ -4819,6 +5321,7 @@ function decadeChips(series, wrapEls) {
   const row = el('div', 'dc-chips');
   const mkChip = (label, key) => {
     const b = el('button', 'dc-chip', label);
+    b.dir = 'ltr';  // season labels like 16–17 flip to 17–16 in RTL
     b.type = 'button';
     b.setAttribute('aria-pressed', state.dcSeason === key ? 'true' : 'false');
     b.addEventListener('click', () => { state.dcSeason = state.dcSeason === key ? null : key; render(); });
@@ -4842,11 +5345,13 @@ function decadeLineChart(series, metrics, ariaLabel) {
     const i = el('i'); i.style.background = mt.color; s.appendChild(i);
     const v0 = series[0][mt.key], v1 = series[series.length - 1][mt.key];
     let txt = mt.label + ':  ' + fmt(v0, mt.dec) + (mt.unit || '') + ' → ' + fmt(v1, mt.dec) + (mt.unit || '');
+    txt += trendRangeText(series.map((d) => d[mt.key]), mt.dec, mt.unit);
     if (mt.axis) txt += '  (' + mt.axis + ')';
     s.appendChild(document.createTextNode(txt));
     legend.appendChild(s);
   });
   wrap.appendChild(legend);
+  wrap.appendChild(el('div', 'tr-scale-note', STR[state.lang].tr_scale_note));
 
   const W = 780, H = 380, m = { l: 30, r: 30, t: 22, b: 46 };
   const pw = W - m.l - m.r, phv = H - m.t - m.b, n = series.length;
@@ -4867,8 +5372,8 @@ function decadeLineChart(series, metrics, ariaLabel) {
 
   metrics.forEach((mt) => {
     const vals = series.map((d) => d[mt.key]);
-    const lo = Math.min(...vals), hi = Math.max(...vals), pad = (hi - lo) * 0.12 || 1;
-    const yAt = (v) => m.t + phv - (hi === lo ? 0.5 : (v - lo + pad) / (hi - lo + 2 * pad)) * phv;
+    const { lo, hi } = trendRange(vals), pad = (hi - lo) * 0.12;
+    const yAt = (v) => m.t + phv - ((v - lo + pad) / (hi - lo + 2 * pad)) * phv;
     const pts = series.map((d, i) => xAt(i) + ',' + yAt(d[mt.key])).join(' ');
     svg.appendChild(mk('polyline', { points: pts, fill: 'none', stroke: mt.color, 'stroke-width': 2.5, 'stroke-linejoin': 'round', 'stroke-dasharray': mt.dash || '0' }));
     series.forEach((d, i) => svg.appendChild(mk('circle', { cx: xAt(i), cy: yAt(d[mt.key]), r: state.dcSeason === d.season ? 5 : 3.5, fill: mt.color })));
@@ -5034,10 +5539,12 @@ function buildTrends(series) {
     const s = el('span');
     const i = el('i'); i.style.background = mt.color; s.appendChild(i);
     const v0 = series[0][mt.key], v1 = series[series.length - 1][mt.key];
-    s.appendChild(document.createTextNode(mt.label + ':  ' + fmt(v0, mt.dec) + ' → ' + fmt(v1, mt.dec)));
+    s.appendChild(document.createTextNode(mt.label + ':  ' + fmt(v0, mt.dec) + ' → ' + fmt(v1, mt.dec)
+      + trendRangeText(series.map((d) => d[mt.key]), mt.dec)));
     legend.appendChild(s);
   });
   wrap.appendChild(legend);
+  wrap.appendChild(el('div', 'tr-scale-note', S.tr_scale_note));
 
   const W = 780, H = 400, m = { l: 40, r: 24, t: 22, b: 46 };
   const pw = W - m.l - m.r, phv = H - m.t - m.b, n = series.length;
@@ -5061,8 +5568,8 @@ function buildTrends(series) {
 
   metrics.forEach((mt) => {
     const vals = series.map((d) => d[mt.key]);
-    const lo = Math.min(...vals), hi = Math.max(...vals);
-    const yAt = (v) => m.t + phv - (hi === lo ? 0.5 : (v - lo) / (hi - lo)) * phv;
+    const { lo, hi } = trendRange(vals);
+    const yAt = (v) => m.t + phv - ((v - lo) / (hi - lo)) * phv;
     const pts = series.map((d, i) => xAt(i) + ',' + yAt(d[mt.key])).join(' ');
     svg.appendChild(mk('polyline', { points: pts, fill: 'none', stroke: mt.color, 'stroke-width': 2.5, 'stroke-linejoin': 'round' }));
     series.forEach((d, i) => svg.appendChild(mk('circle', { cx: xAt(i), cy: yAt(d[mt.key]), r: 3.5, fill: mt.color })));
@@ -5212,6 +5719,15 @@ function buildBubble(players) {
 }
 
 /* ---- B. Dean Oliver's Four Factors (teams) ---- */
+/* Four-factors label: the metric code (bidi-isolated so "eFG%" doesn't flip to
+ * "%eFG" in RTL) over a plain-words median -- replaces the old "eFG%  µ55.9",
+ * whose µ read as noise to anyone without a stats background. */
+function ffLabel(code, med) {
+  const box = el('div', 'ff-team');
+  box.appendChild(el('bdi', null, code));
+  box.appendChild(el('div', 'ff-med', STR[state.lang].ff_median(fmt(med))));
+  return box;
+}
 function renderFourFactors(root) {
   const S = STR[state.lang];
   const panel = advPanel(S.adv_ff_tab, S.adv_ff_title, S.adv_ff_sub);
@@ -5231,7 +5747,7 @@ function renderFourFactors(root) {
   const body = el('div', 'ff-wrap');
   const head = el('div', 'ff-row ff-head');
   head.appendChild(el('div', 'ff-team', ''));
-  factors.forEach((f) => head.appendChild(el('div', 'ff-cell', f.label + '  µ' + fmt(med[f.key]))));
+  factors.forEach((f) => { const c = ffLabel(f.label, med[f.key]); c.className = 'ff-cell'; head.appendChild(c); });
   body.appendChild(head);
   rows.sort((a, b) => a.tm.rank - b.tm.rank).forEach((r) => {
     const row = el('div', 'ff-row');
@@ -5267,7 +5783,7 @@ function renderPPR(root) {
   const S = STR[state.lang];
   const panel = advPanel(S.adv_ppr_tab, S.adv_ppr_title, S.adv_ppr_sub);
   const pool = analysisPool(activePlayersRaw())
-    .filter((p) => num0(totalMin(p)) > 0 && num0(p.avg_assists) >= 1.5)
+    .filter((p) => qualifiesForPercentiles(p) && num0(p.avg_assists) >= 1.5)  // per-minute rate: needs the minutes floor
     .map((p) => ({ p, ppr: safeDiv(100 * ((2 / 3) * num0(p.ast) - num0(p.tov)), totalMin(p)) }))
     .sort((a, b) => b.ppr - a.ppr);
   const body = el('div', 'sc-body');
@@ -5363,7 +5879,8 @@ function renderGlass(root) {
   const teams = [...activeTeams()];
   const meanO = teams.length ? teams.reduce((s, x) => s + num0(x.oreb), 0) / teams.length : 0;
   const meanD = teams.length ? teams.reduce((s, x) => s + num0(x.dreb), 0) / teams.length : 0;
-  const pool = analysisPool(activePlayersRaw()).filter((p) => num0(totalMin(p)) > 0).map((p) => {
+  // rebound rates are per-minute: without the minutes floor a 30-minute cameo tops ORB%
+  const pool = analysisPool(activePlayersRaw()).filter(qualifiesForPercentiles).map((p) => {
     const tm = teams.find((x) => String(x.id) === String(p.team_id));
     const factor = (tm ? num0(tm.gp) : 0) * 40;
     const tO = tm ? num0(tm.oreb) : 0, tD = tm ? num0(tm.dreb) : 0;
@@ -5404,7 +5921,7 @@ function renderGlass(root) {
     const nm = el('button', 'diet-name'); nm.type = 'button'; nm.textContent = playerName(d.p);
     nm.addEventListener('click', () => { state.glassPid = d.p.id; render(); });
     r.appendChild(nm);
-    r.appendChild(el('div', 'ppr-val', 'ORB ' + fmt(d.orb) + '  ·  DRB ' + fmt(d.drb)));
+    r.appendChild(el('div', 'ppr-val glass-pair', S.glass_pair(fmt(d.orb), fmt(d.drb))));
     top.appendChild(r);
   });
   body.appendChild(top);
@@ -5609,7 +6126,7 @@ function courtZoneTable(entity, pool) {
   const names = [S.court_zone_paint, S.court_zone_arc, S.court_zone_ft];
   const tbl = el('div', 'hc-table');
   const head = el('div', 'hc-trow hc-thead');
-  ['', 'M/A', 'FG%', S.court_vol, S.court_vs].forEach((h) => head.appendChild(el('div', null, h)));
+  ['', S.court_ma, S.court_pct, S.court_vol, S.court_vs].forEach((h) => head.appendChild(el('div', null, h)));
   tbl.appendChild(head);
   zones.forEach((z, i) => {
     const row = el('div', 'hc-trow');
@@ -5727,6 +6244,8 @@ const SKILL_AXES = [
   { key: 'perimeter',  lk: 'axis_perimeter',  inv: false, v: (p) => (num0(p.fg3a) >= 15 ? num0(p.fg3_pct) : null) },
   { key: 'inside',     lk: 'axis_inside',     inv: false, v: (p) => (num0(p.fga) - num0(p.fg3a) >= 15 ? twoPtPctOf(p) : null) },
   { key: 'impact',     lk: 'axis_impact',     inv: false, v: (p) => num0(p.per_36_pir) },
+  // steals + blocks per 36, from the box scores (null without them)
+  { key: 'defense',    lk: 'axis_defense',    inv: false, v: (p) => (p.lg_min >= 60 ? ((num0(p.stl) + num0(p.blk)) * 36) / p.lg_min : null) },
 ];
 function playerSkillAxes(p, pool) {
   return SKILL_AXES.map((ax) => {
@@ -5849,12 +6368,30 @@ function buildSkillRadar(series, axisLabels) {
 }
 
 /* every season row on record for one canonical player id, oldest -> newest */
-function playerCareerRows(pid) {
-  if (!RAW || !RAW.seasons) return [];
-  return Object.keys(RAW.seasons).sort().map((sk) => {
-    const row = (RAW.seasons[sk].players || []).find((x) => x.id === pid);
-    return row ? { season: sk, row } : null;
-  }).filter(Boolean);
+/* Every season row of this player, oldest first. The league site issues a
+ * fresh PlayerId every season (no id repeats across seasons in data.json), so
+ * matching by id only ever found the active season -- the "stats by season"
+ * table showed one row and the trend always read "first season". Match by
+ * English name instead, guarded by age: the other season's age must fit the
+ * year gap +-1, so two different players sharing a name don't merge. A season
+ * with a mid-season move yields one row per stint. */
+function playerCareerRows(p, comp) {
+  if (!RAW || !RAW.seasons || !p) return [];
+  const yr = (sk) => Number(String(sk).slice(0, 4));
+  const curYr = yr(DATA.season);
+  const ageOk = (x, sk) => p.age == null || x.age == null || Math.abs(x.age - (p.age - (curYr - yr(sk)))) <= 1;
+  const out = [];
+  Object.keys(RAW.seasons).sort().forEach((sk) => {
+    const blob = RAW.seasons[sk];
+    const list = comp === 'playoffs' ? ((blob.playoffs && blob.playoffs.players) || []) : (blob.players || []);
+    list.filter((x) => x.name === p.name && ageOk(x, sk)).forEach((row) => out.push({ season: sk, row }));
+  });
+  return out;
+}
+function seasonTeam(season, comp, teamId) {
+  const blob = RAW && RAW.seasons && RAW.seasons[season];
+  const teams = blob ? (comp === 'playoffs' ? ((blob.playoffs && blob.playoffs.teams) || []) : (blob.teams || [])) : [];
+  return teams.find((x) => x.id === teamId) || null;
 }
 
 /* two highest skill axes -> a plain-language archetype label */
@@ -5868,6 +6405,7 @@ function playerArchetype(axes) {
   if ((has('rebounding') && has('inside')) || (has('rebounding') && has('impact'))) return S.arch_anchor;
   if (has('rebounding') && has('playmaking')) return S.arch_glassguard;
   if (has('scoring') && (has('impact') || has('inside') || has('shooting'))) return S.arch_scorer;
+  if (has('defense') && !has('scoring')) return S.arch_defender;
   return S.arch_connector;
 }
 
@@ -5889,11 +6427,14 @@ function playerSignatureCard(p, axes) {
   const arch = el('div', 'sig-arch');
   arch.appendChild(el('span', 'sig-pill', S.sig_arch_label));
   arch.appendChild(el('b', null, qualified ? playerArchetype(axes) : S.arch_limited));
-  const career = playerCareerRows(p.id);
+  // compare the active season with the player's previous season (not simply
+  // the last two rows: an older season can be the one on screen)
+  const career = playerCareerRows(p, state.competition);
+  const prevRows = career.filter((c) => c.season < DATA.season);
   const trend = el('span', 'sig-trend');
-  if (career.length < 2) { trend.textContent = S.sig_trend_new; }
+  if (!prevRows.length) { trend.textContent = S.sig_trend_new; }
   else {
-    const cur = career[career.length - 1].row, prev = career[career.length - 2].row;
+    const cur = p, prev = prevRows[prevRows.length - 1].row;
     const d = num0(cur.per_36_pir) - num0(prev.per_36_pir);
     if (d >= 1) { trend.textContent = S.sig_trend_up; trend.classList.add('up'); }
     else if (d <= -1) { trend.textContent = S.sig_trend_down; trend.classList.add('down'); }
@@ -5974,7 +6515,7 @@ function playerSkillRadarPanel(p) {
 }
 
 /* Compare mode drops the numbers off the radar, so they land here: first the
-   eight axis percentiles (exactly what the chart plots), then a few raw
+   axis percentiles (exactly what the chart plots), then a few raw
    season rates for context. */
 function playerRadarCompareTable(a, b, aAxes, bAxes) {
   const S = STR[state.lang];
@@ -5986,6 +6527,7 @@ function playerRadarCompareTable(a, b, aAxes, bAxes) {
     ['eFG%', (p) => fmt(num0(p.efg_pct))],
     ['AST:TOV', (p) => fmt(num0(p.ast_to_tov), 2)],
     ['PIR /36', (p) => fmt(num0(p.per_36_pir))],
+    [statAbbr('STL') + ' + ' + statAbbr('BLK') + ' /36', (p) => (p.lg_min ? fmt(((num0(p.stl) + num0(p.blk)) * 36) / p.lg_min) : '—')],
   ];
   const tbl = el('div', 'pr-tbl');
   const head = el('div', 'pr-trow pr-thead');
@@ -6041,7 +6583,7 @@ function playerFourFactorsPanel(p) {
     const rel = (mine - mv) / span;
     const better = f.good * (mine - mv) > 0;
     const row = el('div', 'ff-row'); row.style.gridTemplateColumns = '96px 1fr 54px';
-    row.appendChild(el('div', 'ff-team', f.label + '  µ' + fmt(mv)));
+    row.appendChild(ffLabel(f.label, mv));
     const cell = el('div', 'ff-cell');
     const track = el('div', 'ff-track');
     track.appendChild(el('div', 'ff-mid'));
@@ -6431,6 +6973,12 @@ const GLOSSARY = [
     { name: { he: 'USG% / Offensive Load (קירוב)', en: 'USG% / Offensive Load (proxy)' },
       def: { he: 'הערכת נתח ההחזקות שהשחקן מסיים בזריקה, עבירה או איבוד. ללא נתוני החזקה מלאים זהו קירוב מנתוני הבוקס בלבד.', en: 'Estimated share of team possessions a player finishes with a shot, foul or turnover. Without full possession data this is a box-score proxy.' },
       formula: 'USG% ≈ (FGA + 0.44 * FTA + TOV) / TeamPoss' },
+    { name: { he: '+/- — פלוס/מינוס', en: '+/- — Plus/minus' },
+      def: { he: 'הפרש הנקודות של הקבוצה בזמן שהשחקן על המגרש. תלוי מאוד בחמישייה שסביבו, ולכן כדאי לקרוא אותו לאורך הרבה משחקים.', en: 'Team point differential while the player is on the floor. Heavily shaped by the lineup around him, so read it over many games.' },
+      formula: '+/- = team points − opponent points (player on floor)' },
+    { name: { he: 'הפרש נקודות קבוצתי', en: 'Team point differential' },
+      def: { he: 'נקודות זכות פחות נקודות חובה, בממוצע למשחק. מנבא חוזק קבוצה טוב יותר ממאזן הניצחונות לבדו.', en: 'Points scored minus points allowed, per game. A better predictor of team strength than the win-loss record alone.' },
+      formula: 'DIFF = (PTS for − PTS against) / GP' },
     { name: { he: 'PIR — מדד היעילות (Index)', en: 'PIR — Performance Index Rating' },
       def: { he: 'המדד המצרפי הרשמי של היורוליג/הליגה: סכום התרומות החיוביות פחות ההחמצות והאיבודים.', en: 'The official EuroLeague/league composite: positive contributions minus missed shots and turnovers.' },
       formula: 'PIR = (PTS + REB + AST + STL + BLK + FoulsDrawn)\n      - (FGmiss + FTmiss + TOV + BLKagainst + FoulsCommitted)' },
@@ -6465,7 +7013,7 @@ const GLOSSARY = [
   ]},
   { cat: { he: 'בסיס הנתונים והנחות', en: 'Data foundation & assumptions' }, terms: [
     { name: { he: 'מקור הנתונים', en: 'Data source' },
-      def: { he: 'סכומי עונה רשמיים מ־ליגת העל הישראלית בכדורסל (Israeli Basketball Super League). כל המדדים נגזרים מנתוני הבוקס-סקור בלבד — אין קואורדינטות זריקה, play-by-play או יומני משחק.', en: 'Official season totals from the Israeli Basketball Super League. Every metric is derived from the box score alone — there are no shot coordinates, play-by-play or game logs.' },
+      def: { he: 'סכומי עונה רשמיים וסטטיסטיקת משחק לכל משחק מאתר ליגת העל בכדורסל. חטיפות, +/-, מאזן ניצחונות ונקודות חובה מחושבים מסטטיסטיקת המשחקים. אין קואורדינטות זריקה או play-by-play, ולכן מפת הזריקות מבוססת אזורים בלבד.', en: 'Official season totals plus a box score for every game, from the Israeli Basketball Super League site. Steals, +/-, win-loss records and points allowed are computed from the box scores. There are no shot coordinates or play-by-play, so the shot map is zone-based only.' },
       formula: null },
     { name: { he: 'עונה סדירה מול פלייאוף', en: 'Regular season vs playoffs' },
       def: { he: 'הנתונים מפוצלים לשתי מסגרות נפרדות. מתג "פלייאוף" בסרגל העליון מחליף את כל הלוח; עונות היסטוריות ללא רשומות פלייאוף משביתות אותו.', en: 'Data is split into two separate frameworks. The playoff toggle in the top bar swaps the entire dashboard; historical seasons with no playoff records disable it.' },
