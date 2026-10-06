@@ -941,9 +941,9 @@
       display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
     }
     nav.tabs button {
-      padding: 6px 4px; font-size: 10.5px; min-height: 44px;
+      padding: 6px 2px; font-size: 10px; min-height: 44px;
       /* two short lines rather than "מדדים מ…" in a fifth-width cell */
-      white-space: normal; line-height: 1.15; overflow: hidden;
+      white-space: normal; line-height: 1.15; overflow: hidden; letter-spacing: .02em;
     }
     .lang-switch button { padding: 9px 12px; min-height: 40px; }
 
@@ -1026,8 +1026,8 @@
     display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
   }
   html[data-mobile] nav.tabs button {
-    padding: 6px 4px; font-size: 10.5px; min-height: 44px;
-    white-space: normal; line-height: 1.15; overflow: hidden;
+    padding: 6px 2px; font-size: 10px; min-height: 44px;
+    white-space: normal; line-height: 1.15; overflow: hidden; letter-spacing: .02em;
   }
   html[data-mobile] .lang-switch button { padding: 9px 12px; min-height: 40px; }
   html[data-mobile] .view { padding: 24px 16px 40px; }
@@ -1917,7 +1917,7 @@ const STR = {
     tab_league: 'League',
     tab_team: 'Team',
     tab_player: 'Player',
-    tab_analytics: 'Advanced',
+    tab_analytics: 'Advanced Stats',
     an_eyebrow: 'Israeli Basketball Super League',
     an_title: 'Advanced Stats',
     an_grp: { players: 'Players', teams: 'Teams', more: 'Comparisons & trends' },
