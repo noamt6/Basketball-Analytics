@@ -137,7 +137,8 @@ function domainB(data) {
     let jm = 0, nm = 0;
     for (const p of rows) {
       totPlayers++;
-      if (p.jersey === null || p.jersey === undefined || p.jersey === 0) jm++;
+      // 0 is a real shirt number (box-score backfill, merge_game_totals.py)
+      if (p.jersey === null || p.jersey === undefined) jm++;
       if (!p.name_he || !String(p.name_he).trim()) nm++;
     }
     totJerseyMiss += jm; totNameHeMiss += nm;
